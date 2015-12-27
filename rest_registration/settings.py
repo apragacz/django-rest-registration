@@ -3,7 +3,7 @@ from rest_framework.settings import perform_import
 
 
 DEFAULTS = {
-    'LOGIN_FIELDS': None,
+    'USER_LOGIN_FIELDS': None,
 }
 
 IMPORT_STRINGS = (

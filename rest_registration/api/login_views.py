@@ -23,7 +23,7 @@ def login(request):
     data = serializer.data
 
     User = get_user_model_class()
-    login_fields = (registration_settings.LOGIN_FIELDS
+    login_fields = (registration_settings.USER_LOGIN_FIELDS
                     or getattr(User, 'LOGIN_FIELDS', None)
                     or [User.USERNAME_FIELD])
 
