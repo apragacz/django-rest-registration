@@ -4,6 +4,8 @@ from rest_framework.settings import perform_import
 
 DEFAULTS = {
     'USER_LOGIN_FIELDS': None,
+    'USER_HIDDEN_FIELDS': (),
+    'USER_PUBLIC_FIELDS': None,
 }
 
 IMPORT_STRINGS = (
