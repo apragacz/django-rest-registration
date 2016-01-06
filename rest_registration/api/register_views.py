@@ -4,7 +4,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ..utils import get_user_model_class, get_user_setting
+from ..utils import get_user_model_class
 from .base import get_field_names, get_profile_serializer_class
 
 
