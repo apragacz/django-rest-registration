@@ -3,10 +3,16 @@ import re
 from setuptools import setup, find_packages
 
 
-INSTALL_REQUIRES = [
-    'Django>=1.9',
-    'djangorestframework>=3.3.2',
-]
+def get_requirements(filename):
+    with open(filename, 'r') as f:
+        requirements = f.read().split('\n')
+
+    return requirements
+
+
+def find_lib_packages():
+    return [package for package in find_packages()
+            if not package.startswith('tests')]
 
 
 def get_version(package):
@@ -25,7 +31,7 @@ def read(fname):
 setup(
     name='django-rest-registration',
     version=get_version('rest_registration'),
-    packages=find_packages(),
+    packages=find_lib_packages(),
     author='Andrzej Pragacz',
     author_email='apragacz@o2.pl',
     description=(
@@ -43,5 +49,5 @@ setup(
         'Topic :: Utilities',
         'License :: OSI Approved :: MIT License',
     ],
-    install_requires=INSTALL_REQUIRES,
+    install_requires=get_requirements('requirements.txt'),
 )
