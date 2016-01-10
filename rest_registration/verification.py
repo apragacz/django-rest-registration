@@ -22,7 +22,7 @@ class DataSigner(object):
     timestamp_field = 'timestamp'
     salt = 'rest-registration-default-salt'
     use_timestamp = False
-    vaid_period = None
+    valid_period = None
 
     def __init__(self, data):
         if self.use_timestamp and self.timestamp_field not in data:
@@ -53,14 +53,11 @@ class DataSigner(object):
         if not constant_time_compare(signature, expected_signature):
             raise BadSignature()
 
-        if self.use_timestamp and self.vaid_period is not None:
-            timestamp = data.get(self.timestamp_field, None)
-            if timestamp is None:
-                raise BadSignature()
-
+        if self.use_timestamp and self.valid_period is not None:
+            timestamp = data[self.timestamp_field]
             timestamp = int(timestamp)
             current_timestamp = get_current_timestamp()
-            valid_period_secs = self.vaid_period.total_seconds()
+            valid_period_secs = self.valid_period.total_seconds()
             if current_timestamp - timestamp > valid_period_secs:
                 raise SignatureExpired()
 
