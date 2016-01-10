@@ -1,9 +1,16 @@
+from django.core.signing import BadSignature, SignatureExpired
+from django.http import Http404
 from rest_framework import status
+from rest_framework import serializers
+from rest_framework.decorators import api_view
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from rest_registration.notifications import email as notifications_email
-from rest_registration.utils import get_user_setting
+from rest_registration.utils import (get_ok_response, get_user_model_class,
+                                     get_user_setting)
+from rest_registration.exceptions import BadRequest
 from rest_registration.settings import settings as registration_settings
 from rest_registration.verification import URLParamsSigner
 from .serializers import (get_profile_serializer_class,
@@ -61,3 +68,39 @@ class RegisterView(APIView):
 
 
 register = RegisterView.as_view()
+
+
+class VerifyRegistrationSerializer(serializers.Serializer):
+    user_id = serializers.CharField(required=True)
+    timestamp = serializers.IntegerField(required=True)
+    signature = serializers.CharField(required=True)
+
+
+@api_view(['POST'])
+def verify_registration(request):
+    '''
+    Verify registration via signature.
+    ---
+    serializer: VerifyRegistrationSerializer
+    '''
+    if not registration_settings.REGISTER_VERIFICATION_ENABLED:
+        raise Http404()
+    user_class = get_user_model_class()
+    serializer = VerifyRegistrationSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+
+    data = serializer.data
+    signer = RegisterSigner(data, request=request)
+    try:
+        signer.verify()
+    except SignatureExpired:
+        raise BadRequest('Signature expired')
+    except BadSignature:
+        raise BadRequest('Invalid signature')
+
+    verification_flag_field = get_user_setting('VERIFICATION_FLAG_FIELD')
+    user = get_object_or_404(user_class.objects.all(), pk=data['user_id'])
+    setattr(user, verification_flag_field, True)
+    user.save()
+
+    return get_ok_response('User verified successfully')

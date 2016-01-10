@@ -1,9 +1,14 @@
 from django.test.utils import override_settings
 from rest_framework import status
 
-from rest_registration.api.register_views import register
+from rest_registration.api.register_views import (RegisterSigner,
+                                                  register,
+                                                  verify_registration)
 from rest_registration.api.serializers import get_register_serializer_class
 from .base import APIViewTestCase
+
+
+REGISTER_VERIFICATION_URL = '/verify-account/'
 
 
 class RegisterViewTestCase(APIViewTestCase):
@@ -20,7 +25,7 @@ class RegisterViewTestCase(APIViewTestCase):
 
     @override_settings(
         REST_REGISTRATION={
-            'REGISTER_VERIFICATION_URL': '/verify-account/'
+            'REGISTER_VERIFICATION_URL': REGISTER_VERIFICATION_URL,
         }
     )
     def test_register_ok(self):
@@ -39,3 +44,22 @@ class RegisterViewTestCase(APIViewTestCase):
         self.assertEqual(user.username, username)
         self.assertTrue(user.check_password(password))
         self.assertFalse(user.is_active)
+
+
+class VerifyRegistrationViewTestCase(APIViewTestCase):
+
+    @override_settings(
+        REST_REGISTRATION={
+            'REGISTER_VERIFICATION_URL': REGISTER_VERIFICATION_URL,
+        }
+    )
+    def test_verify_ok(self):
+        user = self.create_test_user(is_active=False)
+        self.assertFalse(user.is_active)
+        signer = RegisterSigner({'user_id': user.pk})
+        data = signer.get_signed_data()
+        request = self.factory.post('', data)
+        response = verify_registration(request)
+        self.assert_valid_response(response, status.HTTP_200_OK)
+        user.refresh_from_db()
+        self.assertTrue(user.is_active)

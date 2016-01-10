@@ -3,7 +3,6 @@ import time
 from urllib.parse import urlencode
 
 from django.core.signing import BadSignature, SignatureExpired, base64_hmac
-from django.conf import settings
 from django.utils.crypto import constant_time_compare
 
 
@@ -41,7 +40,7 @@ class DataSigner(object):
 
     def get_signed_data(self):
         data = self._data.copy()
-        data[self.signature_field] = self.calculate_signature()
+        data[self.signature_field] = self.calculate_signature().decode('utf-8')
         return data
 
     def verify(self):
