@@ -28,6 +28,13 @@ DEFAULTS = {
         'body':  'rest_registration/register/body.txt',
     },
 
+    'RESET_PASSWORD_VERIFICATION_PERIOD': datetime.timedelta(days=1),
+    'RESET_PASSWORD_VERIFICATION_URL': None,
+    'RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES': {
+        'subject': 'rest_registration/reset_password/subject.txt',
+        'body': 'rest_registration/reset_password/body.txt',
+    },
+
     'VERIFICATION_FROM_EMAIL': None,
     'VERIFICATION_REPLY_TO_EMAIL': None,
 }
