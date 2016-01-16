@@ -6,10 +6,10 @@ from rest_framework.response import Response
 from rest_registration.api.serializers import get_profile_serializer_class
 
 
-@api_view(['POST'])
+@api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def profile(request):
     profile_serializer_class = get_profile_serializer_class()
     profile_serializer = profile_serializer_class(instance=request.user)
 
-    return Response(profile_serializer.data, status=status.HTTP_201_CREATED)
+    return Response(profile_serializer.data, status=status.HTTP_200_OK)
