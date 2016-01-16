@@ -1,7 +1,7 @@
 from rest_framework import status
 from rest_framework.test import force_authenticate
 
-from rest_registration.api.change_password_views import change_password
+from rest_registration.api.views import change_password
 from .base import APIViewTestCase
 
 

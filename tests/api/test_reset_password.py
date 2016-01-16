@@ -1,10 +1,11 @@
 from django.test.utils import override_settings
 from rest_framework import status
 
-from rest_registration.api.reset_password_views import (
-    ResetPasswordSigner,
+from rest_registration.api.views import (
     reset_password,
-    send_reset_password_link)
+    send_reset_password_link,
+)
+from rest_registration.api.views.reset_password import ResetPasswordSigner
 from .base import APIViewTestCase
 
 

@@ -2,9 +2,9 @@ from django.contrib import auth
 from rest_framework import serializers
 from rest_framework.decorators import api_view
 
-from ..exceptions import BadRequest
-from ..settings import settings as registration_settings
-from ..utils import get_user_model_class, get_ok_response
+from rest_registration.exceptions import BadRequest
+from rest_registration.settings import settings as registration_settings
+from rest_registration.utils import get_user_model_class, get_ok_response
 
 
 class LoginSerializer(serializers.Serializer):

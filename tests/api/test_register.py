@@ -1,9 +1,8 @@
 from django.test.utils import override_settings
 from rest_framework import status
 
-from rest_registration.api.register_views import (RegisterSigner,
-                                                  register,
-                                                  verify_registration)
+from rest_registration.api.views import register, verify_registration
+from rest_registration.api.views.register import RegisterSigner
 from rest_registration.api.serializers import get_register_serializer_class
 from .base import APIViewTestCase
 

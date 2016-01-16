@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
-from .base import get_profile_serializer_class
+from rest_registration.api.serializers import get_profile_serializer_class
 
 
 @api_view(['POST'])
