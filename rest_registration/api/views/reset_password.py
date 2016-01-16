@@ -57,7 +57,7 @@ def send_reset_password_link(request):
         'user_id': user.pk,
     }, request=request)
 
-    email_field = get_user_setting('VERIFICATION_EMAIL_FIELD')
+    email_field = get_user_setting('EMAIL_FIELD')
     email = getattr(user, email_field)
     notifications_email.send(email, signer)
 
