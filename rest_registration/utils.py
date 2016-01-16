@@ -12,9 +12,9 @@ def get_user_model_class():
 
 def get_user_setting(name):
     setting_name = 'USER_{}'.format(name)
-    User = get_user_model_class()
+    user_class = get_user_model_class()
     placeholder = object()
-    value = getattr(User, name, placeholder)
+    value = getattr(user_class, name, placeholder)
 
     if value is placeholder:
         value = getattr(registration_settings, setting_name)

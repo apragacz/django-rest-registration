@@ -5,12 +5,12 @@ from rest_registration.utils import get_user_model_class, get_user_setting
 
 
 def generate_profile_serializer_class():
-    User = get_user_model_class()
+    user_class = get_user_model_class()
     field_names = _get_field_names(allow_primary_key=True)
 
     class UserProfileSerializer(serializers.ModelSerializer):
         class Meta:
-            model = User
+            model = user_class
             fields = field_names
             readonly_fields = field_names
 
@@ -22,13 +22,13 @@ def get_profile_serializer_class():
 
 
 def generate_register_serializer_class():
-    User = get_user_model_class()
+    user_class = get_user_model_class()
     field_names = _get_field_names(allow_primary_key=False)
     field_names = field_names + ('password', 'password_confirm')
 
     class RegisterUserSerializer(serializers.ModelSerializer):
         class Meta:
-            model = User
+            model = user_class
             fields = field_names
 
         password_confirm = serializers.CharField()
@@ -58,8 +58,8 @@ def _get_field_names(allow_primary_key=True):
     def not_in_seq(names):
         return lambda name: name not in names
 
-    User = get_user_model_class()
-    fields = User._meta.get_fields()
+    user_class = get_user_model_class()
+    fields = user_class._meta.get_fields()
     hidden_field_names = set(get_user_setting('HIDDEN_FIELDS'))
     hidden_field_names = hidden_field_names.union(['last_login', 'password', 'logentry'])
     public_field_names = get_user_setting('PUBLIC_FIELDS')
