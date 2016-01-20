@@ -1,5 +1,6 @@
 import contextlib
 
+from django.contrib.sessions.middleware import SessionMiddleware
 from django.core import mail
 from django.test import TestCase
 from django_dynamic_fixture import G
@@ -22,6 +23,11 @@ class APIViewTestCase(TestCase):
             user.save()
             user.password_in_plaintext = password
         return user
+
+    def add_session_to_request(self, request):
+        middleware = SessionMiddleware()
+        middleware.process_request(request)
+        request.session.save()
 
     def assert_response(self, response, valid=True, expected_status_code=None):
         status_code = response.status_code
