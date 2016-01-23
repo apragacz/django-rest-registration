@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.decorators import api_view
 
 from rest_registration.exceptions import BadRequest
-from rest_registration.settings import settings as registration_settings
+from rest_registration.settings import registration_settings
 from rest_registration.utils import get_user_model_class, get_ok_response
 
 

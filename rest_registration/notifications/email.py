@@ -1,7 +1,7 @@
 from django.core.mail.message import EmailMessage
 from django.template.loader import get_template
 
-from rest_registration.settings import settings as registration_settings
+from rest_registration.settings import registration_settings
 
 
 def send(email, params_signer):

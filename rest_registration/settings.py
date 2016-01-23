@@ -80,10 +80,10 @@ class RegistrationSettings(object):
         return val
 
 
-settings = RegistrationSettings(None, DEFAULTS, IMPORT_STRINGS)  # noqa
+registration_settings = RegistrationSettings(None, DEFAULTS, IMPORT_STRINGS)  # noqa
 
 
 def settings_changed_handler(*args, **kwargs):
-    settings.reset_user_settings()
+    registration_settings.reset_user_settings()
 
 setting_changed.connect(settings_changed_handler)

@@ -3,7 +3,7 @@ from django.conf import settings
 from rest_framework.response import Response
 
 
-from .settings import settings as registration_settings
+from rest_registration.settings import registration_settings
 
 
 def get_user_model_class():
