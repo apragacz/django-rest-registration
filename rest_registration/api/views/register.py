@@ -13,8 +13,6 @@ from rest_registration.utils import (get_ok_response, get_user_model_class,
 from rest_registration.exceptions import BadRequest
 from rest_registration.settings import registration_settings
 from rest_registration.verification import URLParamsSigner
-from rest_registration.api.serializers import (get_profile_serializer_class,
-                                               get_register_serializer_class)
 
 
 class RegisterSigner(URLParamsSigner):
@@ -31,7 +29,7 @@ class RegisterSigner(URLParamsSigner):
 
 
 def _register(request):
-    serializer_class = get_register_serializer_class()
+    serializer_class = registration_settings.REGISTER_SERIALIZER_CLASS
     serializer = serializer_class(data=request.data)
     serializer.is_valid(raise_exception=True)
 
@@ -43,7 +41,7 @@ def _register(request):
 
     user = serializer.save(**kwargs)
 
-    profile_serializer_class = get_profile_serializer_class()
+    profile_serializer_class = registration_settings.PROFILE_SERIALIZER_CLASS
     profile_serializer = profile_serializer_class(instance=user)
     user_data = profile_serializer.data
 

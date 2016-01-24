@@ -2,7 +2,6 @@ from rest_framework import status
 from rest_framework.test import force_authenticate
 
 from rest_registration.api.views import login, logout
-from rest_registration.api.serializers import get_register_serializer_class
 from .base import APIViewTestCase
 
 

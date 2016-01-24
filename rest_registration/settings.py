@@ -20,6 +20,9 @@ DEFAULTS = {
 
     'USER_VERIFICATION_FLAG_FIELD': 'is_active',
 
+    'REGISTER_SERIALIZER_CLASS': (
+        'rest_registration.api.serializers.DefaultRegisterUserSerializer'),
+
     'REGISTER_VERIFICATION_ENABLED': True,
     'REGISTER_VERIFICATION_PERIOD': datetime.timedelta(days=7),
     'REGISTER_VERIFICATION_URL': None,
@@ -35,11 +38,16 @@ DEFAULTS = {
         'body': 'rest_registration/reset_password/body.txt',
     },
 
+    'PROFILE_SERIALIZER_CLASS': (
+        'rest_registration.api.serializers.DefaultUserProfileSerializer'),
+
     'VERIFICATION_FROM_EMAIL': None,
     'VERIFICATION_REPLY_TO_EMAIL': None,
 }
 
 IMPORT_STRINGS = (
+    'REGISTER_SERIALIZER_CLASS',
+    'PROFILE_SERIALIZER_CLASS',
 )
 
 

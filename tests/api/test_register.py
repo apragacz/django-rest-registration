@@ -3,7 +3,7 @@ from rest_framework import status
 
 from rest_registration.api.views import register, verify_registration
 from rest_registration.api.views.register import RegisterSigner
-from rest_registration.api.serializers import get_register_serializer_class
+from rest_registration.settings import registration_settings
 from .base import APIViewTestCase
 
 
@@ -13,7 +13,7 @@ REGISTER_VERIFICATION_URL = '/verify-account/'
 class RegisterViewTestCase(APIViewTestCase):
 
     def test_register_serializer_ok(self):
-        serializer_class = get_register_serializer_class()
+        serializer_class = registration_settings.REGISTER_SERIALIZER_CLASS
         serializer = serializer_class(data={})
         field_names = {f for f in serializer.get_fields()}
         self.assertEqual(

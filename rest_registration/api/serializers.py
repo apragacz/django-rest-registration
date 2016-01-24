@@ -4,50 +4,44 @@ from rest_framework.exceptions import ValidationError
 from rest_registration.utils import get_user_model_class, get_user_setting
 
 
-def generate_profile_serializer_class():
-    user_class = get_user_model_class()
-    field_names = _get_field_names(allow_primary_key=True)
-
-    class UserProfileSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = user_class
-            fields = field_names
-            readonly_fields = field_names
-
-    return UserProfileSerializer
+class MetaObj(object):
+    pass
 
 
-def get_profile_serializer_class():
-    return generate_profile_serializer_class()
+class DefaultUserProfileSerializer(serializers.ModelSerializer):
+
+    def __init__(self, *args, **kwargs):
+        user_class = get_user_model_class()
+        field_names = _get_field_names(allow_primary_key=True)
+        self.Meta = MetaObj()
+        self.Meta.model = user_class
+        self.Meta.fields = field_names
+        self.Meta.readonly_fields = field_names
+        super().__init__(*args, **kwargs)
 
 
-def generate_register_serializer_class():
-    user_class = get_user_model_class()
-    field_names = _get_field_names(allow_primary_key=False)
-    field_names = field_names + ('password', 'password_confirm')
+class DefaultRegisterUserSerializer(serializers.ModelSerializer):
 
-    class RegisterUserSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = user_class
-            fields = field_names
+    password_confirm = serializers.CharField()
 
-        password_confirm = serializers.CharField()
+    def __init__(self, *args, **kwargs):
+        user_class = get_user_model_class()
+        field_names = _get_field_names(allow_primary_key=False)
+        field_names = field_names + ('password', 'password_confirm')
+        self.Meta = MetaObj()
+        self.Meta.model = user_class
+        self.Meta.fields = field_names
+        super().__init__(*args, **kwargs)
 
-        def validate(self, data):
-            if data['password'] != data['password_confirm']:
-                raise ValidationError('Passwords don\'t match')
-            return data
+    def validate(self, data):
+        if data['password'] != data['password_confirm']:
+            raise ValidationError('Passwords don\'t match')
+        return data
 
-        def create(self, validated_data):
-            data = validated_data.copy()
-            del data['password_confirm']
-            return self.Meta.model.objects.create_user(**data)
-
-    return RegisterUserSerializer
-
-
-def get_register_serializer_class():
-    return generate_register_serializer_class()
+    def create(self, validated_data):
+        data = validated_data.copy()
+        del data['password_confirm']
+        return self.Meta.model.objects.create_user(**data)
 
 
 def _get_field_names(allow_primary_key=True):
