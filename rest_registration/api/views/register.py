@@ -59,7 +59,7 @@ def _register(request):
 class RegisterView(APIView):
 
     def get_serializer_class(self):
-        return get_register_serializer_class()
+        return registration_settings.REGISTER_SERIALIZER_CLASS
 
     def post(self, request):
         return _register(request)
