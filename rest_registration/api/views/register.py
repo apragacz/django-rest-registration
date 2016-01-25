@@ -5,12 +5,12 @@ from rest_framework import serializers
 from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 from rest_registration.notifications import email as notifications_email
 from rest_registration.utils import (get_ok_response, get_user_model_class,
                                      get_user_setting)
 from rest_registration.exceptions import BadRequest
+from rest_registration.decorators import serializer_class_getter
 from rest_registration.settings import registration_settings
 from rest_registration.verification import URLParamsSigner
 
@@ -28,7 +28,10 @@ class RegisterSigner(URLParamsSigner):
         return registration_settings.REGISTER_VERIFICATION_PERIOD
 
 
-def _register(request):
+@serializer_class_getter(
+    lambda: registration_settings.REGISTER_SERIALIZER_CLASS)
+@api_view(['POST'])
+def register(request):
     serializer_class = registration_settings.REGISTER_SERIALIZER_CLASS
     serializer = serializer_class(data=request.data)
     serializer.is_valid(raise_exception=True)
@@ -54,18 +57,6 @@ def _register(request):
         notifications_email.send(email, signer)
 
     return Response(user_data, status=status.HTTP_201_CREATED)
-
-
-class RegisterView(APIView):
-
-    def get_serializer_class(self):
-        return registration_settings.REGISTER_SERIALIZER_CLASS
-
-    def post(self, request):
-        return _register(request)
-
-
-register = RegisterView.as_view()
 
 
 class VerifyRegistrationSerializer(serializers.Serializer):
