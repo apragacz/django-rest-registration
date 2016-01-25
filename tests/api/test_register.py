@@ -44,6 +44,18 @@ class RegisterViewTestCase(APIViewTestCase):
         self.assertTrue(user.check_password(password))
         self.assertFalse(user.is_active)
 
+    def test_register_not_matching_password(self):
+        username = 'testusername'
+        password = 'testpassword'
+        request = self.factory.post('', {
+            'username': username,
+            'password': password,
+            'password_confirm': 'blah',
+        })
+        with self.assert_no_mail_sent():
+            response = register(request)
+        self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
+
 
 class VerifyRegistrationViewTestCase(APIViewTestCase):
 

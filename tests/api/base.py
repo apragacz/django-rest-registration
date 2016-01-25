@@ -65,3 +65,7 @@ class APIViewTestCase(TestCase):
     @contextlib.contextmanager
     def assert_mail_sent(self):
         yield from self._assert_mails_sent(1)
+
+    @contextlib.contextmanager
+    def assert_no_mail_sent(self):
+        yield from self._assert_mails_sent(0)
