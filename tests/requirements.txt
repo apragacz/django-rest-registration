@@ -2,3 +2,4 @@ django-dynamic-fixture
 flake8
 pylint
 ipython
+coverage
