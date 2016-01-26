@@ -3,8 +3,11 @@ import re
 from setuptools import setup, find_packages
 
 
+ROOT_DIR = os.path.dirname(__file__)
+
+
 def get_requirements(filename):
-    with open(filename, 'r') as f:
+    with open(os.path.join(ROOT_DIR, filename), 'r') as f:
         requirements = f.read().split('\n')
 
     return requirements
@@ -19,13 +22,15 @@ def get_version(package):
     """
     Return package version as listed in `__version__` in `init.py`.
     """
-    init_py = open(os.path.join(package, '__init__.py')).read()
+    with open(os.path.join(ROOT_DIR, package, '__init__.py')) as f:
+        init_py = f.read()
     return re.search("__version__ = ['\"]([^'\"]+)['\"]", init_py).group(1)
 
 
-def read(fname):
+def read(filename):
     '''Utility function to read the README file.'''
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+    with open(os.path.join(ROOT_DIR, filename)) as f:
+        return f.read()
 
 
 setup(
