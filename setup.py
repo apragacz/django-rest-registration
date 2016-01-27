@@ -6,53 +6,74 @@ from setuptools import setup, find_packages
 ROOT_DIR = os.path.dirname(__file__)
 
 
-def get_requirements(filename):
-    with open(os.path.join(ROOT_DIR, filename), 'r') as f:
-        requirements = f.read().split('\n')
-
-    return requirements
+def read_contents(local_filepath):
+    with open(os.path.join(ROOT_DIR, local_filepath)) as f:
+        return f.read()
 
 
-def find_lib_packages():
-    return [package for package in find_packages()
-            if not package.startswith('tests')]
+def get_requirements(requirements_filepath):
+    '''
+    Return list of this package requirements via local filepath.
+    '''
+    return read_contents(requirements_filepath).split('\n')
 
 
 def get_version(package):
-    """
+    '''
     Return package version as listed in `__version__` in `init.py`.
-    """
-    with open(os.path.join(ROOT_DIR, package, '__init__.py')) as f:
-        init_py = f.read()
+    '''
+    init_py = read_contents(os.path.join(package, '__init__.py'))
     return re.search("__version__ = ['\"]([^'\"]+)['\"]", init_py).group(1)
 
 
-def read(filename):
-    '''Utility function to read the README file.'''
-    with open(os.path.join(ROOT_DIR, filename)) as f:
-        return f.read()
+def get_long_description(markdown_filepath):
+    '''
+    Return the long description in RST format, when possible.
+    '''
+    try:
+        import pypandoc
+        return pypandoc.convert(markdown_filepath, 'rst')
+    except ImportError:
+        return read_contents(markdown_filepath)
 
 
 setup(
     name='django-rest-registration',
     version=get_version('rest_registration'),
-    packages=find_lib_packages(),
+    packages=find_packages(exclude=['tests.*', 'tests']),
     author='Andrzej Pragacz',
     author_email='apragacz@o2.pl',
     description=(
         'User registration REST API, based on django-rest-framework'
     ),
     license='MIT',
-    keywords='django rest rest-framework registration',
-    long_description=read('README.md'),
+    keywords=' '.join((
+        'django',
+        'rest',
+        'api',
+        'rest-framework',
+        'registration',
+        'register',
+        'login',
+        'sign-up',
+        'signin',
+    )),
+    long_description=get_long_description('README.md'),
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 3 - Alpha',
         'Environment :: Web Environment',
-        'Intended Audience :: Developers'
+        'Framework :: Django',
+        'Framework :: Django :: 1.9',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: MIT License',
+        'Operating System :: POSIX',
+        'Operating System :: POSIX :: Linux',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Topic :: Utilities',
-        'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python :: 3 :: Only',
+        'Topic :: Internet',
+        'Topic :: Internet :: WWW/HTTP',
     ],
     install_requires=get_requirements('requirements.txt'),
+    url='https://github.com/szopu/django-rest-registration',
 )

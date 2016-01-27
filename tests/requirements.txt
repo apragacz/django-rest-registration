@@ -3,3 +3,4 @@ flake8
 pylint
 ipython
 coverage
+pypandoc
