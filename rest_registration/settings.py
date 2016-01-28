@@ -71,6 +71,11 @@ class RegistrationSettings(object):
         if hasattr(self, '_user_settings'):
             del self._user_settings
 
+    def reset_attr_cache(self):
+        for key in self.defaults.keys():
+            if hasattr(self, key):
+                delattr(self, key)
+
     def __getattr__(self, attr):
         if attr not in self.defaults.keys():
             raise AttributeError("Invalid registration setting: '%s'" % attr)
@@ -96,5 +101,6 @@ registration_settings = RegistrationSettings(None, DEFAULTS, IMPORT_STRINGS)  # 
 
 def settings_changed_handler(*args, **kwargs):
     registration_settings.reset_user_settings()
+    registration_settings.reset_attr_cache()
 
 setting_changed.connect(settings_changed_handler)
