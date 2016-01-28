@@ -31,6 +31,9 @@ DEFAULTS = {
         'body':  'rest_registration/register/body.txt',
     },
 
+    'LOGIN_AUTHENTICATE_SESSION': None,
+    'LOGIN_RETRIEVE_TOKEN': None,
+
     'RESET_PASSWORD_VERIFICATION_PERIOD': datetime.timedelta(days=1),
     'RESET_PASSWORD_VERIFICATION_URL': None,
     'RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES': {

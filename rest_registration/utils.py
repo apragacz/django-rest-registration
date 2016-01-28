@@ -22,5 +22,7 @@ def get_user_setting(name):
     return value
 
 
-def get_ok_response(message, status=200):
-    return Response({'detail': message}, status=status)
+def get_ok_response(message, status=200, extra_data={}):
+    data = {'detail': message}
+    data.update(extra_data)
+    return Response(data, status=status)
