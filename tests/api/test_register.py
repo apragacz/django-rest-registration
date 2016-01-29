@@ -1,3 +1,6 @@
+import time
+from unittest.mock import patch
+
 from django.test.utils import override_settings
 from rest_framework import status
 
@@ -74,3 +77,58 @@ class VerifyRegistrationViewTestCase(APIViewTestCase):
         self.assert_valid_response(response, status.HTTP_200_OK)
         user.refresh_from_db()
         self.assertTrue(user.is_active)
+
+    @override_settings(
+        REST_REGISTRATION={
+            'REGISTER_VERIFICATION_URL': REGISTER_VERIFICATION_URL,
+        }
+    )
+    def test_verify_tampered_timestamp(self):
+        user = self.create_test_user(is_active=False)
+        self.assertFalse(user.is_active)
+        signer = RegisterSigner({'user_id': user.pk})
+        data = signer.get_signed_data()
+        data['timestamp'] += 1
+        request = self.factory.post('', data)
+        response = verify_registration(request)
+        self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
+        user.refresh_from_db()
+        self.assertFalse(user.is_active)
+
+    @override_settings(
+        REST_REGISTRATION={
+            'REGISTER_VERIFICATION_URL': REGISTER_VERIFICATION_URL,
+        }
+    )
+    def test_verify_expired(self):
+        timestamp = int(time.time())
+        user = self.create_test_user(is_active=False)
+        self.assertFalse(user.is_active)
+        with patch('time.time',
+                   side_effect=lambda: timestamp):
+            signer = RegisterSigner({'user_id': user.pk})
+            data = signer.get_signed_data()
+            request = self.factory.post('', data)
+        with patch('time.time',
+                   side_effect=lambda: timestamp + 3600 * 24 * 8):
+            response = verify_registration(request)
+        self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
+        user.refresh_from_db()
+        self.assertFalse(user.is_active)
+
+    @override_settings(
+        REST_REGISTRATION={
+            'REGISTER_VERIFICATION_ENABLED': False,
+            'REGISTER_VERIFICATION_URL': REGISTER_VERIFICATION_URL,
+        }
+    )
+    def test_verify_disabled(self):
+        user = self.create_test_user(is_active=False)
+        self.assertFalse(user.is_active)
+        signer = RegisterSigner({'user_id': user.pk})
+        data = signer.get_signed_data()
+        request = self.factory.post('', data)
+        response = verify_registration(request)
+        self.assert_invalid_response(response, status.HTTP_404_NOT_FOUND)
+        user.refresh_from_db()
+        self.assertFalse(user.is_active)
