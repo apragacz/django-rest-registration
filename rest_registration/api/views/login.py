@@ -3,6 +3,8 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view
 from rest_framework.settings import api_settings
+from rest_framework.authentication import (SessionAuthentication,
+                                           TokenAuthentication)
 
 from rest_registration.exceptions import BadRequest
 from rest_registration.settings import registration_settings
@@ -70,17 +72,16 @@ def logout(request):
 def should_authenticate_session():
     result = registration_settings.LOGIN_AUTHENTICATE_SESSION
     if result is None:
-        result = rest_auth_has_class('SessionAuthentication')
+        result = rest_auth_has_class(SessionAuthentication)
     return result
 
 
 def should_retrieve_token():
     result = registration_settings.LOGIN_RETRIEVE_TOKEN
     if result is None:
-        result = rest_auth_has_class('TokenAuthentication')
+        result = rest_auth_has_class(TokenAuthentication)
     return result
 
 
-def rest_auth_has_class(class_name):
-    import_str = 'rest_framework.authentication.{}'.format(class_name)
-    return import_str in api_settings.DEFAULT_AUTHENTICATION_CLASSES
+def rest_auth_has_class(cls):
+    return cls in api_settings.DEFAULT_AUTHENTICATION_CLASSES
