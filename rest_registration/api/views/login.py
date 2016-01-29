@@ -47,7 +47,8 @@ def login(request):
     extra_data = {}
 
     if should_retrieve_token():
-        extra_data['token'], _ = Token.objects.get_or_create(user=user)
+        token, _ = Token.objects.get_or_create(user=user)
+        extra_data['token'] = token.key
 
     return get_ok_response('Login successful', extra_data=extra_data)
 
