@@ -46,25 +46,22 @@ class DefaultRegisterUserSerializer(serializers.ModelSerializer):
 
 def _get_field_names(allow_primary_key=True):
 
-    def in_seq(names):
-        return lambda name: name in names
-
     def not_in_seq(names):
         return lambda name: name not in names
 
     user_class = get_user_model_class()
     fields = user_class._meta.get_fields()
-    hidden_field_names = set(get_user_setting('HIDDEN_FIELDS'))
-    hidden_field_names = hidden_field_names.union(['last_login', 'password', 'logentry'])
-    public_field_names = get_user_setting('PUBLIC_FIELDS')
+    default_field_names = [f.name for f in fields
+                           if (getattr(f, 'serialize', False)
+                               or getattr(f, 'primary_key', False))]
     pk_field_names = [f.name for f in fields
                       if getattr(f, 'primary_key', False)]
+    hidden_field_names = set(get_user_setting('HIDDEN_FIELDS'))
+    hidden_field_names = hidden_field_names.union(['last_login', 'password'])
+    public_field_names = get_user_setting('PUBLIC_FIELDS')
 
-    field_names = (f.name for f in fields)
-
-    if public_field_names is not None:
-        field_names = filter(in_seq(public_field_names), field_names)
-
+    field_names = (public_field_names if public_field_names is not None
+                   else default_field_names)
     field_names = filter(not_in_seq(hidden_field_names), field_names)
 
     if not allow_primary_key:
