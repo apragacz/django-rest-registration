@@ -6,10 +6,20 @@ from rest_framework.response import Response
 from rest_registration.settings import registration_settings
 
 
-@api_view(['GET'])
+@api_view(['GET', 'PUT', 'PATCH'])
 @permission_classes([IsAuthenticated])
 def profile(request):
-    profile_serializer_class = registration_settings.PROFILE_SERIALIZER_CLASS
-    profile_serializer = profile_serializer_class(instance=request.user)
+    serializer_class = registration_settings.PROFILE_SERIALIZER_CLASS
+    if request.method == 'GET':
+        serializer = serializer_class(instance=request.user)
+    elif request.method in ['PUT', 'PATCH']:
+        partial = request.method == 'PATCH'
+        serializer = serializer_class(
+            instance=request.user,
+            data=request.data,
+            partial=partial,
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
 
-    return Response(profile_serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.data)

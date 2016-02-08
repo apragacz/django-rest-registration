@@ -16,6 +16,7 @@ DEFAULTS = {
         'date_joined',
     ),
     'USER_PUBLIC_FIELDS': None,
+    'USER_EDITABLE_FIELDS': None,
     'USER_EMAIL_FIELD': 'email',
 
     'USER_VERIFICATION_FLAG_FIELD': 'is_active',
