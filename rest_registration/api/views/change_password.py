@@ -28,4 +28,8 @@ def change_password(request):
     serializer = ChangePasswordSerializer(data=request.data,
                                           context={'request': request})
     serializer.is_valid(raise_exception=True)
+
+    user = request.user
+    user.set_password(serializer.data['password'])
+    user.save()
     return get_ok_response('Password changed successfully')
