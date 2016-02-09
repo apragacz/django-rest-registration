@@ -54,7 +54,9 @@ def register(request):
         }, request=request)
         email_field = get_user_setting('EMAIL_FIELD')
         email = getattr(user, email_field)
-        notifications_email.send(email, signer)
+        template_config = (
+            registration_settings.REGISTER_VERIFICATION_EMAIL_TEMPLATES)
+        notifications_email.send(email, signer, template_config)
 
     return Response(user_data, status=status.HTTP_201_CREATED)
 
