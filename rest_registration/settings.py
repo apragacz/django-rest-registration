@@ -42,6 +42,14 @@ DEFAULTS = {
         'body': 'rest_registration/reset_password/body.txt',
     },
 
+    'REGISTER_EMAIL_VERIFICATION_ENABLED': True,
+    'REGISTER_EMAIL_VERIFICATION_PERIOD': datetime.timedelta(days=7),
+    'REGISTER_EMAIL_VERIFICATION_URL': None,
+    'REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES': {
+        'subject':  'rest_registration/register_email/subject.txt',
+        'body':  'rest_registration/register_email/body.txt',
+    },
+
     'PROFILE_SERIALIZER_CLASS': (
         'rest_registration.api.serializers.DefaultUserProfileSerializer'),
 
