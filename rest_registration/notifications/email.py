@@ -11,8 +11,8 @@ def send(email, params_signer, template_config):
     body_template = get_template(template_config['body'])
     subject_template = get_template(template_config['subject'])
     from_email = registration_settings.VERIFICATION_FROM_EMAIL
-    reply_to_email = (registration_settings.VERIFICATION_REPLY_TO_EMAIL
-                      or from_email)
+    reply_to_email = (registration_settings.VERIFICATION_REPLY_TO_EMAIL or
+                      from_email)
     subject = subject_template.render(ctx).strip()
     body = body_template.render(ctx)
 

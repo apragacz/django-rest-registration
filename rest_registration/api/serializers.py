@@ -54,8 +54,8 @@ def _get_field_names(allow_primary_key=True, non_editable=False):
     user_class = get_user_model_class()
     fields = user_class._meta.get_fields()
     default_field_names = [f.name for f in fields
-                           if (getattr(f, 'serialize', False)
-                               or getattr(f, 'primary_key', False))]
+                           if (getattr(f, 'serialize', False) or
+                               getattr(f, 'primary_key', False))]
     pk_field_names = [f.name for f in fields
                       if getattr(f, 'primary_key', False)]
     hidden_field_names = set(get_user_setting('HIDDEN_FIELDS'))

@@ -73,7 +73,11 @@ class RegistrationSettings(object):
     @property
     def user_settings(self):
         if not hasattr(self, '_user_settings'):
-            self._user_settings = getattr(root_settings, 'REST_REGISTRATION', {})
+            self._user_settings = getattr(
+                root_settings,
+                'REST_REGISTRATION',
+                {},
+            )
         return self._user_settings
 
     def reset_user_settings(self):

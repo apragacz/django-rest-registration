@@ -28,9 +28,9 @@ def login(request):
     data = serializer.data
 
     user_class = get_user_model_class()
-    login_fields = (registration_settings.USER_LOGIN_FIELDS
-                    or getattr(user_class, 'LOGIN_FIELDS', None)
-                    or [user_class.USERNAME_FIELD])
+    login_fields = (registration_settings.USER_LOGIN_FIELDS or
+                    getattr(user_class, 'LOGIN_FIELDS', None) or
+                    [user_class.USERNAME_FIELD])
 
     for field_name in login_fields:
         kwargs = {
