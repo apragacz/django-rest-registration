@@ -64,8 +64,8 @@ class DataSigner(object):
 class URLParamsSigner(DataSigner):
     base_url = None
 
-    def __init__(self, data, request=None):
-        assert self.base_url, 'base_url is not defined'
+    def __init__(self, data, request=None, strict=True):
+        assert not strict or self.base_url, 'base_url is not defined'
         super().__init__(data)
         self.request = request
 
