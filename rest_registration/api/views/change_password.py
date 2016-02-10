@@ -25,6 +25,11 @@ class ChangePasswordSerializer(serializers.Serializer):
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def change_password(request):
+    '''
+    Change the user password.
+    ---
+    serializer: ChangePasswordSerializer
+    '''
     serializer = ChangePasswordSerializer(data=request.data,
                                           context={'request': request})
     serializer.is_valid(raise_exception=True)

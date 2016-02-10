@@ -31,6 +31,9 @@ class RegisterSigner(URLParamsSigner):
     lambda: registration_settings.REGISTER_SERIALIZER_CLASS)
 @api_view(['POST'])
 def register(request):
+    '''
+    Register new user.
+    '''
     serializer_class = registration_settings.REGISTER_SERIALIZER_CLASS
     serializer = serializer_class(data=request.data)
     serializer.is_valid(raise_exception=True)

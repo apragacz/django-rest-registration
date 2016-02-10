@@ -36,6 +36,11 @@ def get_login_fields():
 
 @api_view(['POST'])
 def send_reset_password_link(request):
+    '''
+    Send email with reset password link.
+    ---
+    serializer: SendResetPasswordLinkSerializer
+    '''
     serializer = SendResetPasswordLinkSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     login = serializer.data['login']
@@ -75,6 +80,11 @@ class ResetPasswordSerializer(serializers.Serializer):
 
 @api_view(['POST'])
 def reset_password(request):
+    '''
+    Reset password, given the signature and timestamp from the link.
+    ---
+    serializer: ResetPasswordSerializer
+    '''
     serializer = ResetPasswordSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 

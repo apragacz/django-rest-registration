@@ -19,6 +19,7 @@ class LoginSerializer(serializers.Serializer):
 @api_view(['POST'])
 def login(request):
     '''
+    Logs in the user via given login and password.
     ---
     serializer: LoginSerializer
     '''
