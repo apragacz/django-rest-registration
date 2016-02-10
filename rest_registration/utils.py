@@ -1,8 +1,9 @@
 from django.apps import apps
 from django.conf import settings
+from django.core.signing import BadSignature, SignatureExpired
 from rest_framework.response import Response
 
-
+from rest_registration.exceptions import BadRequest
 from rest_registration.settings import registration_settings
 
 
@@ -26,3 +27,12 @@ def get_ok_response(message, status=200, extra_data={}):
     data = {'detail': message}
     data.update(extra_data)
     return Response(data, status=status)
+
+
+def verify_signer_or_bad_request(signer):
+    try:
+        signer.verify()
+    except SignatureExpired:
+        raise BadRequest('Signature expired')
+    except BadSignature:
+        raise BadRequest('Invalid signature')

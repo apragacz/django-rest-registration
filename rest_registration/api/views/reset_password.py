@@ -1,4 +1,3 @@
-from django.core.signing import BadSignature, SignatureExpired
 from django.http import Http404
 from rest_framework import serializers
 from rest_framework.decorators import api_view
@@ -9,7 +8,8 @@ from rest_registration.notifications import email as notifications_email
 from rest_registration.settings import registration_settings
 from rest_registration.verification import URLParamsSigner
 from rest_registration.utils import (get_ok_response, get_user_model_class,
-                                     get_user_setting)
+                                     get_user_setting,
+                                     verify_signer_or_bad_request)
 
 
 class ResetPasswordSigner(URLParamsSigner):
@@ -80,14 +80,8 @@ def reset_password(request):
 
     data = serializer.data.copy()
     password = data.pop('password')
-
     signer = ResetPasswordSigner(data, request=request)
-    try:
-        signer.verify()
-    except SignatureExpired:
-        raise BadRequest('Signature expired')
-    except BadSignature:
-        raise BadRequest('Invalid signature')
+    verify_signer_or_bad_request(signer)
 
     user_class = get_user_model_class()
     user = get_object_or_404(user_class.objects.all(), pk=data['user_id'])
