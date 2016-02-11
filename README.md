@@ -29,6 +29,10 @@ WARNING: `django-rest-registration` is only Python 3 compatible.
 
 You can install `django-rest-registration` via pip:
 
+    pip install django-rest-registration
+
+Or:
+
     pip install git+https://github.com/szopu/django-rest-registration
 
 Then, you should add it to the `INSTALLED_APPS` so the app templates
