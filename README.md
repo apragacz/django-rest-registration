@@ -1,4 +1,4 @@
-# django-rest-registration
+# Django-REST-Registration
 
 User registration REST API, based on django-rest-framework.
 
@@ -10,10 +10,19 @@ WARNING: `django-rest-registration` is only Python 3 compatible.
 * Supported views:
     * registration (sign-up) with verification
     * login/logout (sign-in), session- or token-based
-    * user profile
+    * user profile (retrieving / updating)
     * reset password
     * change password
+    * register (change) e-mail
 * Modeless (uses cryptographic signing instead of profile models)
+* Heavily tested (Above 99% code coverage)
+
+
+## Current limitations
+
+* Supports only one email per user (as model field)
+* Heavily based on Django an Django-REST-Framework
+* Python3 only
 
 
 ## Installation
@@ -88,6 +97,14 @@ The default values are:
         'RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES': {
             'subject': 'rest_registration/reset_password/subject.txt',
             'body': 'rest_registration/reset_password/body.txt',
+        },
+
+        'REGISTER_EMAIL_VERIFICATION_ENABLED': True,
+        'REGISTER_EMAIL_VERIFICATION_PERIOD': datetime.timedelta(days=7),
+        'REGISTER_EMAIL_VERIFICATION_URL': None,
+        'REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES': {
+            'subject':  'rest_registration/register_email/subject.txt',
+            'body':  'rest_registration/register_email/body.txt',
         },
 
         'PROFILE_SERIALIZER_CLASS': (
