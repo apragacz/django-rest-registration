@@ -1,3 +1,5 @@
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from django.http import Http404
 from rest_framework import serializers
 from rest_framework.decorators import api_view
@@ -95,6 +97,10 @@ def reset_password(request):
 
     user_class = get_user_model_class()
     user = get_object_or_404(user_class.objects.all(), pk=data['user_id'])
+    try:
+        validate_password(password, user=user)
+    except ValidationError as exc:
+        raise serializers.ValidationError(exc.messages[0])
     user.set_password(password)
     user.save()
 

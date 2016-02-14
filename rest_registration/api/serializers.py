@@ -1,3 +1,4 @@
+from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
@@ -35,6 +36,11 @@ class DefaultRegisterUserSerializer(serializers.ModelSerializer):
         self.Meta.fields = field_names
         super().__init__(*args, **kwargs)
 
+    def validate_password(self, password):
+        user = _build_initial_user(self.initial_data)
+        validate_password(password, user=user)
+        return password
+
     def validate(self, data):
         if data['password'] != data['password_confirm']:
             raise ValidationError('Passwords don\'t match')
@@ -44,6 +50,16 @@ class DefaultRegisterUserSerializer(serializers.ModelSerializer):
         data = validated_data.copy()
         del data['password_confirm']
         return self.Meta.model.objects.create_user(**data)
+
+
+def _build_initial_user(data):
+    user_field_names = _get_field_names(allow_primary_key=False)
+    user_data = {}
+    for field_name in user_field_names:
+        if field_name in data:
+            user_data[field_name] = data[field_name]
+    user_class = get_user_model_class()
+    return user_class(**user_data)
 
 
 def _get_field_names(allow_primary_key=True, non_editable=False):

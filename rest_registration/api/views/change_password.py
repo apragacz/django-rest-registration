@@ -1,3 +1,4 @@
+from django.contrib.auth.password_validation import validate_password
 from rest_framework import permissions
 from rest_framework import serializers
 from rest_framework.decorators import permission_classes, api_view
@@ -15,6 +16,11 @@ class ChangePasswordSerializer(serializers.Serializer):
         if not user.check_password(old_password):
             raise serializers.ValidationError('Old password is not correct')
         return old_password
+
+    def validate_password(self, password):
+        user = self.context['request'].user
+        validate_password(password, user=user)
+        return password
 
     def validate(self, data):
         if data['password'] != data['password_confirm']:

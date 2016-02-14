@@ -4,6 +4,7 @@ from django.contrib.sessions.middleware import SessionMiddleware
 from django.core import mail
 from django.test import TestCase
 from django_dynamic_fixture import G
+from rest_framework import status
 from rest_framework.test import APIRequestFactory
 
 from rest_registration.utils import get_user_model_class
@@ -51,6 +52,18 @@ class APIViewTestCase(TestCase):
     def assert_invalid_response(self, response, expected_status_code=None):
         self.assert_response(response, valid=False,
                              expected_status_code=expected_status_code)
+
+    def assert_response_is_ok(self, response):
+        self.assert_valid_response(
+            response,
+            expected_status_code=status.HTTP_200_OK,
+        )
+
+    def assert_response_is_bad_request(self, response):
+        self.assert_invalid_response(
+            response,
+            expected_status_code=status.HTTP_400_BAD_REQUEST,
+        )
 
     def _assert_mails_sent(self, count):
         before = len(mail.outbox)

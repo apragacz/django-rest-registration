@@ -47,6 +47,42 @@ class RegisterViewTestCase(APIViewTestCase):
         self.assertTrue(user.check_password(password))
         self.assertFalse(user.is_active)
 
+    def test_register_short_password(self):
+        username = 'testusername'
+        password = 'a'
+        request = self.factory.post('', {
+            'username': username,
+            'password': password,
+            'password_confirm': password,
+        })
+        with self.assert_no_mail_sent():
+            response = register(request)
+            self.assert_response_is_bad_request(response)
+
+    def test_register_password_numeric(self):
+        username = 'testusername'
+        password = '4321332211113322'
+        request = self.factory.post('', {
+            'username': username,
+            'password': password,
+            'password_confirm': password,
+        })
+        with self.assert_no_mail_sent():
+            response = register(request)
+            self.assert_response_is_bad_request(response)
+
+    def test_register_password_same_as_username(self):
+        username = 'testusername'
+        password = username
+        request = self.factory.post('', {
+            'username': username,
+            'password': password,
+            'password_confirm': password,
+        })
+        with self.assert_no_mail_sent():
+            response = register(request)
+            self.assert_response_is_bad_request(response)
+
     def test_register_not_matching_password(self):
         username = 'testusername'
         password = 'testpassword'
@@ -57,7 +93,7 @@ class RegisterViewTestCase(APIViewTestCase):
         })
         with self.assert_no_mail_sent():
             response = register(request)
-        self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
+            self.assert_response_is_bad_request(response)
 
 
 class VerifyRegistrationViewTestCase(APIViewTestCase):
