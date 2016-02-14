@@ -1,4 +1,3 @@
-from django.test.utils import override_settings
 from rest_framework import status
 from rest_framework.test import force_authenticate
 
@@ -47,6 +46,7 @@ class ProfileViewTestCase(APIViewTestCase):
             'first_name': 'Donald',
             'last_name': 'Knuth',
         })
+        self.assert_response_is_ok(response)
         self.user.refresh_from_db()
         self.assertEqual(self.user.id, self.user_id)
         self.assertEqual(self.user.username, self.USERNAME)
@@ -57,6 +57,7 @@ class ProfileViewTestCase(APIViewTestCase):
         response = self._get_valid_patch_response({
             'username': 'dknuth',
         })
+        self.assert_response_is_ok(response)
         self.user.refresh_from_db()
         self.assertEqual(self.user.id, self.user_id)
         self.assertEqual(self.user.username, 'dknuth')
@@ -67,6 +68,7 @@ class ProfileViewTestCase(APIViewTestCase):
         response = self._get_valid_patch_response({
             'id': 10,
         })
+        self.assert_response_is_ok(response)
         self.user.refresh_from_db()
         self.assertEqual(self.user.id, self.user_id)
         self.assertEqual(self.user.username, self.USERNAME)

@@ -7,7 +7,6 @@ from rest_framework.test import force_authenticate
 
 from rest_registration.api.views import register_email, verify_email
 from rest_registration.api.views.register_email import RegisterEmailSigner
-from rest_registration.settings import registration_settings
 from .base import APIViewTestCase
 
 
