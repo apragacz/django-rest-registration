@@ -14,12 +14,12 @@ class DefaultUserProfileSerializer(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
         user_class = get_user_model_class()
         field_names = _get_field_names(allow_primary_key=True)
-        readonly_field_names = _get_field_names(allow_primary_key=True,
-                                                non_editable=True)
+        read_only_field_names = _get_field_names(allow_primary_key=True,
+                                                 non_editable=True)
         self.Meta = MetaObj()
         self.Meta.model = user_class
         self.Meta.fields = field_names
-        self.Meta.readonly_fields = readonly_field_names
+        self.Meta.read_only_fields = read_only_field_names
         super().__init__(*args, **kwargs)
 
 
