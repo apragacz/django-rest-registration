@@ -14,7 +14,7 @@ class DefaultUserProfileSerializer(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
         user_class = get_user_model_class()
         field_names = _get_field_names(allow_primary_key=True)
-        readonly_field_names = _get_field_names(allow_primary_key=False,
+        readonly_field_names = _get_field_names(allow_primary_key=True,
                                                 non_editable=True)
         self.Meta = MetaObj()
         self.Meta.model = user_class
@@ -84,8 +84,8 @@ def _get_field_names(allow_primary_key=True, non_editable=False):
     if editable_field_names is None:
         editable_field_names = field_names
 
-    editable_field_names = filter(not_in_seq(pk_field_names),
-                                  editable_field_names)
+    editable_field_names = set(filter(not_in_seq(pk_field_names),
+                                      editable_field_names))
 
     field_names = filter(not_in_seq(hidden_field_names), field_names)
     if not allow_primary_key:
