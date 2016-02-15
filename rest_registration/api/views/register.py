@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
-from rest_registration.notifications import email as notifications_email
+from rest_registration.notifications import send_verification
 from rest_registration.utils import (get_ok_response, get_user_model_class,
                                      get_user_setting,
                                      verify_signer_or_bad_request)
@@ -54,11 +54,9 @@ def register(request):
         signer = RegisterSigner({
             'user_id': user.pk,
         }, request=request)
-        email_field = get_user_setting('EMAIL_FIELD')
-        email = getattr(user, email_field)
         template_config = (
             registration_settings.REGISTER_VERIFICATION_EMAIL_TEMPLATES)
-        notifications_email.send(email, signer, template_config)
+        send_verification(user, signer, template_config)
 
     return Response(user_data, status=status.HTTP_201_CREATED)
 

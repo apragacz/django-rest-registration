@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 
-from rest_registration.notifications import email as notifications_email
+from rest_registration.notifications import send_verification
 from rest_registration.utils import (get_ok_response, get_user_model_class,
                                      get_user_setting,
                                      verify_signer_or_bad_request)
@@ -52,7 +52,7 @@ def register_email(request):
             'user_id': user.pk,
             'email': email,
         }, request=request)
-        notifications_email.send(email, signer, template_config)
+        send_verification(user, signer, template_config)
     else:
         email_field = get_user_setting('EMAIL_FIELD')
         setattr(user, email_field, email)

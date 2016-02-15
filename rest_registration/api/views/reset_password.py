@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404
 
 from rest_registration.exceptions import BadRequest
-from rest_registration.notifications import email as notifications_email
+from rest_registration.notifications import send_verification
 from rest_registration.settings import registration_settings
 from rest_registration.verification import URLParamsSigner
 from rest_registration.utils import (get_ok_response, get_user_model_class,
@@ -64,11 +64,9 @@ def send_reset_password_link(request):
         'user_id': user.pk,
     }, request=request)
 
-    email_field = get_user_setting('EMAIL_FIELD')
-    email = getattr(user, email_field)
     template_config = (
         registration_settings.RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES)
-    notifications_email.send(email, signer, template_config)
+    send_verification(user, signer, template_config)
 
     return get_ok_response('Reset link sent')
 
