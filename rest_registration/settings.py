@@ -55,11 +55,15 @@ DEFAULTS = {
 
     'VERIFICATION_FROM_EMAIL': None,
     'VERIFICATION_REPLY_TO_EMAIL': None,
+
+    'SUCCESS_RESPONSE_BUILDER': (
+        'rest_registration.utils.build_default_success_response')
 }
 
 IMPORT_STRINGS = (
     'REGISTER_SERIALIZER_CLASS',
     'PROFILE_SERIALIZER_CLASS',
+    'SUCCESS_RESPONSE_BUILDER',
 )
 
 

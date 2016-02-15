@@ -23,10 +23,9 @@ def get_user_setting(name):
     return value
 
 
-def get_ok_response(message, status=200, extra_data={}):
-    data = {'detail': message}
-    data.update(extra_data)
-    return Response(data, status=status)
+def get_ok_response(message, status=200, extra_data=None):
+    builder = registration_settings.SUCCESS_RESPONSE_BUILDER
+    return builder(message=message, status=status, extra_data=extra_data)
 
 
 def verify_signer_or_bad_request(signer):
@@ -36,3 +35,10 @@ def verify_signer_or_bad_request(signer):
         raise BadRequest('Signature expired')
     except BadSignature:
         raise BadRequest('Invalid signature')
+
+
+def build_default_success_response(message, status, extra_data):
+    data = {'detail': message}
+    if extra_data:
+        data.update(extra_data)
+    return Response(data, status=status)
