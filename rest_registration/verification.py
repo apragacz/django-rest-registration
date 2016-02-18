@@ -2,18 +2,17 @@ import pickle
 import time
 from urllib.parse import urlencode
 
-from django.core.signing import BadSignature, SignatureExpired, base64_hmac
+from django.core.signing import BadSignature, SignatureExpired, Signer
 from django.utils.crypto import constant_time_compare
-
-
-def hash_simple_dict(salt, data, key=None):
-    data_items = sorted([(str(k), str(v)) for k, v in data.items()])
-    value = pickle.dumps(data_items, pickle.HIGHEST_PROTOCOL)
-    return base64_hmac(salt, value, key=key)
 
 
 def get_current_timestamp():
     return int(time.time())
+
+
+def get_dict_repr(data):
+    data_items = sorted([(str(k), str(v)) for k, v in data.items()])
+    return pickle.dumps(data_items, pickle.HIGHEST_PROTOCOL)
 
 
 class DataSigner(object):
@@ -28,19 +27,25 @@ class DataSigner(object):
             data = data.copy()
             data[self.timestamp_field] = get_current_timestamp()
         self._data = data
+        self._signer = Signer(self.salt)
+
+    def hash_simple_dict(salt, data, key=None):
+        data_items = sorted([(str(k), str(v)) for k, v in data.items()])
+        value = pickle.dumps(data_items, pickle.HIGHEST_PROTOCOL)
+        return base64_hmac(salt, value, key=key)
 
     def _calculate_signature(self, data):
         if self.signature_field in data:
             data = data.copy()
             del data[self.signature_field]
-        return hash_simple_dict(self.salt, data)
+        return self._signer.signature(get_dict_repr(data))
 
     def calculate_signature(self):
         return self._calculate_signature(self._data)
 
     def get_signed_data(self):
         data = self._data.copy()
-        data[self.signature_field] = self.calculate_signature().decode('utf-8')
+        data[self.signature_field] = self.calculate_signature()
         return data
 
     def verify(self):
