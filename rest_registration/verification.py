@@ -29,11 +29,6 @@ class DataSigner(object):
         self._data = data
         self._signer = Signer(self.salt)
 
-    def hash_simple_dict(salt, data, key=None):
-        data_items = sorted([(str(k), str(v)) for k, v in data.items()])
-        value = pickle.dumps(data_items, pickle.HIGHEST_PROTOCOL)
-        return base64_hmac(salt, value, key=key)
-
     def _calculate_signature(self, data):
         if self.signature_field in data:
             data = data.copy()
