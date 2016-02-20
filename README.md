@@ -14,24 +14,28 @@ WARNING: `django-rest-registration` is only Python 3 compatible.
     * reset password
     * change password
     * register (change) e-mail
-* Modeless (uses cryptographic signing instead of profile models)
+* Views are compatible with [django-rest-swagger](https://github.com/marcgibbons/django-rest-swagger)
+* Views can be authenticated via session or auth token
+* Modeless (uses the user defined by `settings.AUTH_USER_MODEL` and also uses [cryptographic signing](https://docs.djangoproject.com/en/dev/topics/signing/) instead of profile models)
+* Uses [password validation](https://docs.djangoproject.com/en/dev/topics/auth/passwords/#password-validation)
 * Heavily tested (Above 99% code coverage)
 
 
 ## Current limitations
 
 * Supports only one email per user (as model field)
-* Heavily based on Django an Django-REST-Framework
+* Heavily based on Django (1.9+) an Django-REST-Framework (3.3.2+)
 * Python3 only
+* No JWT support
 
 
 ## Installation
 
-You can install `django-rest-registration` via pip:
+You can install `django-rest-registration` lastest version via pip:
 
     pip install django-rest-registration
 
-Or:
+Or install directly from source via GitHub:
 
     pip install git+https://github.com/szopu/django-rest-registration
 
@@ -62,9 +66,22 @@ After that, you can use the urls in your urlconfig, for instance:
 
 ## Configuration
 
-
 You can configure `django-rest-registraton` using the `REST_REGISTRATION`
 setting in your django settings (similarly to `django-rest-framework`).
+
+Below is sample, minimal config you can provide in your django settings which will satisfy the system checks:
+
+    REST_REGISTRATION = {
+        'REGISTER_VERIFICATION_ENABLED': False,
+
+        'RESET_PASSWORD_VERIFICATION_URL': '/reset-password/',
+
+        'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
+
+        'VERIFICATION_FROM_EMAIL': 'no-reply@example.com',
+    }
+
+
 The default values are:
 
     REST_REGISTRATION = {
@@ -116,8 +133,13 @@ The default values are:
 
         'VERIFICATION_FROM_EMAIL': None,
         'VERIFICATION_REPLY_TO_EMAIL': None,
+
+        'SUCCESS_RESPONSE_BUILDER': (
+            'rest_registration.utils.build_default_success_response')
+
     }
 
 The `USER_*` fields can be set directly in the user class
 (specified by `settings.AUTH_USER_MODEL`) without using
-the `USER_` prefix (`EMAIL_FIELD`, etc.).
+the `USER_` prefix (`EMAIL_FIELD`, etc.). These settings will override these
+provided in `settings.REST_REGISTRATION`.
