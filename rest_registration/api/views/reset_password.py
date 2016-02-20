@@ -15,7 +15,7 @@ from rest_registration.utils import (get_ok_response, get_user_model_class,
 
 
 class ResetPasswordSigner(URLParamsSigner):
-
+    salt = 'reset-password'
     use_timestamp = True
 
     @property

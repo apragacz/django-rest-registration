@@ -14,7 +14,7 @@ from rest_registration.verification import URLParamsSigner
 
 
 class RegisterEmailSigner(URLParamsSigner):
-
+    salt = 'register-email'
     use_timestamp = True
 
     @property
