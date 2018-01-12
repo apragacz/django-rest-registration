@@ -11,8 +11,14 @@ from .base import APIViewTestCase
 
 
 REGISTER_VERIFICATION_URL = '/verify-account/'
+REST_REGISTRATION_WITH_VERIFICATION = {
+    'REGISTER_VERIFICATION_ENABLED': True,
+    'REGISTER_VERIFICATION_URL': REGISTER_VERIFICATION_URL,
+    'VERIFICATION_FROM_EMAIL': 'no-reply@example.com',
+}
 
 
+@override_settings(REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION)
 class RegisterViewTestCase(APIViewTestCase):
 
     def test_register_serializer_ok(self):
@@ -25,84 +31,76 @@ class RegisterViewTestCase(APIViewTestCase):
              'password', 'password_confirm'},
         )
 
-    @override_settings(
-        REST_REGISTRATION={
-            'REGISTER_VERIFICATION_URL': REGISTER_VERIFICATION_URL,
-        }
-    )
     def test_register_ok(self):
-        username = 'testusername'
-        password = 'testpassword'
-        request = self.factory.post('', {
-            'username': username,
-            'password': password,
-            'password_confirm': password,
-        })
+        data = self._get_register_user_data(password='testpassword')
+        request = self.factory.post('', data)
         with self.assert_mail_sent():
             response = register(request)
         self.assert_valid_response(response, status.HTTP_201_CREATED)
         user_id = response.data['id']
         user = self.user_class.objects.get(id=user_id)
-        self.assertEqual(user.username, username)
-        self.assertTrue(user.check_password(password))
+        self.assertEqual(user.username, data['username'])
+        self.assertTrue(user.check_password(data['password']))
         self.assertFalse(user.is_active)
 
+    def test_register_no_email(self):
+        data = self._get_register_user_data(password='testpassword', email='')
+        request = self.factory.post('', data)
+        with self.assert_no_mail_sent():
+            response = register(request)
+            self.assert_response_is_bad_request(response)
+
     def test_register_short_password(self):
-        username = 'testusername'
-        password = 'a'
-        request = self.factory.post('', {
-            'username': username,
-            'password': password,
-            'password_confirm': password,
-        })
+        data = self._get_register_user_data(password='a')
+        request = self.factory.post('', data)
         with self.assert_no_mail_sent():
             response = register(request)
             self.assert_response_is_bad_request(response)
 
     def test_register_password_numeric(self):
-        username = 'testusername'
-        password = '4321332211113322'
-        request = self.factory.post('', {
-            'username': username,
-            'password': password,
-            'password_confirm': password,
-        })
+        data = self._get_register_user_data(password='4321332211113322')
+        request = self.factory.post('', data)
         with self.assert_no_mail_sent():
             response = register(request)
             self.assert_response_is_bad_request(response)
 
     def test_register_password_same_as_username(self):
         username = 'testusername'
-        password = username
-        request = self.factory.post('', {
-            'username': username,
-            'password': password,
-            'password_confirm': password,
-        })
+        data = self._get_register_user_data(
+            username=username, password=username)
+        request = self.factory.post('', data)
         with self.assert_no_mail_sent():
             response = register(request)
             self.assert_response_is_bad_request(response)
 
     def test_register_not_matching_password(self):
-        username = 'testusername'
-        password = 'testpassword'
-        request = self.factory.post('', {
-            'username': username,
-            'password': password,
-            'password_confirm': 'blah',
-        })
+        data = self._get_register_user_data(
+            password='testpassword1',
+            password_confirm='testpassword2')
+        request = self.factory.post('', data)
         with self.assert_no_mail_sent():
             response = register(request)
             self.assert_response_is_bad_request(response)
 
+    def _get_register_user_data(
+            self, password, password_confirm=None, **options):
+        username = 'testusername'
+        email = 'testusername@example.com'
+        if password_confirm is None:
+            password_confirm = password
+        data = {
+            'username': username,
+            'password': password,
+            'password_confirm': password_confirm,
+            'email': email,
+        }
+        data.update(options)
+        return data
+
 
 class VerifyRegistrationViewTestCase(APIViewTestCase):
 
-    @override_settings(
-        REST_REGISTRATION={
-            'REGISTER_VERIFICATION_URL': REGISTER_VERIFICATION_URL,
-        }
-    )
+    @override_settings(REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION)
     def test_verify_ok(self):
         user = self.create_test_user(is_active=False)
         self.assertFalse(user.is_active)
@@ -114,11 +112,7 @@ class VerifyRegistrationViewTestCase(APIViewTestCase):
         user.refresh_from_db()
         self.assertTrue(user.is_active)
 
-    @override_settings(
-        REST_REGISTRATION={
-            'REGISTER_VERIFICATION_URL': REGISTER_VERIFICATION_URL,
-        }
-    )
+    @override_settings(REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION)
     def test_verify_tampered_timestamp(self):
         user = self.create_test_user(is_active=False)
         self.assertFalse(user.is_active)
@@ -131,11 +125,7 @@ class VerifyRegistrationViewTestCase(APIViewTestCase):
         user.refresh_from_db()
         self.assertFalse(user.is_active)
 
-    @override_settings(
-        REST_REGISTRATION={
-            'REGISTER_VERIFICATION_URL': REGISTER_VERIFICATION_URL,
-        }
-    )
+    @override_settings(REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION)
     def test_verify_expired(self):
         timestamp = int(time.time())
         user = self.create_test_user(is_active=False)

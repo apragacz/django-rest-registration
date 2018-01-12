@@ -62,7 +62,7 @@ def logout(request):
     Logs out the user. returns an error if the user is not
     authenticated.
     '''
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         raise BadRequest('Not logged in')
 
     auth.logout(request)

@@ -1,6 +1,9 @@
 django-dynamic-fixture
 flake8
+flake8-debugger
+flake8-print
 pylint
 ipython
 coverage
 pypandoc
+ipdb

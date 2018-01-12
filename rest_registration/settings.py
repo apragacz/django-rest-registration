@@ -120,4 +120,5 @@ def settings_changed_handler(*args, **kwargs):
     registration_settings.reset_user_settings()
     registration_settings.reset_attr_cache()
 
+
 setting_changed.connect(settings_changed_handler)

@@ -2,6 +2,7 @@ from django.http import Http404
 from rest_framework import status
 from rest_framework import serializers
 from rest_framework.decorators import api_view
+from rest_registration.exceptions import BadRequest
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
@@ -43,6 +44,10 @@ def register(request):
     if registration_settings.REGISTER_VERIFICATION_ENABLED:
         verification_flag_field = get_user_setting('VERIFICATION_FLAG_FIELD')
         kwargs[verification_flag_field] = False
+        email_field = get_user_setting('EMAIL_FIELD')
+        if (email_field in serializer.validated_data
+                and not serializer.validated_data[email_field]):
+            raise BadRequest("User without email cannot be verified")
 
     user = serializer.save(**kwargs)
 

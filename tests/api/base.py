@@ -42,7 +42,7 @@ class APIViewTestCase(TestCase):
         else:
             self.assertFalse(status_valid, msg)
 
-        if status_code is not None:
+        if expected_status_code is not None:
             self.assertEqual(status_code, expected_status_code, msg)
 
     def assert_valid_response(self, response, expected_status_code=None):
