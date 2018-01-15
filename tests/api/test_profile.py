@@ -2,8 +2,8 @@ from rest_framework import status
 from rest_framework.test import force_authenticate
 
 from rest_registration.api.views import profile
-from .base import APIViewTestCase
 
+from .base import APIViewTestCase
 
 REGISTER_VERIFICATION_URL = '/verify-account/'
 

@@ -3,8 +3,8 @@ from django.test import TestCase
 from django.test.utils import override_settings
 
 from rest_registration.apps import RestRegistrationConfig
-from rest_registration.settings import DEFAULTS
 from rest_registration.checks import __ALL_CHECKS__, ErrorCode
+from rest_registration.settings import DEFAULTS
 
 
 def simulate_checks():

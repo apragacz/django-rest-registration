@@ -1,9 +1,10 @@
 from django.test.utils import override_settings
 from rest_framework import status
-from rest_framework.test import force_authenticate
 from rest_framework.authtoken.models import Token
+from rest_framework.test import force_authenticate
 
 from rest_registration.api.views import login, logout
+
 from .base import APIViewTestCase
 
 

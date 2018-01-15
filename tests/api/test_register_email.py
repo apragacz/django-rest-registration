@@ -7,8 +7,8 @@ from rest_framework.test import force_authenticate
 
 from rest_registration.api.views import register_email, verify_email
 from rest_registration.api.views.register_email import RegisterEmailSigner
-from .base import APIViewTestCase
 
+from .base import APIViewTestCase
 
 REGISTER_EMAIL_VERIFICATION_URL = '/verify-email/'
 

@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 import sys
 
-from tests.utils import configure_settings
 from django.core.management import execute_from_command_line
+
+from tests.utils import configure_settings
 
 
 def main(args):

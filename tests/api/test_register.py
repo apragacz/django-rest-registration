@@ -7,8 +7,8 @@ from rest_framework import status
 from rest_registration.api.views import register, verify_registration
 from rest_registration.api.views.register import RegisterSigner
 from rest_registration.settings import registration_settings
-from .base import APIViewTestCase
 
+from .base import APIViewTestCase
 
 REGISTER_VERIFICATION_URL = '/verify-account/'
 REST_REGISTRATION_WITH_VERIFICATION = {

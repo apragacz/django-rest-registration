@@ -1,5 +1,6 @@
-from . import default_settings
 from django.conf import settings
+
+from . import default_settings
 
 
 def configure_settings():

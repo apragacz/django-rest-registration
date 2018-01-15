@@ -1,10 +1,17 @@
 from django.conf.urls import url
 
-from .views import (change_password, login, logout, profile,
-                    send_reset_password_link, reset_password,
-                    register, verify_registration,
-                    register_email, verify_email)
-
+from .views import (
+    change_password,
+    login,
+    logout,
+    profile,
+    register,
+    register_email,
+    reset_password,
+    send_reset_password_link,
+    verify_email,
+    verify_registration
+)
 
 urlpatterns = [
     url('register/$', register),

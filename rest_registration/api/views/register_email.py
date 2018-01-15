@@ -1,15 +1,17 @@
 from django.http import Http404
-
 from rest_framework import serializers
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 
 from rest_registration.notifications import send_verification
-from rest_registration.utils import (get_ok_response, get_user_model_class,
-                                     get_user_setting,
-                                     verify_signer_or_bad_request)
 from rest_registration.settings import registration_settings
+from rest_registration.utils import (
+    get_ok_response,
+    get_user_model_class,
+    get_user_setting,
+    verify_signer_or_bad_request
+)
 from rest_registration.verification import URLParamsSigner
 
 

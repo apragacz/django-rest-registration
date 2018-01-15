@@ -6,11 +6,11 @@ from rest_framework import status
 
 from rest_registration.api.views import (
     reset_password,
-    send_reset_password_link,
+    send_reset_password_link
 )
 from rest_registration.api.views.reset_password import ResetPasswordSigner
-from .base import APIViewTestCase
 
+from .base import APIViewTestCase
 
 RESET_PASSWORD_VERIFICATION_URL = '/reset-password/'
 

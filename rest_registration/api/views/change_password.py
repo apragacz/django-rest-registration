@@ -1,7 +1,6 @@
 from django.contrib.auth.password_validation import validate_password
-from rest_framework import permissions
-from rest_framework import serializers
-from rest_framework.decorators import permission_classes, api_view
+from rest_framework import permissions, serializers
+from rest_framework.decorators import api_view, permission_classes
 
 from rest_registration.utils import get_ok_response
 

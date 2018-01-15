@@ -4,7 +4,6 @@ from django.conf import settings as root_settings
 from django.test.signals import setting_changed
 from rest_framework.settings import perform_import
 
-
 DEFAULTS = {
     'USER_LOGIN_FIELDS': None,
     'USER_HIDDEN_FIELDS': (

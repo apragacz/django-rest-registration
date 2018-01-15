@@ -1,14 +1,16 @@
 from django.contrib import auth
 from rest_framework import serializers
+from rest_framework.authentication import (
+    SessionAuthentication,
+    TokenAuthentication
+)
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view
 from rest_framework.settings import api_settings
-from rest_framework.authentication import (SessionAuthentication,
-                                           TokenAuthentication)
 
 from rest_registration.exceptions import BadRequest
 from rest_registration.settings import registration_settings
-from rest_registration.utils import get_user_model_class, get_ok_response
+from rest_registration.utils import get_ok_response, get_user_model_class
 
 
 class LoginSerializer(serializers.Serializer):
