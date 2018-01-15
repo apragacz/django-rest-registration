@@ -1,0 +1,5 @@
+Django==2.0.1
+django-cors-headers==2.1.0
+django-rest-registration==0.3.4
+django-rest-swagger==2.1.2
+djangorestframework==3.7.7
