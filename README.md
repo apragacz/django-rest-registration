@@ -24,7 +24,7 @@ WARNING: `django-rest-registration` is only Python 3 compatible.
 ## Current limitations
 
 * Supports only one email per user (as model field)
-* Heavily based on Django (1.9+) an Django-REST-Framework (3.3.2+)
+* Heavily based on Django (1.10+, 2.0+) an Django-REST-Framework (3.3+)
 * Python3 only
 * No JWT support
 
@@ -48,20 +48,23 @@ for notification emails can be accessed:
         'rest_registration',
     ),
 
-After that, you can use the urls in your urlconfig, for instance:
+After that, you can use the urls in your urlconfig, for instance (using new Django 2.x syntax):
 
     api_urlpatterns = [
         ...
 
-        url(r'accounts/', include('rest_registration.api.urls')),
+        path('accounts/', include('rest_registration.api.urls')),
     ]
 
 
     urlpatterns = [
         ...
 
-        url(r'^api/v1/', include(api_urlpatterns)),
+        path('api/v1/', include(api_urlpatterns)),
     ]
+
+
+In Django 1.x you can use old `url` instead of `path`.
 
 
 ## Configuration
