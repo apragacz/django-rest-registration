@@ -39,7 +39,7 @@ class RegisterEmailViewTestCase(BaseRegisterEmailViewTestCase):
         data = {
             'email': self.new_email,
         }
-        with self.assert_mail_sent():
+        with self.assert_one_mail_sent():
             response = self._test_authenticated(data)
             self.assert_valid_response(response, status.HTTP_200_OK)
         self.user.refresh_from_db()

@@ -17,6 +17,10 @@ REST_REGISTRATION_WITH_VERIFICATION = {
     'VERIFICATION_FROM_EMAIL': 'no-reply@example.com',
 }
 
+REST_REGISTRATION_WITHOUT_VERIFICATION = {
+    'REGISTER_VERIFICATION_ENABLED': False,
+}
+
 
 @override_settings(REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION)
 class RegisterViewTestCase(APIViewTestCase):
@@ -34,7 +38,7 @@ class RegisterViewTestCase(APIViewTestCase):
     def test_register_ok(self):
         data = self._get_register_user_data(password='testpassword')
         request = self.factory.post('', data)
-        with self.assert_mail_sent():
+        with self.assert_one_mail_sent() as sent_emails:
             response = register(request)
         self.assert_valid_response(response, status.HTTP_201_CREATED)
         user_id = response.data['id']
@@ -42,6 +46,28 @@ class RegisterViewTestCase(APIViewTestCase):
         self.assertEqual(user.username, data['username'])
         self.assertTrue(user.check_password(data['password']))
         self.assertFalse(user.is_active)
+        sent_email = sent_emails[0]
+        self.assertEqual(len(sent_email.to), 1)
+        self.assertEqual(
+            sent_email.from_email,
+            REST_REGISTRATION_WITH_VERIFICATION['VERIFICATION_FROM_EMAIL'],
+        )
+        self.assertEqual(sent_email.to[0], data['email'])
+
+    @override_settings(
+        REST_REGISTRATION=REST_REGISTRATION_WITHOUT_VERIFICATION,
+    )
+    def test_register_without_verification_ok(self):
+        data = self._get_register_user_data(password='testpassword')
+        request = self.factory.post('', data)
+        with self.assert_no_mail_sent():
+            response = register(request)
+        self.assert_valid_response(response, status.HTTP_201_CREATED)
+        user_id = response.data['id']
+        user = self.user_class.objects.get(id=user_id)
+        self.assertEqual(user.username, data['username'])
+        self.assertTrue(user.check_password(data['password']))
+        self.assertTrue(user.is_active)
 
     def test_register_no_email(self):
         data = self._get_register_user_data(password='testpassword', email='')

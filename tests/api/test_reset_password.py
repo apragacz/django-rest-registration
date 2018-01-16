@@ -31,7 +31,7 @@ class SendResetPasswordLinkViewTestCase(BaseResetPasswordViewTestCase):
         request = self.factory.post('', {
             'login': user.username,
         })
-        with self.assert_mail_sent():
+        with self.assert_one_mail_sent():
             response = send_reset_password_link(request)
         self.assert_valid_response(response, status.HTTP_200_OK)
 

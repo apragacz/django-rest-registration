@@ -1,4 +1,5 @@
 import contextlib
+from collections import Sequence
 
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.core import mail
@@ -65,20 +66,44 @@ class APIViewTestCase(TestCase):
             expected_status_code=status.HTTP_400_BAD_REQUEST,
         )
 
+    @contextlib.contextmanager
     def _assert_mails_sent(self, count):
         before = len(mail.outbox)
-        yield
+        sent_emails = EmailMessageContainer()
+        yield sent_emails
+        sent_emails.set(mail.outbox[before:])
         after = len(mail.outbox)
         self.assertEqual(after, before + count)
 
     @contextlib.contextmanager
     def assert_mails_sent(self, count):
-        yield from self._assert_mails_sent(count)
+        with self._assert_mails_sent(count) as sent_emails:
+            yield sent_emails
 
     @contextlib.contextmanager
-    def assert_mail_sent(self):
-        yield from self._assert_mails_sent(1)
+    def assert_one_mail_sent(self):
+        with self._assert_mails_sent(1) as sent_emails:
+            yield sent_emails
 
     @contextlib.contextmanager
     def assert_no_mail_sent(self):
-        yield from self._assert_mails_sent(0)
+        with self._assert_mails_sent(0) as sent_emails:
+            yield sent_emails
+
+
+class EmailMessageContainer(Sequence):
+
+    def __init__(self):
+        self._mails = []
+        self._set = False
+
+    def __len__(self):
+        return len(self._mails)
+
+    def __getitem__(self, i):
+        return self._mails[i]
+
+    def set(self, mails):
+        assert not self._set
+        self._mails = list(mails)
+        self._set = True
