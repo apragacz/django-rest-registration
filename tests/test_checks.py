@@ -33,11 +33,53 @@ class ChecksTestCase(TestCase):
             'REGISTER_EMAIL_VERIFICATION_URL': '/verify-email/',
             'RESET_PASSWORD_VERIFICATION_URL': '/reset-password/',
             'VERIFICATION_FROM_EMAIL': 'jon.doe@example.com',
-        }
+        },
     )
     def test_checks_minimal_setup(self):
         errors = simulate_checks()
         self.assert_error_codes_match(errors, [])
+
+    @override_settings(
+        REST_REGISTRATION={
+            'REGISTER_VERIFICATION_URL': '/verify-account/',
+            'REGISTER_EMAIL_VERIFICATION_URL': '/verify-email/',
+            'RESET_PASSWORD_VERIFICATION_URL': '/reset-password/',
+            'VERIFICATION_FROM_EMAIL': 'jon.doe@example.com',
+            'LOGIN_RETRIEVE_TOKEN': True,
+        },
+    )
+    def test_checks_missing_token_auth_config(self):
+        errors = simulate_checks()
+        self.assert_error_codes_match(errors, [
+            ErrorCode.NO_TOKEN_AUTH_CONFIG,
+        ])
+
+    @override_settings(
+        INSTALLED_APPS=(
+            'django.contrib.admin',
+            'django.contrib.auth',
+            'django.contrib.contenttypes',
+            'django.contrib.sessions',
+            'django.contrib.messages',
+            'django.contrib.staticfiles',
+
+            'rest_framework',
+            'rest_registration',
+        ),
+        REST_REGISTRATION={
+            'REGISTER_VERIFICATION_URL': '/verify-account/',
+            'REGISTER_EMAIL_VERIFICATION_URL': '/verify-email/',
+            'RESET_PASSWORD_VERIFICATION_URL': '/reset-password/',
+            'VERIFICATION_FROM_EMAIL': 'jon.doe@example.com',
+            'LOGIN_RETRIEVE_TOKEN': True,
+        },
+    )
+    def test_checks_missing_token_auth_installed(self):
+        errors = simulate_checks()
+        self.assert_error_codes_match(errors, [
+            ErrorCode.NO_TOKEN_AUTH_CONFIG,
+            ErrorCode.NO_TOKEN_AUTH_INSTALLED,
+        ])
 
     def assert_error_codes_match(self, errors, expected_error_codes):
         error_ids = sorted(e.id for e in errors)

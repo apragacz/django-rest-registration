@@ -27,14 +27,20 @@ def simple_check(error_message, error_code, obj=None):
 
         @functools.wraps(predicate)
         def check_fun(app_configs, **kwargs):
+            from rest_registration.apps import RestRegistrationConfig
+
             errors = []
             if not predicate():
+                err_id = '{RestRegistrationConfig.name}.{error_code}'.format(
+                    RestRegistrationConfig=RestRegistrationConfig,
+                    error_code=error_code,
+                )
                 errors.append(
                     Error(
                         error_message,
                         obj=obj,
                         hint=None,
-                        id='rest_registration.{0}'.format(error_code),
+                        id=err_id,
                     )
                 )
             return errors
