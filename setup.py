@@ -41,6 +41,7 @@ setup(
     name='django-rest-registration',
     version=get_version('rest_registration'),
     packages=find_packages(exclude=['tests.*', 'tests']),
+    include_package_data=True,
     author='Andrzej Pragacz',
     author_email='apragacz@o2.pl',
     description=(
