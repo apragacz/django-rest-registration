@@ -5,9 +5,10 @@ from rest_registration.settings import registration_settings
 from rest_registration.utils import get_user_setting
 
 
-def send_verification(user, params_signer, template_config):
-    email_field = get_user_setting('EMAIL_FIELD')
-    email = getattr(user, email_field)
+def send_verification(user, params_signer, template_config, email=None):
+    if email is None:
+        email_field = get_user_setting('EMAIL_FIELD')
+        email = getattr(user, email_field)
     body_template = get_template(template_config['body'])
     subject_template = get_template(template_config['subject'])
     from_email = registration_settings.VERIFICATION_FROM_EMAIL

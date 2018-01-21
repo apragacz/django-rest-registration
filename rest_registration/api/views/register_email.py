@@ -54,7 +54,7 @@ def register_email(request):
             'user_id': user.pk,
             'email': email,
         }, request=request)
-        send_verification(user, signer, template_config)
+        send_verification(user, signer, template_config, email=email)
     else:
         email_field = get_user_setting('EMAIL_FIELD')
         setattr(user, email_field, email)
