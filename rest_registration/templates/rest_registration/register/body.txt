@@ -1,3 +1,3 @@
 Please verify your account by clicking on this link:
 
-{{ verification_url }}
+{{ verification_url | safe }}
