@@ -5,6 +5,8 @@ from urllib.parse import urlencode
 from django.core.signing import BadSignature, SignatureExpired, Signer
 from django.utils.crypto import constant_time_compare
 
+PICKLE_REPR_PROTOCOL = 4
+
 
 def get_current_timestamp():
     return int(time.time())
@@ -12,7 +14,7 @@ def get_current_timestamp():
 
 def get_dict_repr(data):
     data_items = sorted([(str(k), str(v)) for k, v in data.items()])
-    return pickle.dumps(data_items, pickle.HIGHEST_PROTOCOL)
+    return pickle.dumps(data_items, PICKLE_REPR_PROTOCOL)
 
 
 class DataSigner(object):
