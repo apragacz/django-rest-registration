@@ -1,3 +1,4 @@
+import math
 import time
 from unittest.mock import patch
 
@@ -13,12 +14,14 @@ from rest_registration.api.views.reset_password import ResetPasswordSigner
 from .base import APIViewTestCase
 
 RESET_PASSWORD_VERIFICATION_URL = '/reset-password/'
+REST_REGISTRATION_WITH_RESET_PASSWORD = {
+    'RESET_PASSWORD_VERIFICATION_URL': RESET_PASSWORD_VERIFICATION_URL,
+    'VERIFICATION_FROM_EMAIL': 'no-reply@example.com',
+}
 
 
 @override_settings(
-    REST_REGISTRATION={
-        'RESET_PASSWORD_VERIFICATION_URL': RESET_PASSWORD_VERIFICATION_URL,
-    },
+    REST_REGISTRATION=REST_REGISTRATION_WITH_RESET_PASSWORD,
 )
 class BaseResetPasswordViewTestCase(APIViewTestCase):
     pass
@@ -31,9 +34,29 @@ class SendResetPasswordLinkViewTestCase(BaseResetPasswordViewTestCase):
         request = self.factory.post('', {
             'login': user.username,
         })
-        with self.assert_one_mail_sent():
+        time_before = math.floor(time.time())
+        with self.assert_one_mail_sent() as sent_emails:
             response = send_reset_password_link(request)
+        time_after = math.ceil(time.time())
         self.assert_valid_response(response, status.HTTP_200_OK)
+        sent_email = sent_emails[0]
+        self.assertEqual(
+            sent_email.from_email,
+            REST_REGISTRATION_WITH_RESET_PASSWORD['VERIFICATION_FROM_EMAIL'],
+        )
+        self.assertListEqual(sent_email.to, [user.email])
+        url = self.assert_one_url_line_in_text(sent_email.body)
+        verification_data = self.assert_valid_verification_url(
+            url,
+            expected_path=RESET_PASSWORD_VERIFICATION_URL,
+            expected_query_keys={'signature', 'user_id', 'timestamp'},
+        )
+        self.assertEqual(int(verification_data['user_id']), user.id)
+        url_sig_timestamp = int(verification_data['timestamp'])
+        self.assertGreaterEqual(url_sig_timestamp, time_before)
+        self.assertLessEqual(url_sig_timestamp, time_after)
+        signer = ResetPasswordSigner(verification_data)
+        signer.verify()
 
     def test_send_link_invalid_login(self):
         user = self.create_test_user(username='testusername')
