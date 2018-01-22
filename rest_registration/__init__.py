@@ -1,2 +1,2 @@
-__version__ = "0.3.4"
+__version__ = "0.3.5"
 default_app_config = 'rest_registration.apps.RestRegistrationConfig'
