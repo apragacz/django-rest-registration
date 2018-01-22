@@ -18,6 +18,13 @@ REST_REGISTRATION_WITH_VERIFICATION = {
     'VERIFICATION_FROM_EMAIL': 'no-reply@example.com',
 }
 
+REST_REGISTRATION_WITH_VERIFICATION_NO_PASSWORD = {
+    'REGISTER_VERIFICATION_ENABLED': True,
+    'REGISTER_VERIFICATION_URL': REGISTER_VERIFICATION_URL,
+    'VERIFICATION_FROM_EMAIL': 'no-reply@example.com',
+    'REGISTER_SERIALIZER_PASSWORD_CONFIRM': False,
+}
+
 REST_REGISTRATION_WITHOUT_VERIFICATION = {
     'REGISTER_VERIFICATION_ENABLED': False,
 }
@@ -34,6 +41,18 @@ class RegisterViewTestCase(APIViewTestCase):
             field_names,
             {'username', 'first_name', 'last_name', 'email',
              'password', 'password_confirm'},
+        )
+
+    @override_settings(
+        REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION_NO_PASSWORD,
+    )
+    def test_register_serializer_no_password_ok(self):
+        serializer_class = registration_settings.REGISTER_SERIALIZER_CLASS
+        serializer = serializer_class(data={})
+        field_names = {f for f in serializer.get_fields()}
+        self.assertEqual(
+            field_names,
+            {'username', 'first_name', 'last_name', 'email', 'password'},
         )
 
     def test_register_ok(self):
@@ -71,6 +90,56 @@ class RegisterViewTestCase(APIViewTestCase):
         self.assertLessEqual(url_sig_timestamp, time_after)
         signer = RegisterSigner(verification_data)
         signer.verify()
+
+    @override_settings(
+        REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION_NO_PASSWORD,
+    )
+    def test_register_no_password_confirm_ok(self):
+        data = self._get_register_user_data(password='testpassword')
+        data.pop('password_confirm')
+        request = self.factory.post('', data)
+        time_before = math.floor(time.time())
+        with self.assert_one_mail_sent() as sent_emails:
+            response = register(request)
+            self.assert_valid_response(response, status.HTTP_201_CREATED)
+        time_after = math.ceil(time.time())
+        user_id = response.data['id']
+        # Check database state.
+        user = self.user_class.objects.get(id=user_id)
+        self.assertEqual(user.username, data['username'])
+        self.assertTrue(user.check_password(data['password']))
+        self.assertFalse(user.is_active)
+        # Check verification e-mail.
+        sent_email = sent_emails[0]
+        self.assertEqual(
+            sent_email.from_email,
+            REST_REGISTRATION_WITH_VERIFICATION['VERIFICATION_FROM_EMAIL'],
+        )
+        self.assertListEqual(sent_email.to, [data['email']])
+        url = self.assert_one_url_line_in_text(sent_email.body)
+
+        verification_data = self.assert_valid_verification_url(
+            url,
+            expected_path=REGISTER_VERIFICATION_URL,
+            expected_query_keys={'signature', 'user_id', 'timestamp'},
+        )
+        url_user_id = int(verification_data['user_id'])
+        self.assertEqual(url_user_id, user_id)
+        url_sig_timestamp = int(verification_data['timestamp'])
+        self.assertGreaterEqual(url_sig_timestamp, time_before)
+        self.assertLessEqual(url_sig_timestamp, time_after)
+        signer = RegisterSigner(verification_data)
+        signer.verify()
+
+    def test_register_same_username(self):
+        self.create_test_user(username='testusername')
+
+        data = self._get_register_user_data(
+            username='testusername', password='testpassword')
+        request = self.factory.post('', data)
+        with self.assert_no_mail_sent():
+            response = register(request)
+        self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
 
     @override_settings(
         REST_REGISTRATION=REST_REGISTRATION_WITHOUT_VERIFICATION,

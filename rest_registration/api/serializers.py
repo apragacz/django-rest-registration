@@ -2,6 +2,7 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
+from rest_registration.settings import registration_settings
 from rest_registration.utils import get_user_model_class, get_user_setting
 
 
@@ -25,30 +26,40 @@ class DefaultUserProfileSerializer(serializers.ModelSerializer):
 
 class DefaultRegisterUserSerializer(serializers.ModelSerializer):
 
-    password_confirm = serializers.CharField()
-
     def __init__(self, *args, **kwargs):
         user_class = get_user_model_class()
         field_names = _get_field_names(allow_primary_key=False)
-        field_names = field_names + ('password', 'password_confirm')
+        field_names = field_names + ('password',)
         self.Meta = MetaObj()
         self.Meta.model = user_class
         self.Meta.fields = field_names
         super().__init__(*args, **kwargs)
+
+    @property
+    def has_password_confirm(self):
+        return registration_settings.REGISTER_SERIALIZER_PASSWORD_CONFIRM
 
     def validate_password(self, password):
         user = _build_initial_user(self.initial_data)
         validate_password(password, user=user)
         return password
 
+    def get_fields(self):
+        fields = super().get_fields()
+        if self.has_password_confirm:
+            fields['password_confirm'] = serializers.CharField()
+        return fields
+
     def validate(self, data):
-        if data['password'] != data['password_confirm']:
-            raise ValidationError('Passwords don\'t match')
+        if self.has_password_confirm:
+            if data['password'] != data['password_confirm']:
+                raise ValidationError('Passwords don\'t match')
         return data
 
     def create(self, validated_data):
         data = validated_data.copy()
-        del data['password_confirm']
+        if self.has_password_confirm:
+            del data['password_confirm']
         return self.Meta.model.objects.create_user(**data)
 
 

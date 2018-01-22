@@ -102,8 +102,8 @@ The default values are:
 
         'USER_VERIFICATION_FLAG_FIELD': 'is_active',
 
-        'REGISTER_SERIALIZER_CLASS': (
-            'rest_registration.api.serializers.DefaultRegisterUserSerializer'),
+        'REGISTER_SERIALIZER_CLASS': 'rest_registration.api.serializers.DefaultRegisterUserSerializer',
+        'REGISTER_SERIALIZER_PASSWORD_CONFIRM': True,
 
         'REGISTER_VERIFICATION_ENABLED': True,
         'REGISTER_VERIFICATION_PERIOD': datetime.timedelta(days=7),
@@ -131,15 +131,12 @@ The default values are:
             'body':  'rest_registration/register_email/body.txt',
         },
 
-        'PROFILE_SERIALIZER_CLASS': (
-            'rest_registration.api.serializers.DefaultUserProfileSerializer'),
+        'PROFILE_SERIALIZER_CLASS': 'rest_registration.api.serializers.DefaultUserProfileSerializer',
 
         'VERIFICATION_FROM_EMAIL': None,
         'VERIFICATION_REPLY_TO_EMAIL': None,
 
-        'SUCCESS_RESPONSE_BUILDER': (
-            'rest_registration.utils.build_default_success_response')
-
+        'SUCCESS_RESPONSE_BUILDER': 'rest_registration.utils.build_default_success_response',
     }
 
 The `USER_*` fields can be set directly in the user class
