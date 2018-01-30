@@ -13,20 +13,21 @@ from .views import (
     verify_registration
 )
 
+app_name = 'rest_registration'
 urlpatterns = [
-    url('register/$', register),
-    url('verify-registration/$', verify_registration),
+    url('register/$', register, name='register'),
+    url('verify-registration/$', verify_registration, name='verify-registration'),
 
-    url('send-reset-password-link/$', send_reset_password_link),
-    url('reset-password/$', reset_password),
+    url('send-reset-password-link/$', send_reset_password_link, name='send-reset-password-link'),
+    url('reset-password/$', reset_password, name='reset-password'),
 
-    url('login/$', login),
-    url('logout/$', logout),
+    url('login/$', login, name='login'),
+    url('logout/$', logout, name='logout'),
 
-    url('profile/$', profile),
+    url('profile/$', profile, name='profile'),
 
-    url('change-password/$', change_password),
+    url('change-password/$', change_password, name='change_password'),
 
-    url('register-email/$', register_email),
-    url('verify-email/$', verify_email),
+    url('register-email/$', register_email, name='register-email'),
+    url('verify-email/$', verify_email, name='verify-email'),
 ]  # noqa
