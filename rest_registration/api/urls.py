@@ -13,6 +13,7 @@ from .views import (
     verify_registration
 )
 
+app_name = 'rest_registration'
 urlpatterns = [
     url('register/$', register),
     url('verify-registration/$', verify_registration),
