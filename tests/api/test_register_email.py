@@ -6,7 +6,6 @@ from django.test.utils import override_settings
 from rest_framework import status
 from rest_framework.test import force_authenticate
 
-from rest_registration.api.views import register_email, verify_email
 from rest_registration.api.views.register_email import RegisterEmailSigner
 
 from .base import APIViewTestCase
@@ -29,11 +28,12 @@ class BaseRegisterEmailViewTestCase(APIViewTestCase):
 
 
 class RegisterEmailViewTestCase(BaseRegisterEmailViewTestCase):
+    VIEW_NAME = 'register-email'
 
     def _test_authenticated(self, data):
-        request = self.factory.post('', data)
+        request = self.create_post_request(data)
         force_authenticate(request, user=self.user)
-        response = register_email(request)
+        response = self.view_func(request)
         return response
 
     @override_settings(
@@ -89,6 +89,7 @@ class RegisterEmailViewTestCase(BaseRegisterEmailViewTestCase):
 
 
 class VerifyEmailViewTestCase(BaseRegisterEmailViewTestCase):
+    VIEW_NAME = 'verify-email'
 
     @override_settings(
         REST_REGISTRATION={
@@ -101,8 +102,8 @@ class VerifyEmailViewTestCase(BaseRegisterEmailViewTestCase):
             'email': self.new_email,
         })
         data = signer.get_signed_data()
-        request = self.factory.post('', data)
-        response = verify_email(request)
+        request = self.create_post_request(data)
+        response = self.view_func(request)
         self.assert_valid_response(response, status.HTTP_200_OK)
         self.user.refresh_from_db()
         self.assertEqual(self.user.email, self.new_email)
@@ -118,8 +119,8 @@ class VerifyEmailViewTestCase(BaseRegisterEmailViewTestCase):
             'email': self.new_email,
         }, strict=False)
         data = signer.get_signed_data()
-        request = self.factory.post('', data)
-        response = verify_email(request)
+        request = self.create_post_request(data)
+        response = self.view_func(request)
         self.assert_invalid_response(response, status.HTTP_404_NOT_FOUND)
         self.user.refresh_from_db()
         self.assertEqual(self.user.email, self.email)
@@ -136,8 +137,8 @@ class VerifyEmailViewTestCase(BaseRegisterEmailViewTestCase):
         })
         data = signer.get_signed_data()
         data['timestamp'] += 1
-        request = self.factory.post('', data)
-        response = verify_email(request)
+        request = self.create_post_request(data)
+        response = self.view_func(request)
         self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
         self.user.refresh_from_db()
         self.assertEqual(self.user.email, self.email)
@@ -154,8 +155,8 @@ class VerifyEmailViewTestCase(BaseRegisterEmailViewTestCase):
         })
         data = signer.get_signed_data()
         data['email'] = 'p' + data['email']
-        request = self.factory.post('', data)
-        response = verify_email(request)
+        request = self.create_post_request(data)
+        response = self.view_func(request)
         self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
         self.user.refresh_from_db()
         self.assertEqual(self.user.email, self.email)
@@ -174,10 +175,10 @@ class VerifyEmailViewTestCase(BaseRegisterEmailViewTestCase):
                 'email': self.new_email,
             })
             data = signer.get_signed_data()
-        request = self.factory.post('', data)
+        request = self.create_post_request(data)
         with patch('time.time',
                    side_effect=lambda: timestamp + 3600 * 24 * 8):
-            response = verify_email(request)
+            response = self.view_func(request)
         self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
         self.user.refresh_from_db()
         self.assertEqual(self.user.email, self.email)

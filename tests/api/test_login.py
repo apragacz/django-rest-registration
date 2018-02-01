@@ -3,8 +3,6 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import force_authenticate
 
-from rest_registration.api.views import login, logout
-
 from .base import APIViewTestCase
 
 
@@ -17,14 +15,15 @@ class BaseLoginTestCase(APIViewTestCase):
 
 
 class LoginViewTestCase(BaseLoginTestCase):
+    VIEW_NAME = 'login'
 
     def test_success(self):
-        request = self.factory.post('', {
+        request = self.create_post_request({
             'login': self.user.username,
             'password': self.password,
         })
         self.add_session_to_request(request)
-        response = login(request)
+        response = self.view_func(request)
         self.assert_valid_response(response, status.HTTP_200_OK)
 
     @override_settings(
@@ -33,12 +32,12 @@ class LoginViewTestCase(BaseLoginTestCase):
         },
     )
     def test_success_with_token(self):
-        request = self.factory.post('', {
+        request = self.create_post_request({
             'login': self.user.username,
             'password': self.password,
         })
         self.add_session_to_request(request)
-        response = login(request)
+        response = self.view_func(request)
         self.assert_valid_response(response, status.HTTP_200_OK)
         self.assertIn('token', response.data)
         token_key = response.data['token']
@@ -46,26 +45,27 @@ class LoginViewTestCase(BaseLoginTestCase):
         self.assertEqual(token.user, self.user)
 
     def test_invalid(self):
-        request = self.factory.post('', {
+        request = self.create_post_request({
             'login': self.user.username,
             'password': 'blah',
         })
         self.add_session_to_request(request)
-        response = login(request)
+        response = self.view_func(request)
         self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
 
 
 class LogoutViewTestCase(BaseLoginTestCase):
+    VIEW_NAME = 'logout'
 
     def test_success(self):
-        request = self.factory.post('')
+        request = self.create_post_request()
         self.add_session_to_request(request)
         force_authenticate(request, user=self.user)
-        response = logout(request)
+        response = self.view_func(request)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_not_logged_in(self):
-        request = self.factory.post('')
+        request = self.create_post_request()
         self.add_session_to_request(request)
-        response = logout(request)
+        response = self.view_func(request)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

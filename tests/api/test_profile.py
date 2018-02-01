@@ -1,14 +1,13 @@
 from rest_framework import status
 from rest_framework.test import force_authenticate
 
-from rest_registration.api.views import profile
-
 from .base import APIViewTestCase
 
 REGISTER_VERIFICATION_URL = '/verify-account/'
 
 
 class ProfileViewTestCase(APIViewTestCase):
+    VIEW_NAME = 'profile'
     USERNAME = 'e.dijkstra'
     FIRST_NAME = 'Edsger'
     LAST_NAME = 'Dijkstra'
@@ -25,17 +24,17 @@ class ProfileViewTestCase(APIViewTestCase):
         self.user_id = self.user.id
 
     def test_retrieve_ok(self):
-        request = self.factory.get('')
+        request = self.create_get_request()
         force_authenticate(request, user=self.user)
-        response = profile(request)
+        response = self.view_func(request)
         self.assert_valid_response(response, status.HTTP_200_OK)
         user_id = response.data['id']
         self.assertEqual(user_id, self.user.id)
 
     def _get_valid_patch_response(self, data):
-        request = self.factory.patch('', data)
+        request = self.create_patch_request(data)
         force_authenticate(request, user=self.user)
-        response = profile(request)
+        response = self.view_func(request)
         self.assert_valid_response(response, status.HTTP_200_OK)
         user_id = response.data['id']
         self.assertEqual(user_id, self.user.id)

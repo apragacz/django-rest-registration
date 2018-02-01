@@ -55,6 +55,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+ROOT_URLCONF = 'tests.default_urls'
+
 
 # Minimal configuration so Django test subcommand will not fail
 # during initial system check.

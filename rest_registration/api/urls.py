@@ -28,8 +28,8 @@ urlpatterns = [
 
     url('profile/$', profile, name='profile'),
 
-    url('change-password/$', change_password, name='change_password'),
+    url('change-password/$', change_password, name='change-password'),
 
     url('register-email/$', register_email, name='register-email'),
     url('verify-email/$', verify_email, name='verify-email'),
-]  # noqa
+]

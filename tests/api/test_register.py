@@ -5,7 +5,6 @@ from unittest.mock import patch
 from django.test.utils import override_settings
 from rest_framework import status
 
-from rest_registration.api.views import register, verify_registration
 from rest_registration.api.views.register import RegisterSigner
 from rest_registration.settings import registration_settings
 
@@ -32,6 +31,7 @@ REST_REGISTRATION_WITHOUT_VERIFICATION = {
 
 @override_settings(REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION)
 class RegisterViewTestCase(APIViewTestCase):
+    VIEW_NAME = 'register'
 
     def test_register_serializer_ok(self):
         serializer_class = registration_settings.REGISTER_SERIALIZER_CLASS
@@ -57,10 +57,10 @@ class RegisterViewTestCase(APIViewTestCase):
 
     def test_register_ok(self):
         data = self._get_register_user_data(password='testpassword')
-        request = self.factory.post('', data)
+        request = self.create_post_request(data)
         time_before = math.floor(time.time())
         with self.assert_one_mail_sent() as sent_emails:
-            response = register(request)
+            response = self.view_func(request)
         time_after = math.ceil(time.time())
         self.assert_valid_response(response, status.HTTP_201_CREATED)
         user_id = response.data['id']
@@ -97,10 +97,10 @@ class RegisterViewTestCase(APIViewTestCase):
     def test_register_no_password_confirm_ok(self):
         data = self._get_register_user_data(password='testpassword')
         data.pop('password_confirm')
-        request = self.factory.post('', data)
+        request = self.create_post_request(data)
         time_before = math.floor(time.time())
         with self.assert_one_mail_sent() as sent_emails:
-            response = register(request)
+            response = self.view_func(request)
             self.assert_valid_response(response, status.HTTP_201_CREATED)
         time_after = math.ceil(time.time())
         user_id = response.data['id']
@@ -136,20 +136,20 @@ class RegisterViewTestCase(APIViewTestCase):
 
         data = self._get_register_user_data(
             username='testusername', password='testpassword')
-        request = self.factory.post('', data)
+        request = self.create_post_request(data)
         with self.assert_no_mail_sent():
-            response = register(request)
-        self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
+            response = self.view_func(request)
+            self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
 
     @override_settings(
         REST_REGISTRATION=REST_REGISTRATION_WITHOUT_VERIFICATION,
     )
     def test_register_without_verification_ok(self):
         data = self._get_register_user_data(password='testpassword')
-        request = self.factory.post('', data)
+        request = self.create_post_request(data)
         with self.assert_no_mail_sent():
-            response = register(request)
-        self.assert_valid_response(response, status.HTTP_201_CREATED)
+            response = self.view_func(request)
+            self.assert_valid_response(response, status.HTTP_201_CREATED)
         user_id = response.data['id']
         user = self.user_class.objects.get(id=user_id)
         self.assertEqual(user.username, data['username'])
@@ -158,41 +158,41 @@ class RegisterViewTestCase(APIViewTestCase):
 
     def test_register_no_email(self):
         data = self._get_register_user_data(password='testpassword', email='')
-        request = self.factory.post('', data)
+        request = self.create_post_request(data)
         with self.assert_no_mail_sent():
-            response = register(request)
+            response = self.view_func(request)
             self.assert_response_is_bad_request(response)
 
     def test_register_short_password(self):
         data = self._get_register_user_data(password='a')
-        request = self.factory.post('', data)
+        request = self.create_post_request(data)
         with self.assert_no_mail_sent():
-            response = register(request)
+            response = self.view_func(request)
             self.assert_response_is_bad_request(response)
 
     def test_register_password_numeric(self):
         data = self._get_register_user_data(password='4321332211113322')
-        request = self.factory.post('', data)
+        request = self.create_post_request(data)
         with self.assert_no_mail_sent():
-            response = register(request)
+            response = self.view_func(request)
             self.assert_response_is_bad_request(response)
 
     def test_register_password_same_as_username(self):
         username = 'testusername'
         data = self._get_register_user_data(
             username=username, password=username)
-        request = self.factory.post('', data)
+        request = self.create_post_request(data)
         with self.assert_no_mail_sent():
-            response = register(request)
+            response = self.view_func(request)
             self.assert_response_is_bad_request(response)
 
     def test_register_not_matching_password(self):
         data = self._get_register_user_data(
             password='testpassword1',
             password_confirm='testpassword2')
-        request = self.factory.post('', data)
+        request = self.create_post_request(data)
         with self.assert_no_mail_sent():
-            response = register(request)
+            response = self.view_func(request)
             self.assert_response_is_bad_request(response)
 
     def _get_register_user_data(
@@ -212,6 +212,7 @@ class RegisterViewTestCase(APIViewTestCase):
 
 
 class VerifyRegistrationViewTestCase(APIViewTestCase):
+    VIEW_NAME = 'verify-registration'
 
     @override_settings(REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION)
     def test_verify_ok(self):
@@ -219,8 +220,8 @@ class VerifyRegistrationViewTestCase(APIViewTestCase):
         self.assertFalse(user.is_active)
         signer = RegisterSigner({'user_id': user.pk})
         data = signer.get_signed_data()
-        request = self.factory.post('', data)
-        response = verify_registration(request)
+        request = self.create_post_request(data)
+        response = self.view_func(request)
         self.assert_valid_response(response, status.HTTP_200_OK)
         user.refresh_from_db()
         self.assertTrue(user.is_active)
@@ -232,8 +233,8 @@ class VerifyRegistrationViewTestCase(APIViewTestCase):
         signer = RegisterSigner({'user_id': user.pk})
         data = signer.get_signed_data()
         data['timestamp'] += 1
-        request = self.factory.post('', data)
-        response = verify_registration(request)
+        request = self.create_post_request(data)
+        response = self.view_func(request)
         self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
         user.refresh_from_db()
         self.assertFalse(user.is_active)
@@ -247,10 +248,10 @@ class VerifyRegistrationViewTestCase(APIViewTestCase):
                    side_effect=lambda: timestamp):
             signer = RegisterSigner({'user_id': user.pk})
             data = signer.get_signed_data()
-            request = self.factory.post('', data)
+            request = self.create_post_request(data)
         with patch('time.time',
                    side_effect=lambda: timestamp + 3600 * 24 * 8):
-            response = verify_registration(request)
+            response = self.view_func(request)
         self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
         user.refresh_from_db()
         self.assertFalse(user.is_active)
@@ -266,8 +267,8 @@ class VerifyRegistrationViewTestCase(APIViewTestCase):
         self.assertFalse(user.is_active)
         signer = RegisterSigner({'user_id': user.pk})
         data = signer.get_signed_data()
-        request = self.factory.post('', data)
-        response = verify_registration(request)
+        request = self.create_post_request(data)
+        response = self.view_func(request)
         self.assert_invalid_response(response, status.HTTP_404_NOT_FOUND)
         user.refresh_from_db()
         self.assertFalse(user.is_active)

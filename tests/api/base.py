@@ -5,6 +5,7 @@ from urllib.parse import parse_qs, urlparse
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.core import mail
 from django.test import TestCase
+from django.urls import resolve, reverse
 from django_dynamic_fixture import G
 from rest_framework import status
 from rest_framework.test import APIRequestFactory
@@ -13,10 +14,32 @@ from rest_registration.utils import get_user_model_class
 
 
 class APIViewTestCase(TestCase):
+    APP_NAME = 'rest_registration'
+    VIEW_NAME = None
 
     def setUp(self):
         self.factory = APIRequestFactory()
         self.user_class = get_user_model_class()
+        self._view_url = None
+        self._view_func = None
+
+    @property
+    def full_view_name(self):
+        assert self.VIEW_NAME
+        return '{self.APP_NAME}:{self.VIEW_NAME}'.format(self=self)
+
+    @property
+    def view_url(self):
+        if self._view_url is None:
+            self._view_url = reverse(self.full_view_name)
+        return self._view_url
+
+    @property
+    def view_func(self):
+        if self._view_func is None:
+            match = resolve(self.view_url)
+            self._view_func = match.func
+        return self._view_func
 
     def create_test_user(self, **kwargs):
         password = kwargs.pop('password', None)
@@ -26,6 +49,15 @@ class APIViewTestCase(TestCase):
             user.save()
             user.password_in_plaintext = password
         return user
+
+    def create_post_request(self, data=None):
+        return self.factory.post(self.view_url, data)
+
+    def create_patch_request(self, data=None):
+        return self.factory.patch(self.view_url, data)
+
+    def create_get_request(self):
+        return self.factory.get(self.view_url)
 
     def add_session_to_request(self, request):
         middleware = SessionMiddleware()

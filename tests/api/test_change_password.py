@@ -1,12 +1,11 @@
 from rest_framework import status
 from rest_framework.test import force_authenticate
 
-from rest_registration.api.views import change_password
-
 from .base import APIViewTestCase
 
 
 class ChangePasswordTestCase(APIViewTestCase):
+    VIEW_NAME = 'change-password'
 
     def setUp(self):
         super().setUp()
@@ -15,14 +14,14 @@ class ChangePasswordTestCase(APIViewTestCase):
                                           password=self.password)
 
     def test_forbidden(self):
-        request = self.factory.post('', {})
-        response = change_password(request)
+        request = self.create_post_request({})
+        response = self.view_func(request)
         self.assert_invalid_response(response, status.HTTP_403_FORBIDDEN)
 
     def _test_authenticated(self, data):
-        request = self.factory.post('', data)
+        request = self.create_post_request(data)
         force_authenticate(request, user=self.user)
-        response = change_password(request)
+        response = self.view_func(request)
         return response
 
     def test_invalid_old_password(self):

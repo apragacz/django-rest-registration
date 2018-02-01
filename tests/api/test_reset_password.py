@@ -5,10 +5,6 @@ from unittest.mock import patch
 from django.test.utils import override_settings
 from rest_framework import status
 
-from rest_registration.api.views import (
-    reset_password,
-    send_reset_password_link
-)
 from rest_registration.api.views.reset_password import ResetPasswordSigner
 
 from .base import APIViewTestCase
@@ -28,17 +24,18 @@ class BaseResetPasswordViewTestCase(APIViewTestCase):
 
 
 class SendResetPasswordLinkViewTestCase(BaseResetPasswordViewTestCase):
+    VIEW_NAME = 'send-reset-password-link'
 
     def test_send_link_ok(self):
         user = self.create_test_user(username='testusername')
-        request = self.factory.post('', {
+        request = self.create_post_request({
             'login': user.username,
         })
         time_before = math.floor(time.time())
         with self.assert_one_mail_sent() as sent_emails:
-            response = send_reset_password_link(request)
-        time_after = math.ceil(time.time())
-        self.assert_valid_response(response, status.HTTP_200_OK)
+            response = self.view_func(request)
+            time_after = math.ceil(time.time())
+            self.assert_valid_response(response, status.HTTP_200_OK)
         sent_email = sent_emails[0]
         self.assertEqual(
             sent_email.from_email,
@@ -60,15 +57,16 @@ class SendResetPasswordLinkViewTestCase(BaseResetPasswordViewTestCase):
 
     def test_send_link_invalid_login(self):
         user = self.create_test_user(username='testusername')
-        request = self.factory.post('', {
+        request = self.create_post_request({
             'login': user.username + 'b',
         })
         with self.assert_mails_sent(0):
-            response = send_reset_password_link(request)
-        self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
+            response = self.view_func(request)
+            self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
 
 
 class ResetPasswordViewTestCase(BaseResetPasswordViewTestCase):
+    VIEW_NAME = 'reset-password'
 
     def test_reset_ok(self):
         old_password = 'password1'
@@ -77,8 +75,8 @@ class ResetPasswordViewTestCase(BaseResetPasswordViewTestCase):
         signer = ResetPasswordSigner({'user_id': user.pk})
         data = signer.get_signed_data()
         data['password'] = new_password
-        request = self.factory.post('', data)
-        response = reset_password(request)
+        request = self.create_post_request(data)
+        response = self.view_func(request)
         self.assert_response_is_ok(response)
         user.refresh_from_db()
         self.assertTrue(user.check_password(new_password))
@@ -90,8 +88,8 @@ class ResetPasswordViewTestCase(BaseResetPasswordViewTestCase):
         signer = ResetPasswordSigner({'user_id': user.pk})
         data = signer.get_signed_data()
         data['password'] = new_password
-        request = self.factory.post('', data)
-        response = reset_password(request)
+        request = self.create_post_request(data)
+        response = self.view_func(request)
         self.assert_response_is_bad_request(response)
         user.refresh_from_db()
         self.assertTrue(user.check_password(old_password))
@@ -103,8 +101,8 @@ class ResetPasswordViewTestCase(BaseResetPasswordViewTestCase):
         signer = ResetPasswordSigner({'user_id': user.pk})
         data = signer.get_signed_data()
         data['password'] = new_password
-        request = self.factory.post('', data)
-        response = reset_password(request)
+        request = self.create_post_request(data)
+        response = self.view_func(request)
         self.assert_response_is_bad_request(response)
         user.refresh_from_db()
         self.assertTrue(user.check_password(old_password))
@@ -117,8 +115,8 @@ class ResetPasswordViewTestCase(BaseResetPasswordViewTestCase):
         signer = ResetPasswordSigner({'user_id': user.pk})
         data = signer.get_signed_data()
         data['password'] = new_password
-        request = self.factory.post('', data)
-        response = reset_password(request)
+        request = self.create_post_request(data)
+        response = self.view_func(request)
         self.assert_response_is_bad_request(response)
         user.refresh_from_db()
         self.assertTrue(user.check_password(old_password))
@@ -131,8 +129,8 @@ class ResetPasswordViewTestCase(BaseResetPasswordViewTestCase):
         data = signer.get_signed_data()
         data['timestamp'] += 1
         data['password'] = new_password
-        request = self.factory.post('', data)
-        response = reset_password(request)
+        request = self.create_post_request(data)
+        response = self.view_func(request)
         self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
         user.refresh_from_db()
         self.assertTrue(user.check_password(old_password))
@@ -147,10 +145,10 @@ class ResetPasswordViewTestCase(BaseResetPasswordViewTestCase):
             signer = ResetPasswordSigner({'user_id': user.pk})
             data = signer.get_signed_data()
         data['password'] = new_password
-        request = self.factory.post('', data)
+        request = self.create_post_request(data)
         with patch('time.time',
                    side_effect=lambda: timestamp + 3600 * 24 * 8):
-            response = reset_password(request)
+            response = self.view_func(request)
         self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
         user.refresh_from_db()
         self.assertTrue(user.check_password(old_password))
