@@ -1,0 +1,17 @@
+language: python
+cache:
+  directories:
+  - "$HOME/.cache/pip"
+python:
+- "3.4"
+- "3.5"
+- "3.6"
+env:
+- DJANGO_VERSION=1.10
+- DJANGO_VERSION=1.11
+- DJANGO_VERSION=2.0
+install:
+- ./.travis/install.sh
+script:
+- ./.travis/run.sh
+

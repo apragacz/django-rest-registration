@@ -58,6 +58,9 @@ AUTH_PASSWORD_VALIDATORS = [
 ROOT_URLCONF = 'tests.default_urls'
 
 
+TEST_RUNNER = 'xmlrunner.extra.djangotestrunner.XMLTestRunner'
+
+
 # Minimal configuration so Django test subcommand will not fail
 # during initial system check.
 REST_REGISTRATION = {
