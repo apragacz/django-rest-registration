@@ -34,12 +34,11 @@ class APIViewTestCase(TestCase):
             self._view_url = reverse(self.full_view_name)
         return self._view_url
 
-    @property
-    def view_func(self):
+    def view_func(self, *args, **kwargs):
         if self._view_func is None:
             match = resolve(self.view_url)
             self._view_func = match.func
-        return self._view_func
+        return self._view_func(*args, **kwargs)
 
     def create_test_user(self, **kwargs):
         password = kwargs.pop('password', None)
