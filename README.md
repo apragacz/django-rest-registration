@@ -1,6 +1,7 @@
 # Django-REST-Registration
 
 [![Build Status](https://travis-ci.org/szopu/django-rest-registration.svg?branch=master)](https://travis-ci.org/szopu/django-rest-registration)
+[![PyPi Version](https://img.shields.io/pypi/v/django-rest-registration.svg)](https://pypi.python.org/pypi/django-rest-registration/)
 
 User registration REST API, based on django-rest-framework.
 
