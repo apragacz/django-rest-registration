@@ -4,6 +4,7 @@ django-dynamic-fixture
 flake8
 flake8-debugger
 flake8-print
+flake8-tuple
 ipdb
 ipython
 pylint
