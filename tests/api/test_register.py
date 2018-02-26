@@ -156,7 +156,15 @@ class RegisterViewTestCase(APIViewTestCase):
         self.assertTrue(user.check_password(data['password']))
         self.assertTrue(user.is_active)
 
-    def test_register_no_email(self):
+    def test_register_missing_email(self):
+        data = self._get_register_user_data(password='testpassword')
+        del data['email']
+        request = self.create_post_request(data)
+        with self.assert_no_mail_sent():
+            response = self.view_func(request)
+            self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
+
+    def test_register_empty_email(self):
         data = self._get_register_user_data(password='testpassword', email='')
         request = self.create_post_request(data)
         with self.assert_no_mail_sent():

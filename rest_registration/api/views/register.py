@@ -50,8 +50,8 @@ def register(request):
         verification_flag_field = get_user_setting('VERIFICATION_FLAG_FIELD')
         kwargs[verification_flag_field] = False
         email_field = get_user_setting('EMAIL_FIELD')
-        if (email_field in serializer.validated_data
-                and not serializer.validated_data[email_field]):
+        if (email_field not in serializer.validated_data
+                or not serializer.validated_data[email_field]):
             raise BadRequest("User without email cannot be verified")
 
     user = serializer.save(**kwargs)
