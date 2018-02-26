@@ -61,7 +61,7 @@ setup(
     )),
     long_description=get_long_description('README.md'),
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
         'Framework :: Django',
         'Framework :: Django :: 1.10',
