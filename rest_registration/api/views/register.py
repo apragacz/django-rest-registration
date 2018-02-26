@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.http import Http404
 from rest_framework import serializers, status
 from rest_framework.decorators import api_view
@@ -13,7 +14,6 @@ from rest_registration.notifications import send_verification
 from rest_registration.settings import registration_settings
 from rest_registration.utils import (
     get_ok_response,
-    get_user_model_class,
     get_user_setting,
     verify_signer_or_bad_request
 )
@@ -85,7 +85,7 @@ def verify_registration(request):
     '''
     if not registration_settings.REGISTER_VERIFICATION_ENABLED:
         raise Http404()
-    user_class = get_user_model_class()
+    user_class = get_user_model()
     serializer = VerifyRegistrationSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 

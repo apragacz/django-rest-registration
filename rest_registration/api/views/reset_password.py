@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.http import Http404
@@ -11,7 +12,6 @@ from rest_registration.notifications import send_verification
 from rest_registration.settings import registration_settings
 from rest_registration.utils import (
     get_ok_response,
-    get_user_model_class,
     get_user_setting,
     verify_signer_or_bad_request
 )
@@ -36,7 +36,7 @@ class SendResetPasswordLinkSerializer(serializers.Serializer):
 
 
 def get_login_fields():
-    user_class = get_user_model_class()
+    user_class = get_user_model()
     return get_user_setting('LOGIN_FIELDS') or [user_class.USERNAME_FIELD]
 
 
@@ -49,7 +49,7 @@ def send_reset_password_link(request):
     serializer = SendResetPasswordLinkSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     login = serializer.data['login']
-    user_class = get_user_model_class()
+    user_class = get_user_model()
     user_queryset = user_class.objects.all()
 
     user = None
@@ -95,7 +95,7 @@ def reset_password(request):
     signer = ResetPasswordSigner(data, request=request)
     verify_signer_or_bad_request(signer)
 
-    user_class = get_user_model_class()
+    user_class = get_user_model()
     user = get_object_or_404(user_class.objects.all(), pk=data['user_id'])
     try:
         validate_password(password, user=user)

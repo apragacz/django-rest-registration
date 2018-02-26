@@ -1,4 +1,5 @@
 from django.contrib import auth
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.authentication import (
     SessionAuthentication,
@@ -11,7 +12,7 @@ from rest_framework.settings import api_settings
 from rest_registration.decorators import api_view_serializer_class
 from rest_registration.exceptions import BadRequest
 from rest_registration.settings import registration_settings
-from rest_registration.utils import get_ok_response, get_user_model_class
+from rest_registration.utils import get_ok_response
 
 
 class LoginSerializer(serializers.Serializer):
@@ -29,7 +30,7 @@ def login(request):
     serializer.is_valid(raise_exception=True)
     data = serializer.data
 
-    user_class = get_user_model_class()
+    user_class = get_user_model()
     login_fields = (registration_settings.USER_LOGIN_FIELDS or
                     getattr(user_class, 'LOGIN_FIELDS', None) or
                     [user_class.USERNAME_FIELD])

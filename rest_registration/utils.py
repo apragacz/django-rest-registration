@@ -1,5 +1,4 @@
-from django.apps import apps
-from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.signing import BadSignature, SignatureExpired
 from rest_framework.response import Response
 
@@ -7,13 +6,9 @@ from rest_registration.exceptions import BadRequest
 from rest_registration.settings import registration_settings
 
 
-def get_user_model_class():
-    return apps.get_model(*settings.AUTH_USER_MODEL.rsplit('.', 1))
-
-
 def get_user_setting(name):
     setting_name = 'USER_{}'.format(name)
-    user_class = get_user_model_class()
+    user_class = get_user_model()
     placeholder = object()
     value = getattr(user_class, name, placeholder)
 

@@ -2,6 +2,7 @@ import contextlib
 from collections import Sequence
 from urllib.parse import parse_qs, urlparse
 
+from django.contrib.auth import get_user_model
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.core import mail
 from django.test import TestCase
@@ -10,8 +11,6 @@ from django_dynamic_fixture import G
 from rest_framework import status
 from rest_framework.test import APIRequestFactory
 
-from rest_registration.utils import get_user_model_class
-
 
 class APIViewTestCase(TestCase):
     APP_NAME = 'rest_registration'
@@ -19,7 +18,7 @@ class APIViewTestCase(TestCase):
 
     def setUp(self):
         self.factory = APIRequestFactory()
-        self.user_class = get_user_model_class()
+        self.user_class = get_user_model()
         self._view_url = None
         self._view_func = None
 

@@ -1,9 +1,10 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from rest_registration.settings import registration_settings
-from rest_registration.utils import get_user_model_class, get_user_setting
+from rest_registration.utils import get_user_setting
 
 
 class MetaObj(object):
@@ -13,7 +14,7 @@ class MetaObj(object):
 class DefaultUserProfileSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
-        user_class = get_user_model_class()
+        user_class = get_user_model()
         field_names = _get_field_names(allow_primary_key=True)
         read_only_field_names = _get_field_names(allow_primary_key=True,
                                                  non_editable=True)
@@ -27,7 +28,7 @@ class DefaultUserProfileSerializer(serializers.ModelSerializer):
 class DefaultRegisterUserSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
-        user_class = get_user_model_class()
+        user_class = get_user_model()
         field_names = _get_field_names(allow_primary_key=False)
         field_names = field_names + ('password',)
         self.Meta = MetaObj()
@@ -69,7 +70,7 @@ def _build_initial_user(data):
     for field_name in user_field_names:
         if field_name in data:
             user_data[field_name] = data[field_name]
-    user_class = get_user_model_class()
+    user_class = get_user_model()
     return user_class(**user_data)
 
 
@@ -78,7 +79,7 @@ def _get_field_names(allow_primary_key=True, non_editable=False):
     def not_in_seq(names):
         return lambda name: name not in names
 
-    user_class = get_user_model_class()
+    user_class = get_user_model()
     fields = user_class._meta.get_fields()
     default_field_names = [f.name for f in fields
                            if (getattr(f, 'serialize', False) or
