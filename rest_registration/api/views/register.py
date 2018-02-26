@@ -4,7 +4,10 @@ from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
-from rest_registration.decorators import serializer_class_getter
+from rest_registration.decorators import (
+    api_view_serializer_class,
+    api_view_serializer_class_getter
+)
 from rest_registration.exceptions import BadRequest
 from rest_registration.notifications import send_verification
 from rest_registration.settings import registration_settings
@@ -30,7 +33,7 @@ class RegisterSigner(URLParamsSigner):
         return registration_settings.REGISTER_VERIFICATION_PERIOD
 
 
-@serializer_class_getter(
+@api_view_serializer_class_getter(
     lambda: registration_settings.REGISTER_SERIALIZER_CLASS)
 @api_view(['POST'])
 def register(request):
@@ -74,12 +77,11 @@ class VerifyRegistrationSerializer(serializers.Serializer):
     signature = serializers.CharField(required=True)
 
 
+@api_view_serializer_class(VerifyRegistrationSerializer)
 @api_view(['POST'])
 def verify_registration(request):
     '''
     Verify registration via signature.
-    ---
-    serializer: VerifyRegistrationSerializer
     '''
     if not registration_settings.REGISTER_VERIFICATION_ENABLED:
         raise Http404()

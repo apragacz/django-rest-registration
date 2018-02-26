@@ -8,6 +8,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view
 from rest_framework.settings import api_settings
 
+from rest_registration.decorators import api_view_serializer_class
 from rest_registration.exceptions import BadRequest
 from rest_registration.settings import registration_settings
 from rest_registration.utils import get_ok_response, get_user_model_class
@@ -18,12 +19,11 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField()
 
 
+@api_view_serializer_class(LoginSerializer)
 @api_view(['POST'])
 def login(request):
     '''
     Logs in the user via given login and password.
-    ---
-    serializer: LoginSerializer
     '''
     serializer = LoginSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)

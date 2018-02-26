@@ -4,21 +4,35 @@ import types
 from django.core.checks import Error
 
 
-def serializer_class_getter(class_getter):
+def api_view_serializer_class_getter(serializer_class_getter):
 
     def _get_serializer_class(self):
-        return class_getter()
+        return serializer_class_getter()
+
+    def _get_serializer(self):
+        cls = self.get_serializer_class()
+        return cls()
 
     def decorator(func):
         if not hasattr(func, 'cls'):
-            raise Exception('@serializer_class_getter can only decorate'
-                            ' @api_view decorated functions')
+            raise Exception(
+                '@api_view_serializer_class_getter can only decorate'
+                ' @api_view decorated functions')
         apiview_cls = func.cls
         apiview_cls.get_serializer_class = types.MethodType(
             _get_serializer_class,
             apiview_cls)
+        if not hasattr(apiview_cls, 'get_serializer'):
+            # In case get_serializer() method is missing.
+            apiview_cls.get_serializer = types.MethodType(
+                _get_serializer,
+                apiview_cls)
         return func
     return decorator
+
+
+def api_view_serializer_class(serializer_class):
+    return api_view_serializer_class_getter(lambda: serializer_class)
 
 
 def simple_check(error_message, error_code, obj=None):

@@ -1,3 +1,4 @@
+coreapi
 coverage
 django-dynamic-fixture
 flake8

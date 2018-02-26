@@ -2,6 +2,7 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import permissions, serializers
 from rest_framework.decorators import api_view, permission_classes
 
+from rest_registration.decorators import api_view_serializer_class
 from rest_registration.utils import get_ok_response
 
 
@@ -27,13 +28,12 @@ class ChangePasswordSerializer(serializers.Serializer):
         return data
 
 
+@api_view_serializer_class(ChangePasswordSerializer)
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def change_password(request):
     '''
     Change the user password.
-    ---
-    serializer: ChangePasswordSerializer
     '''
     serializer = ChangePasswordSerializer(data=request.data,
                                           context={'request': request})

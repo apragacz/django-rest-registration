@@ -5,6 +5,7 @@ from rest_framework import serializers
 from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404
 
+from rest_registration.decorators import api_view_serializer_class
 from rest_registration.exceptions import BadRequest
 from rest_registration.notifications import send_verification
 from rest_registration.settings import registration_settings
@@ -39,12 +40,11 @@ def get_login_fields():
     return get_user_setting('LOGIN_FIELDS') or [user_class.USERNAME_FIELD]
 
 
+@api_view_serializer_class(SendResetPasswordLinkSerializer)
 @api_view(['POST'])
 def send_reset_password_link(request):
     '''
     Send email with reset password link.
-    ---
-    serializer: SendResetPasswordLinkSerializer
     '''
     serializer = SendResetPasswordLinkSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
@@ -81,12 +81,11 @@ class ResetPasswordSerializer(serializers.Serializer):
     password = serializers.CharField(required=True)
 
 
+@api_view_serializer_class(ResetPasswordSerializer)
 @api_view(['POST'])
 def reset_password(request):
     '''
     Reset password, given the signature and timestamp from the link.
-    ---
-    serializer: ResetPasswordSerializer
     '''
     serializer = ResetPasswordSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
