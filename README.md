@@ -45,27 +45,29 @@ Or install directly from source via GitHub:
 Then, you should add it to the `INSTALLED_APPS` so the app templates
 for notification emails can be accessed:
 
-    INSTALLED_APPS=(
-        ...
+```python
+INSTALLED_APPS=(
+    ...
 
-        'rest_registration',
-    ),
-
+    'rest_registration',
+)
+```
 After that, you can use the urls in your urlconfig, for instance (using new Django 2.x syntax):
 
-    api_urlpatterns = [
-        ...
+```python
+api_urlpatterns = [
+    ...
 
-        path('accounts/', include('rest_registration.api.urls')),
-    ]
+    path('accounts/', include('rest_registration.api.urls')),
+]
 
 
-    urlpatterns = [
-        ...
+urlpatterns = [
+    ...
 
-        path('api/v1/', include(api_urlpatterns)),
-    ]
-
+    path('api/v1/', include(api_urlpatterns)),
+]
+```
 
 In Django 1.x you can use old `url` instead of `path`.
 
@@ -77,70 +79,105 @@ setting in your django settings (similarly to `django-rest-framework`).
 
 Below is sample, minimal config you can provide in your django settings which will satisfy the system checks:
 
-    REST_REGISTRATION = {
-        'REGISTER_VERIFICATION_ENABLED': False,
+```python
+REST_REGISTRATION = {
+    'REGISTER_VERIFICATION_ENABLED': False,
 
-        'RESET_PASSWORD_VERIFICATION_URL': '/reset-password/',
+    'RESET_PASSWORD_VERIFICATION_URL': 'https://frontend-url/reset-password/',
 
-        'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
+    'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
 
-        'VERIFICATION_FROM_EMAIL': 'no-reply@example.com',
-    }
+    'VERIFICATION_FROM_EMAIL': 'no-reply@example.com',
+}
+```
 
+However, the preferred base configuration would be:
 
-The default values are:
+```python
+REST_REGISTRATION = {
+    'REGISTER_VERIFICATION_URL': 'https://frontend-url/verify-user/',
+    'RESET_PASSWORD_VERIFICATION_URL': 'https://frontend-url/reset-password/',
+    'REGISTER_EMAIL_VERIFICATION_URL': 'https://frontend-url/verify-email/',
 
-    REST_REGISTRATION = {
-        'USER_LOGIN_FIELDS': None,
-        'USER_HIDDEN_FIELDS': (
-            'is_active',
-            'is_staff',
-            'is_superuser',
-            'user_permissions',
-            'groups',
-            'date_joined',
-        ),
-        'USER_PUBLIC_FIELDS': None,
-        'USER_EMAIL_FIELD': 'email',
+    'VERIFICATION_FROM_EMAIL': 'no-reply@example.com',
+}
+```
 
-        'USER_VERIFICATION_FLAG_FIELD': 'is_active',
+The frontend urls will receive parameters as GET query and should pass
+them to corresponding REST API views via HTTP POST request.
+The frontend urls are not provided by the library but should be provided
+by the user of the library, because `django-rest-registration` is frontend-agnostic.
 
-        'REGISTER_SERIALIZER_CLASS': 'rest_registration.api.serializers.DefaultRegisterUserSerializer',
-        'REGISTER_SERIALIZER_PASSWORD_CONFIRM': True,
+Let's explain it by example:
+the frontend endpoint https://frontend-url/verify-email/ would receive
+following GET parameters:
+* `user_id`
+* `email`
+* `timestamp`
+* `signature`
 
-        'REGISTER_VERIFICATION_ENABLED': True,
-        'REGISTER_VERIFICATION_PERIOD': datetime.timedelta(days=7),
-        'REGISTER_VERIFICATION_URL': None,
-        'REGISTER_VERIFICATION_EMAIL_TEMPLATES': {
-            'subject':  'rest_registration/register/subject.txt',
-            'body':  'rest_registration/register/body.txt',
-        },
+and then it should perform AJAX request to https://backend-url/api/v1/verify-email/
+via HTTP POST and then show a message to the user depending on the response
+from backend server.
 
-        'LOGIN_AUTHENTICATE_SESSION': None,
-        'LOGIN_RETRIEVE_TOKEN': None,
+## Configuration options
 
-        'RESET_PASSWORD_VERIFICATION_PERIOD': datetime.timedelta(days=1),
-        'RESET_PASSWORD_VERIFICATION_URL': None,
-        'RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES': {
-            'subject': 'rest_registration/reset_password/subject.txt',
-            'body': 'rest_registration/reset_password/body.txt',
-        },
+You can modify following keys in `REST_REGISTRATION` dictionary.
+The default values are shown below:
 
-        'REGISTER_EMAIL_VERIFICATION_ENABLED': True,
-        'REGISTER_EMAIL_VERIFICATION_PERIOD': datetime.timedelta(days=7),
-        'REGISTER_EMAIL_VERIFICATION_URL': None,
-        'REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES': {
-            'subject':  'rest_registration/register_email/subject.txt',
-            'body':  'rest_registration/register_email/body.txt',
-        },
+```python
+REST_REGISTRATION = {
+    'USER_LOGIN_FIELDS': None,
+    'USER_HIDDEN_FIELDS': (
+        'is_active',
+        'is_staff',
+        'is_superuser',
+        'user_permissions',
+        'groups',
+        'date_joined',
+    ),
+    'USER_PUBLIC_FIELDS': None,
+    'USER_EMAIL_FIELD': 'email',
 
-        'PROFILE_SERIALIZER_CLASS': 'rest_registration.api.serializers.DefaultUserProfileSerializer',
+    'USER_VERIFICATION_FLAG_FIELD': 'is_active',
 
-        'VERIFICATION_FROM_EMAIL': None,
-        'VERIFICATION_REPLY_TO_EMAIL': None,
+    'REGISTER_SERIALIZER_CLASS': 'rest_registration.api.serializers.DefaultRegisterUserSerializer',
+    'REGISTER_SERIALIZER_PASSWORD_CONFIRM': True,
 
-        'SUCCESS_RESPONSE_BUILDER': 'rest_registration.utils.build_default_success_response',
-    }
+    'REGISTER_VERIFICATION_ENABLED': True,
+    'REGISTER_VERIFICATION_PERIOD': datetime.timedelta(days=7),
+    'REGISTER_VERIFICATION_URL': None,
+    'REGISTER_VERIFICATION_EMAIL_TEMPLATES': {
+        'subject':  'rest_registration/register/subject.txt',
+        'body':  'rest_registration/register/body.txt',
+    },
+
+    'LOGIN_AUTHENTICATE_SESSION': None,
+    'LOGIN_RETRIEVE_TOKEN': None,
+
+    'RESET_PASSWORD_VERIFICATION_PERIOD': datetime.timedelta(days=1),
+    'RESET_PASSWORD_VERIFICATION_URL': None,
+    'RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES': {
+        'subject': 'rest_registration/reset_password/subject.txt',
+        'body': 'rest_registration/reset_password/body.txt',
+    },
+
+    'REGISTER_EMAIL_VERIFICATION_ENABLED': True,
+    'REGISTER_EMAIL_VERIFICATION_PERIOD': datetime.timedelta(days=7),
+    'REGISTER_EMAIL_VERIFICATION_URL': None,
+    'REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES': {
+        'subject':  'rest_registration/register_email/subject.txt',
+        'body':  'rest_registration/register_email/body.txt',
+    },
+
+    'PROFILE_SERIALIZER_CLASS': 'rest_registration.api.serializers.DefaultUserProfileSerializer',
+
+    'VERIFICATION_FROM_EMAIL': None,
+    'VERIFICATION_REPLY_TO_EMAIL': None,
+
+    'SUCCESS_RESPONSE_BUILDER': 'rest_registration.utils.build_default_success_response',
+}
+```
 
 The `USER_*` fields can be set directly in the user class
 (specified by `settings.AUTH_USER_MODEL`) without using
