@@ -1,6 +1,7 @@
 # Django-REST-Registration
 
 [![Build Status](https://travis-ci.org/szopu/django-rest-registration.svg?branch=master)](https://travis-ci.org/szopu/django-rest-registration)
+[![Codecov Coverage](https://img.shields.io/codecov/c/github/szopu/django-rest-registration/master.svg)](https://codecov.io/github/szopu/django-rest-registration?branch=master)
 [![PyPi Version](https://img.shields.io/pypi/v/django-rest-registration.svg)](https://pypi.python.org/pypi/django-rest-registration/)
 
 User registration REST API, based on django-rest-framework.
@@ -21,7 +22,7 @@ WARNING: `django-rest-registration` is only Python 3 compatible.
 * Views can be authenticated via session or auth token
 * Modeless (uses the user defined by `settings.AUTH_USER_MODEL` and also uses [cryptographic signing](https://docs.djangoproject.com/en/dev/topics/signing/) instead of profile models)
 * Uses [password validation](https://docs.djangoproject.com/en/dev/topics/auth/passwords/#password-validation)
-* Heavily tested (Above 99% code coverage)
+* Heavily tested (Above 98% code coverage)
 
 
 ## Current limitations
@@ -103,21 +104,35 @@ REST_REGISTRATION = {
 }
 ```
 
-The frontend urls will receive parameters as GET query and should pass
-them to corresponding REST API views via HTTP POST request.
 The frontend urls are not provided by the library but should be provided
 by the user of the library, because `django-rest-registration` is frontend-agnostic.
+The frontend urls will receive parameters as GET query and should pass
+them to corresponding REST API views via HTTP POST request.
 
 Let's explain it by example:
-the frontend endpoint https://frontend-url/verify-email/ would receive
+
+we're assuming that the `django-rest-registration` views are served at
+https://backend-url/api/v1/accounts/.
+The frontend endpoint https://frontend-url/verify-email/ would receive
 following GET parameters:
 * `user_id`
 * `email`
 * `timestamp`
 * `signature`
 
-and then it should perform AJAX request to https://backend-url/api/v1/verify-email/
-via HTTP POST and then show a message to the user depending on the response
+and then it should perform AJAX request to https://backend-url/api/v1/accounts/verify-email/
+via HTTP POST with following JSON payload:
+
+```javascript
+{
+    "user_id": "<user id>",
+    "email": "<email>",
+    "timestamp": "<timestamp>",
+    "signature": "<signature>"
+}
+```
+
+and then show a message to the user depending on the response
 from backend server.
 
 ## Configuration options
