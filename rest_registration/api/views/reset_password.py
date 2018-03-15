@@ -1,17 +1,17 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
-from django.http import Http404
 from rest_framework import serializers
 from rest_framework.decorators import api_view
-from rest_framework.generics import get_object_or_404
 
 from rest_registration.decorators import api_view_serializer_class
-from rest_registration.exceptions import BadRequest
+from rest_registration.exceptions import UserNotFound
 from rest_registration.notifications import send_verification
 from rest_registration.settings import registration_settings
 from rest_registration.utils import (
     get_ok_response,
+    get_user_by_id,
+    get_user_by_lookup_dict,
     get_user_setting,
     verify_signer_or_bad_request
 )
@@ -49,19 +49,15 @@ def send_reset_password_link(request):
     serializer = SendResetPasswordLinkSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     login = serializer.data['login']
-    user_class = get_user_model()
-    user_queryset = user_class.objects.all()
 
     user = None
     for login_field in get_login_fields():
-        try:
-            user = get_object_or_404(user_queryset, **{login_field: login})
+        user = get_user_by_lookup_dict({login_field: login}, default=None)
+        if user:
             break
-        except Http404:
-            pass
 
     if not user:
-        raise BadRequest('User not found')
+        raise UserNotFound()
 
     signer = ResetPasswordSigner({
         'user_id': user.pk,
@@ -95,8 +91,7 @@ def reset_password(request):
     signer = ResetPasswordSigner(data, request=request)
     verify_signer_or_bad_request(signer)
 
-    user_class = get_user_model()
-    user = get_object_or_404(user_class.objects.all(), pk=data['user_id'])
+    user = get_user_by_id(data['user_id'])
     try:
         validate_password(password, user=user)
     except ValidationError as exc:

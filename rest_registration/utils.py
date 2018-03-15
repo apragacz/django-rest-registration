@@ -1,13 +1,17 @@
 from django.contrib.auth import get_user_model
 from django.core.signing import BadSignature, SignatureExpired
+from django.http import Http404
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
-from rest_registration.exceptions import BadRequest
+from rest_registration.exceptions import BadRequest, UserNotFound
 from rest_registration.settings import registration_settings
+
+_RAISE_EXCEPTION = object()
 
 
 def get_user_setting(name):
-    setting_name = 'USER_{}'.format(name)
+    setting_name = 'USER_{name}'.format(name=name)
     user_class = get_user_model()
     placeholder = object()
     value = getattr(user_class, name, placeholder)
@@ -16,6 +20,32 @@ def get_user_setting(name):
         value = getattr(registration_settings, setting_name)
 
     return value
+
+
+def get_user_by_id(user_id, default=_RAISE_EXCEPTION, require_verified=True):
+    return get_user_by_lookup_dict({
+        'pk': user_id,
+    }, require_verified=require_verified)
+
+
+def get_user_by_lookup_dict(
+        lookup_dict, default=_RAISE_EXCEPTION, require_verified=True):
+    verification_enabled = registration_settings.REGISTER_VERIFICATION_ENABLED
+    verification_flag_field = get_user_setting('VERIFICATION_FLAG_FIELD')
+    user_class = get_user_model()
+    kwargs = {}
+    kwargs.update(lookup_dict)
+    if require_verified and verification_enabled and verification_flag_field:
+        kwargs[verification_flag_field] = True
+    try:
+        user = get_object_or_404(user_class.objects.all(), **kwargs)
+    except Http404:
+        if default is _RAISE_EXCEPTION:
+            raise UserNotFound()
+        else:
+            return default
+    else:
+        return user
 
 
 def get_ok_response(message, status=200, extra_data=None):

@@ -55,6 +55,15 @@ class SendResetPasswordLinkViewTestCase(BaseResetPasswordViewTestCase):
         signer = ResetPasswordSigner(verification_data)
         signer.verify()
 
+    def test_send_link_inactive_user(self):
+        user = self.create_test_user(username='testusername', is_active=False)
+        request = self.create_post_request({
+            'login': user.username,
+        })
+        with self.assert_no_mail_sent():
+            response = self.view_func(request)
+            self.assert_response_is_not_found(response)
+
     def test_send_link_invalid_login(self):
         user = self.create_test_user(username='testusername')
         request = self.create_post_request({
@@ -62,7 +71,7 @@ class SendResetPasswordLinkViewTestCase(BaseResetPasswordViewTestCase):
         })
         with self.assert_mails_sent(0):
             response = self.view_func(request)
-            self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
+            self.assert_response_is_not_found(response)
 
 
 class ResetPasswordViewTestCase(BaseResetPasswordViewTestCase):
@@ -80,6 +89,19 @@ class ResetPasswordViewTestCase(BaseResetPasswordViewTestCase):
         self.assert_response_is_ok(response)
         user.refresh_from_db()
         self.assertTrue(user.check_password(new_password))
+
+    def test_reset_inactive_user(self):
+        old_password = 'password1'
+        new_password = 'password2'
+        user = self.create_test_user(password=old_password, is_active=False)
+        signer = ResetPasswordSigner({'user_id': user.pk})
+        data = signer.get_signed_data()
+        data['password'] = new_password
+        request = self.create_post_request(data)
+        response = self.view_func(request)
+        self.assert_response_is_not_found(response)
+        user.refresh_from_db()
+        self.assertTrue(user.check_password(old_password))
 
     def test_reset_short_password(self):
         old_password = 'password1'

@@ -62,30 +62,50 @@ class APIViewTestCase(TestCase):
         middleware.process_request(request)
         request.session.save()
 
-    def assert_len_equals(self, collection, expected_len):
-        msg_format = "{collection} does not have length {expected_len}"
-        msg = msg_format.format(
+    def assert_len_equals(self, collection, expected_len, msg=None):
+        std_msg_format = "{collection} does not have length {expected_len}"
+        std_msg = std_msg_format.format(
             collection=collection,
             expected_len=expected_len,
         )
-        self.assertEqual(len(collection), expected_len, msg=msg)
+        if len(collection) != expected_len:
+            self.fail(self._formatMessage(msg, std_msg))
+
+    def assert_is_between(self, value, start, end, msg=None):
+        std_msg_format = "{value} is not in range [{start}, {end})"
+        std_msg = std_msg_format.format(
+            value=value,
+            start=start,
+            end=end,
+        )
+        if not (start <= value < end):
+            self.fail(self._formatMessage(msg, std_msg))
+
+    def assert_is_not_between(self, value, start, end, msg=None):
+        std_msg_format = "{value} is unexpectedly in range [{start}, {end})"
+        std_msg = std_msg_format.format(
+            value=value,
+            start=start,
+            end=end,
+        )
+        if start <= value < end:
+            self.fail(self._formatMessage(msg, std_msg))
 
     def assert_response(
             self, response, expected_valid_response=True,
             expected_status_code=None):
         status_code = response.status_code
-        status_valid = (200 <= status_code < 400)
         msg_format = "Response returned with code {status_code}, body {response.data}"  # noqa: E501
         msg = msg_format.format(
-                status_code=status_code,
-                response=response)
-        if expected_valid_response:
-            self.assertTrue(status_valid, msg)
-        else:
-            self.assertFalse(status_valid, msg)
-
+            status_code=status_code,
+            response=response,
+        )
         if expected_status_code is not None:
-            self.assertEqual(status_code, expected_status_code, msg)
+            self.assertEqual(status_code, expected_status_code, msg=msg)
+        elif expected_valid_response:
+            self.assert_is_between(status_code, 200, 400, msg=msg)
+        else:
+            self.assert_is_not_between(status_code, 200, 400, msg=msg)
 
     def assert_valid_response(self, response, expected_status_code=None):
         self.assert_response(
@@ -109,6 +129,12 @@ class APIViewTestCase(TestCase):
         self.assert_invalid_response(
             response,
             expected_status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+    def assert_response_is_not_found(self, response):
+        self.assert_invalid_response(
+            response,
+            expected_status_code=status.HTTP_404_NOT_FOUND,
         )
 
     @contextlib.contextmanager

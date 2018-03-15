@@ -110,6 +110,26 @@ class VerifyEmailViewTestCase(BaseRegisterEmailViewTestCase):
 
     @override_settings(
         REST_REGISTRATION={
+            'REGISTER_EMAIL_VERIFICATION_URL': REGISTER_EMAIL_VERIFICATION_URL,
+        }
+    )
+    def test_inactive_user(self):
+        old_email = self.user.email
+        self.user.is_active = False
+        self.user.save()
+        signer = RegisterEmailSigner({
+            'user_id': self.user.pk,
+            'email': self.new_email,
+        })
+        data = signer.get_signed_data()
+        request = self.create_post_request(data)
+        response = self.view_func(request)
+        self.assert_response_is_not_found(response)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.email, old_email)
+
+    @override_settings(
+        REST_REGISTRATION={
             'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
         }
     )
