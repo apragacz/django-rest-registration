@@ -9,9 +9,9 @@ def api_view_serializer_class_getter(serializer_class_getter):
     def _get_serializer_class(self):
         return serializer_class_getter()
 
-    def _get_serializer(self):
-        cls = self.get_serializer_class()
-        return cls()
+    def _get_serializer(self, *args, **kwargs):
+        serializer_class = self.get_serializer_class()
+        return serializer_class(*args, **kwargs)
 
     def decorator(func):
         if not hasattr(func, 'cls'):
