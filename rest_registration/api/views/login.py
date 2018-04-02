@@ -70,7 +70,7 @@ def logout(request):
 
     if should_authenticate_session():
         auth.logout(request)
-    elif should_retrieve_token() and request.data.get('revoke_token', None) == True:
+    elif should_retrieve_token() and request.data.get('revoke_token', None):
         request.user.auth_token.delete()
 
     return get_ok_response('Logout successful')
