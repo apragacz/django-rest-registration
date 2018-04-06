@@ -1,11 +1,14 @@
 from collections.abc import Callable
 
 from django.test import TestCase
+from rest_framework import renderers
+from rest_framework import request as rest_request
 from rest_framework import serializers
 from rest_framework.compat import uritemplate
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.serializers import Serializer
+from rest_framework.test import APIRequestFactory
 
 from rest_registration.decorators import api_view_serializer_class_getter
 
@@ -45,3 +48,25 @@ class SerializerClassGetterTestCase(TestCase):
     def test_not_a_view(self):
         input_view = self._dummy_view
         self.assertRaises(Exception, lambda: self.decorator(input_view))
+
+    def test_browsable_renderer_put_render(self):
+        """
+        Test, that PUT method works with BrowsableAPIRenderer
+        This was not working in the past, because of `_get_serializer`
+        didn't allow `instance parameter.
+        """
+        data = {'blah': 'blah'}
+        method = 'PUT'
+        request = rest_request.Request(APIRequestFactory().get('blah'))
+        input_view = (api_view([method]))(self._dummy_view)
+        output_view = self.decorator(input_view)
+        wrapper_cls = output_view.cls
+        test_view_instance = wrapper_cls()
+
+        renderer = renderers.BrowsableAPIRenderer()
+        renderer.accepted_media_type = None
+        renderer.renderer_context = {}
+        response = renderer.get_raw_data_form(
+            data, test_view_instance, method, request,
+        )
+        self.assertEquals(response.data, {})
