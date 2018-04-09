@@ -1,6 +1,8 @@
 import os.path
 import re
+import uuid
 
+from pip.req import parse_requirements
 from setuptools import find_packages, setup
 
 ROOT_DIR = os.path.dirname(__file__)
@@ -15,7 +17,9 @@ def get_requirements(requirements_filepath):
     '''
     Return list of this package requirements via local filepath.
     '''
-    return read_contents(requirements_filepath).split('\n')
+    requirements = parse_requirements(
+        requirements_filepath, session=uuid.uuid1())
+    return [str(ir.req) for ir in list(requirements)]
 
 
 def get_version(package):

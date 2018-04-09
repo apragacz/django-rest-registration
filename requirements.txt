@@ -1,2 +1,1 @@
-Django>=1.10
-djangorestframework>=3.3
+-r ./requirements/requirements-base.txt

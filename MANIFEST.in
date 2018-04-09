@@ -1,5 +1,6 @@
 include README.md
 include LICENSE
 include requirements.txt
+include requirements/requirements-base.txt
 recursive-include rest_registration/templates *.txt
 prune examples

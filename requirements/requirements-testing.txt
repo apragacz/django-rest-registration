@@ -1,0 +1,5 @@
+codecov
+coreapi
+coverage
+django-dynamic-fixture
+unittest-xml-reporting

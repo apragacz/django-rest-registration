@@ -18,5 +18,7 @@ fi
 
 print_step "Installing base requirements"
 pip install -r "${BASE_DIR}/requirements.txt"
-print_step "Installing test requirements"
-pip install -r "${BASE_DIR}/tests/requirements.txt"
+print_step "Installing testing requirements"
+pip install -r "${BASE_DIR}/requirements/requirements-testing.txt"
+print_step "Installing linting requirements"
+pip install -r "${BASE_DIR}/requirements/requirements-linting.txt"
