@@ -10,16 +10,16 @@ from rest_framework.test import APIRequestFactory
 from rest_registration.verification import DataSigner, URLParamsSigner
 
 
-class TestSigner(DataSigner):
+class ExampleSigner(DataSigner):
     pass
 
 
-class TimestampTestSigner(DataSigner):
+class ExampleTimestampSigner(DataSigner):
     use_timestamp = True
     valid_period = datetime.timedelta(days=1)
 
 
-class URLTestSigner(URLParamsSigner):
+class ExampleURLSigner(URLParamsSigner):
     base_url = '/verify/'
     use_timestamp = True
     valid_period = datetime.timedelta(days=1)
@@ -57,12 +57,12 @@ class BaseTestSignerMixin(object):
         self.assertRaises(BadSignature, signer1.verify)
 
 
-class TestSignerTestCase(BaseTestSignerMixin, TestCase):
-    cls = TestSigner
+class ExampleSignerTestCase(BaseTestSignerMixin, TestCase):
+    cls = ExampleSigner
 
 
-class TimestampTestSignerTestCase(BaseTestSignerMixin, TestCase):
-    cls = TimestampTestSigner
+class ExampleTimestampSignerTestCase(BaseTestSignerMixin, TestCase):
+    cls = ExampleTimestampSigner
 
     def test_signer_timestamp_present(self):
         signer = self.create_signer({
@@ -103,8 +103,8 @@ class TimestampTestSignerTestCase(BaseTestSignerMixin, TestCase):
             self.assertRaises(SignatureExpired, signer2.verify)
 
 
-class URLTestSignerTestCase(BaseTestSignerMixin, TestCase):
-    cls = URLTestSigner
+class ExampleURLSignerTestCase(BaseTestSignerMixin, TestCase):
+    cls = ExampleURLSigner
 
     def setUp(self):
         self.factory = APIRequestFactory()

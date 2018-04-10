@@ -2,6 +2,7 @@ import os.path
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+SECRET_KEY = 'abracadabra'
 
 DATABASES = {
     'default': {
@@ -56,9 +57,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 ROOT_URLCONF = 'tests.default_urls'
-
-
-TEST_RUNNER = 'xmlrunner.extra.djangotestrunner.XMLTestRunner'
 
 
 # Minimal configuration so Django test subcommand will not fail

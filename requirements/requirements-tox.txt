@@ -1,0 +1,3 @@
+-r ./requirements-packaging.txt
+tox
+travis-tox

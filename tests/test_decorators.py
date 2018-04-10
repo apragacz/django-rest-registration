@@ -13,7 +13,7 @@ from rest_framework.test import APIRequestFactory
 from rest_registration.decorators import api_view_serializer_class_getter
 
 
-class TestSerializer(Serializer):
+class ExampleSerializer(Serializer):
     test_field = serializers.CharField()
 
 
@@ -27,7 +27,7 @@ class SerializerClassGetterTestCase(TestCase):
         return Response()
 
     def _serializer_getter(self):
-        return TestSerializer
+        return ExampleSerializer
 
     def test_ok(self):
         method = 'POST'
@@ -35,8 +35,8 @@ class SerializerClassGetterTestCase(TestCase):
         output_view = self.decorator(input_view)
         self.assertIsInstance(output_view, Callable)
         wrapper_cls = output_view.cls
-        self.assertEqual(wrapper_cls.get_serializer_class(), TestSerializer)
-        self.assertEqual(type(wrapper_cls.get_serializer()), TestSerializer)
+        self.assertEqual(wrapper_cls.get_serializer_class(), ExampleSerializer)
+        self.assertEqual(type(wrapper_cls.get_serializer()), ExampleSerializer)
         schema = wrapper_cls().schema
         # Ensure that get_link works properly.
         self.assertIsNotNone(uritemplate)
