@@ -6,7 +6,8 @@ from rest_framework.authentication import (
     TokenAuthentication
 )
 from rest_framework.authtoken.models import Token
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.settings import api_settings
 
 from rest_registration.decorators import api_view_serializer_class
@@ -59,19 +60,30 @@ def login(request):
     return get_ok_response('Login successful', extra_data=extra_data)
 
 
+class LogoutSerializer(serializers.Serializer):
+    revoke_token = serializers.BooleanField(default=False)
+
+
+@api_view_serializer_class(LogoutSerializer)
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def logout(request):
     '''
     Logs out the user. returns an error if the user is not
     authenticated.
     '''
-    if not request.user.is_authenticated:
-        raise BadRequest('Not logged in')
+    user = request.user
+    serializer = LogoutSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    data = serializer.data
 
     if should_authenticate_session():
         auth.logout(request)
-    elif should_retrieve_token() and request.data.get('revoke_token', None):
-        request.user.auth_token.delete()
+    if should_retrieve_token() and data['revoke_token']:
+        try:
+            user.auth_token.delete()
+        except Token.DoesNotExist:
+            raise BadRequest('Cannot remove non-existent token')
 
     return get_ok_response('Logout successful')
 
