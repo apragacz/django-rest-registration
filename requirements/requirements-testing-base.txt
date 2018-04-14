@@ -1,0 +1,2 @@
+coreapi
+django-dynamic-fixture

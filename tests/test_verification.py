@@ -30,7 +30,7 @@ class BaseTestSignerMixin(object):
     test_email = 'test@example.com'
 
     def create_signer(self, data):
-        return self.cls(data)
+        return self.cls(data)  # pylint: disable=E1102
 
     def test_verify_ok(self):
         signer1 = self.create_signer({

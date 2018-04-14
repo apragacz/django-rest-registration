@@ -2,4 +2,4 @@
 
 set -euo pipefail
 
-pylint --rcfile=setup.cfg rest_registration -E "$@"
+pylint --rcfile=setup.cfg rest_registration tests -E "$@"

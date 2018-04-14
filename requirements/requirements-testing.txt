@@ -1,5 +1,3 @@
-coreapi
-django-dynamic-fixture
 tox
 pytest
 pytest-django
