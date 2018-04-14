@@ -3,7 +3,6 @@ import os.path
 import re
 import uuid
 
-from pip.req import parse_requirements
 from setuptools import find_packages, setup
 
 ROOT_DIR = os.path.dirname(__file__)
@@ -14,11 +13,21 @@ def read_contents(local_filepath):
         return f.read()
 
 
+def get_pip_req_module():
+    try:
+        from pip._internal import req
+    except ImportError:
+        # Fallback for pip<10.0.0 .
+        from pip import req
+    return req
+
+
 def get_requirements(requirements_filepath):
     '''
     Return list of this package requirements via local filepath.
     '''
-    requirements = parse_requirements(
+    pip_req = get_pip_req_module()
+    requirements = pip_req.parse_requirements(
         requirements_filepath, session=uuid.uuid1())
     return [str(ir.req) for ir in list(requirements)]
 
