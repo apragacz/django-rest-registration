@@ -1,3 +1,4 @@
+from django.contrib import auth
 from django.contrib.auth import get_user_model
 from django.core.signing import BadSignature, SignatureExpired
 from django.http import Http404
@@ -20,6 +21,25 @@ def get_user_setting(name):
         value = getattr(registration_settings, setting_name)
 
     return value
+
+
+def authenticate_by_login_and_password_or_none(login, password):
+    user = None
+    user_class = get_user_model()
+    login_fields = (registration_settings.USER_LOGIN_FIELDS or
+                    getattr(user_class, 'LOGIN_FIELDS', None) or
+                    [user_class.USERNAME_FIELD])
+
+    for field_name in login_fields:
+        kwargs = {
+            field_name: login,
+            'password': password,
+        }
+        user = auth.authenticate(**kwargs)
+        if user:
+            break
+
+    return user
 
 
 def get_user_by_id(user_id, default=_RAISE_EXCEPTION, require_verified=True):

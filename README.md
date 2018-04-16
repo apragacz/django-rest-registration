@@ -167,6 +167,7 @@ REST_REGISTRATION = {
         'body':  'rest_registration/register/body.txt',
     },
 
+    'LOGIN_SERIALIZER_CLASS': 'rest_registration.api.serializers.DefaultLoginSerializer',
     'LOGIN_AUTHENTICATE_SESSION': None,
     'LOGIN_RETRIEVE_TOKEN': None,
 

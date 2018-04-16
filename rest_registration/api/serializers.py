@@ -4,11 +4,24 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from rest_registration.settings import registration_settings
-from rest_registration.utils import get_user_setting
+from rest_registration.utils import (
+    authenticate_by_login_and_password_or_none,
+    get_user_setting
+)
 
 
 class MetaObj(object):
     pass
+
+
+class DefaultLoginSerializer(serializers.Serializer):
+    login = serializers.CharField()
+    password = serializers.CharField()
+
+    def get_authenticated_user(self):
+        data = self.validated_data
+        return authenticate_by_login_and_password_or_none(
+            data['login'], data['password'])
 
 
 class DefaultUserProfileSerializer(serializers.ModelSerializer):

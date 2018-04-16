@@ -1,5 +1,4 @@
 from django.contrib import auth
-from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.authentication import (
     SessionAuthentication,
@@ -10,40 +9,26 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.settings import api_settings
 
-from rest_registration.decorators import api_view_serializer_class
+from rest_registration.decorators import (
+    api_view_serializer_class,
+    api_view_serializer_class_getter
+)
 from rest_registration.exceptions import BadRequest
 from rest_registration.settings import registration_settings
 from rest_registration.utils import get_ok_response
 
 
-class LoginSerializer(serializers.Serializer):
-    login = serializers.CharField()
-    password = serializers.CharField()
-
-
-@api_view_serializer_class(LoginSerializer)
+@api_view_serializer_class_getter(
+    lambda: registration_settings.LOGIN_SERIALIZER_CLASS)
 @api_view(['POST'])
 def login(request):
     '''
     Logs in the user via given login and password.
     '''
-    serializer = LoginSerializer(data=request.data)
+    serializer_class = registration_settings.LOGIN_SERIALIZER_CLASS
+    serializer = serializer_class(data=request.data)
     serializer.is_valid(raise_exception=True)
-    data = serializer.data
-
-    user_class = get_user_model()
-    login_fields = (registration_settings.USER_LOGIN_FIELDS or
-                    getattr(user_class, 'LOGIN_FIELDS', None) or
-                    [user_class.USERNAME_FIELD])
-
-    for field_name in login_fields:
-        kwargs = {
-            field_name: data['login'],
-            'password': data['password'],
-        }
-        user = auth.authenticate(**kwargs)
-        if user:
-            break
+    user = serializer.get_authenticated_user()
 
     if not user:
         raise BadRequest('Login or password invalid.')

@@ -31,6 +31,7 @@ DEFAULTS = {
         'body':  'rest_registration/register/body.txt',
     },
 
+    'LOGIN_SERIALIZER_CLASS': 'rest_registration.api.serializers.DefaultLoginSerializer',  # noqa: E501
     'LOGIN_AUTHENTICATE_SESSION': None,
     'LOGIN_RETRIEVE_TOKEN': None,
 
@@ -59,6 +60,7 @@ DEFAULTS = {
 
 IMPORT_STRINGS = (
     'REGISTER_SERIALIZER_CLASS',
+    'LOGIN_SERIALIZER_CLASS',
     'PROFILE_SERIALIZER_CLASS',
     'SUCCESS_RESPONSE_BUILDER',
 )
