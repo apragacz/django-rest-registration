@@ -48,7 +48,7 @@ def send_reset_password_link(request):
     '''
     serializer = SendResetPasswordLinkSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    login = serializer.data['login']
+    login = serializer.validated_data['login']
 
     user = None
     for login_field in get_login_fields():
@@ -86,7 +86,7 @@ def reset_password(request):
     serializer = ResetPasswordSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 
-    data = serializer.data.copy()
+    data = serializer.validated_data.copy()
     password = data.pop('password')
     signer = ResetPasswordSigner(data, request=request)
     verify_signer_or_bad_request(signer)

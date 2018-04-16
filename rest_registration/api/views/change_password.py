@@ -40,6 +40,6 @@ def change_password(request):
     serializer.is_valid(raise_exception=True)
 
     user = request.user
-    user.set_password(serializer.data['password'])
+    user.set_password(serializer.validated_data['password'])
     user.save()
     return get_ok_response('Password changed successfully')

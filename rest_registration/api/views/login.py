@@ -60,7 +60,7 @@ def logout(request):
     user = request.user
     serializer = LogoutSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    data = serializer.data
+    data = serializer.validated_data
 
     if should_authenticate_session():
         auth.logout(request)

@@ -87,7 +87,7 @@ def verify_registration(request):
     serializer = VerifyRegistrationSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 
-    data = serializer.data
+    data = serializer.validated_data
     signer = RegisterSigner(data, request=request)
     verify_signer_or_bad_request(signer)
 

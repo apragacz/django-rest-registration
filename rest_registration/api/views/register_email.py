@@ -44,7 +44,7 @@ def register_email(request):
     serializer = RegisterEmailSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 
-    email = serializer.data['email']
+    email = serializer.validated_data['email']
 
     template_config = (
         registration_settings.REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES)
@@ -80,7 +80,7 @@ def verify_email(request):
     serializer = VerifyEmailSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 
-    data = serializer.data
+    data = serializer.validated_data
     signer = RegisterEmailSigner(data, request=request)
     verify_signer_or_bad_request(signer)
 
