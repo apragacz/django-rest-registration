@@ -79,7 +79,7 @@ class ResetPasswordViewTestCase(BaseResetPasswordViewTestCase):
 
     def test_reset_ok(self):
         old_password = 'password1'
-        new_password = 'password2'
+        new_password = 'eaWrivtig5'
         user = self.create_test_user(password=old_password)
         signer = ResetPasswordSigner({'user_id': user.pk})
         data = signer.get_signed_data()
@@ -92,7 +92,7 @@ class ResetPasswordViewTestCase(BaseResetPasswordViewTestCase):
 
     def test_reset_inactive_user(self):
         old_password = 'password1'
-        new_password = 'password2'
+        new_password = 'eaWrivtig5'
         user = self.create_test_user(password=old_password, is_active=False)
         signer = ResetPasswordSigner({'user_id': user.pk})
         data = signer.get_signed_data()
@@ -145,7 +145,7 @@ class ResetPasswordViewTestCase(BaseResetPasswordViewTestCase):
 
     def test_reset_tampered_timestamp(self):
         old_password = 'password1'
-        new_password = 'password2'
+        new_password = 'eaWrivtig5'
         user = self.create_test_user(password=old_password)
         signer = ResetPasswordSigner({'user_id': user.pk})
         data = signer.get_signed_data()
@@ -160,7 +160,7 @@ class ResetPasswordViewTestCase(BaseResetPasswordViewTestCase):
     def test_reset_expired(self):
         timestamp = int(time.time())
         old_password = 'password1'
-        new_password = 'password2'
+        new_password = 'eaWrivtig5'
         user = self.create_test_user(password=old_password)
         with patch('time.time',
                    side_effect=lambda: timestamp):
