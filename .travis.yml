@@ -37,6 +37,9 @@ matrix:
     env: TOXENV=py36-djangomaster
   - python: "3.5"
     env: TOXENV=py35-djangomaster
+  allow_failures:
+  - env: TOXENV=py36-djangomaster
+  - env: TOXENV=py35-djangomaster
 
 install:
 - pip install tox
