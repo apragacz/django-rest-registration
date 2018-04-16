@@ -1,3 +1,5 @@
-Pygments>=2.2.0
 docutils
+Pygments>=2.2.0
 pypandoc
+twine
+wheel
