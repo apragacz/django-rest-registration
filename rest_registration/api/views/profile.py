@@ -15,9 +15,7 @@ def profile(request):
     Get or set user profile.
     '''
     serializer_class = registration_settings.PROFILE_SERIALIZER_CLASS
-    if request.method == 'GET':
-        serializer = serializer_class(instance=request.user)
-    elif request.method in ['POST', 'PUT', 'PATCH']:
+    if request.method in ['POST', 'PUT', 'PATCH']:
         partial = request.method == 'PATCH'
         serializer = serializer_class(
             instance=request.user,
@@ -26,5 +24,7 @@ def profile(request):
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
+    else:  # request.method == 'GET':
+        serializer = serializer_class(instance=request.user)
 
     return Response(serializer.data)
