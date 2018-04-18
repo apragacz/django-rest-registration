@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.test.utils import override_settings
 
-from rest_registration.settings import RegistrationSettings
+from rest_registration.settings import NestedSettings
 
 
 class RegistrationSettingsTestCase(TestCase):
@@ -16,7 +16,8 @@ class RegistrationSettingsTestCase(TestCase):
         user_settings = {
             'A': 1,
         }
-        settings = RegistrationSettings(user_settings, self.defaults, ())
+        settings = NestedSettings(
+            user_settings, self.defaults, (), 'NESTED_TEST_SETTING')
         self.assertEqual(settings.A, 1)
         self.assertEqual(settings.B, 3)
 
@@ -26,6 +27,7 @@ class RegistrationSettingsTestCase(TestCase):
         }
     )
     def test_django_settings(self):
-        settings = RegistrationSettings(None, self.defaults, ())
+        settings = NestedSettings(
+            None, self.defaults, (), 'REST_REGISTRATION')
         self.assertEqual(settings.A, 5)
         self.assertEqual(settings.B, 3)

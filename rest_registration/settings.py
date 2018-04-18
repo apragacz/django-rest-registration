@@ -66,19 +66,22 @@ IMPORT_STRINGS = (
 )
 
 
-class RegistrationSettings(object):
-    def __init__(self, user_settings, defaults, import_strings):
+class NestedSettings(object):
+    def __init__(
+            self, user_settings, defaults, import_strings,
+            root_setting_name):
         if user_settings:
             self._user_settings = user_settings
         self.defaults = defaults
         self.import_strings = import_strings
+        self.root_setting_name = root_setting_name
 
     @property
     def user_settings(self):
         if not hasattr(self, '_user_settings'):
             self._user_settings = getattr(
                 root_settings,
-                'REST_REGISTRATION',
+                self.root_setting_name,
                 {},
             )
         return self._user_settings
@@ -94,7 +97,9 @@ class RegistrationSettings(object):
 
     def __getattr__(self, attr):
         if attr not in self.defaults.keys():
-            raise AttributeError("Invalid registration setting: '%s'" % attr)
+            raise AttributeError(
+                "Invalid {self.root_setting_name} setting: '{attr}'".format(
+                    self=self, attr=attr))
 
         try:
             # Check if present in user settings
@@ -112,7 +117,9 @@ class RegistrationSettings(object):
         return val
 
 
-registration_settings = RegistrationSettings(None, DEFAULTS, IMPORT_STRINGS)  # noqa
+registration_settings = NestedSettings(
+    None, DEFAULTS, IMPORT_STRINGS,
+    root_setting_name='REST_REGISTRATION')
 
 
 def settings_changed_handler(*args, **kwargs):
