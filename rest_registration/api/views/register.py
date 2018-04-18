@@ -82,18 +82,21 @@ def verify_registration(request):
     '''
     Verify registration via signature.
     '''
+    process_verify_registration_data(request.data)
+    return get_ok_response('User verified successfully')
+
+
+def process_verify_registration_data(input_data):
     if not registration_settings.REGISTER_VERIFICATION_ENABLED:
         raise Http404()
-    serializer = VerifyRegistrationSerializer(data=request.data)
+    serializer = VerifyRegistrationSerializer(data=input_data)
     serializer.is_valid(raise_exception=True)
 
     data = serializer.validated_data
-    signer = RegisterSigner(data, request=request)
+    signer = RegisterSigner(data)
     verify_signer_or_bad_request(signer)
 
     verification_flag_field = get_user_setting('VERIFICATION_FLAG_FIELD')
     user = get_user_by_id(data['user_id'], require_verified=False)
     setattr(user, verification_flag_field, True)
     user.save()
-
-    return get_ok_response('User verified successfully')
