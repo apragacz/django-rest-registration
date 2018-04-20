@@ -92,5 +92,5 @@ setup(
     ],
     install_requires=get_requirements('requirements.txt'),
     python_requires='>=3.4',
-    url='https://github.com/szopu/django-rest-registration',
+    url='https://github.com/apragacz/django-rest-registration',
 )

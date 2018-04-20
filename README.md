@@ -1,7 +1,7 @@
 # Django-REST-Registration
 
-[![Build Status](https://travis-ci.org/szopu/django-rest-registration.svg?branch=master)](https://travis-ci.org/szopu/django-rest-registration)
-[![Codecov Coverage](https://img.shields.io/codecov/c/github/szopu/django-rest-registration/master.svg)](https://codecov.io/github/szopu/django-rest-registration?branch=master)
+[![Build Status](https://travis-ci.org/apragacz/django-rest-registration.svg?branch=master)](https://travis-ci.org/apragacz/django-rest-registration)
+[![Codecov Coverage](https://img.shields.io/codecov/c/github/apragacz/django-rest-registration/master.svg)](https://codecov.io/github/apragacz/django-rest-registration?branch=master)
 [![PyPi Version](https://img.shields.io/pypi/v/django-rest-registration.svg)](https://pypi.python.org/pypi/django-rest-registration/)
 
 User registration REST API, based on django-rest-framework.
@@ -41,7 +41,7 @@ You can install `django-rest-registration` lastest version via pip:
 
 Or install directly from source via GitHub:
 
-    pip install git+https://github.com/szopu/django-rest-registration
+    pip install git+https://github.com/apragacz/django-rest-registration
 
 Then, you should add it to the `INSTALLED_APPS` so the app templates
 for notification emails can be accessed:
