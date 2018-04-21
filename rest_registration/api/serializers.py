@@ -29,8 +29,9 @@ class DefaultUserProfileSerializer(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
         user_class = get_user_model()
         field_names = _get_field_names(allow_primary_key=True)
-        read_only_field_names = _get_field_names(allow_primary_key=True,
-                                                 non_editable=True)
+        read_only_field_names = _get_field_names(
+            allow_primary_key=True,
+            non_editable=True)
         self.Meta = MetaObj()
         self.Meta.model = user_class
         self.Meta.fields = field_names
@@ -42,11 +43,15 @@ class DefaultRegisterUserSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         user_class = get_user_model()
-        field_names = _get_field_names(allow_primary_key=False)
+        field_names = _get_field_names(allow_primary_key=True)
         field_names = field_names + ('password',)
+        read_only_field_names = _get_field_names(
+            allow_primary_key=True,
+            non_editable=True)
         self.Meta = MetaObj()
         self.Meta.model = user_class
         self.Meta.fields = field_names
+        self.Meta.read_only_fields = read_only_field_names
         super().__init__(*args, **kwargs)
 
     @property
@@ -61,7 +66,7 @@ class DefaultRegisterUserSerializer(serializers.ModelSerializer):
     def get_fields(self):
         fields = super().get_fields()
         if self.has_password_confirm:
-            fields['password_confirm'] = serializers.CharField()
+            fields['password_confirm'] = serializers.CharField(write_only=True)
         return fields
 
     def validate(self, data):

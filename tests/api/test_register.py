@@ -39,7 +39,7 @@ class RegisterViewTestCase(APIViewTestCase):
         field_names = {f for f in serializer.get_fields()}
         self.assertEqual(
             field_names,
-            {'username', 'first_name', 'last_name', 'email',
+            {'id', 'username', 'first_name', 'last_name', 'email',
              'password', 'password_confirm'},
         )
 
@@ -52,7 +52,7 @@ class RegisterViewTestCase(APIViewTestCase):
         field_names = {f for f in serializer.get_fields()}
         self.assertEqual(
             field_names,
-            {'username', 'first_name', 'last_name', 'email', 'password'},
+            {'id', 'username', 'first_name', 'last_name', 'email', 'password'},
         )
 
     def test_register_ok(self):

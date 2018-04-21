@@ -55,9 +55,9 @@ def register(request):
 
     user = serializer.save(**kwargs)
 
-    profile_serializer_class = registration_settings.PROFILE_SERIALIZER_CLASS
-    profile_serializer = profile_serializer_class(instance=user)
-    user_data = profile_serializer.data
+    output_serializer_class = registration_settings.REGISTER_OUTPUT_SERIALIZER_CLASS  # noqa: E501
+    output_serializer = output_serializer_class(instance=user)
+    user_data = output_serializer.data
 
     if registration_settings.REGISTER_VERIFICATION_ENABLED:
         signer = RegisterSigner({

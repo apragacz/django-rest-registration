@@ -23,6 +23,8 @@ DEFAULTS = {
     'REGISTER_SERIALIZER_CLASS': 'rest_registration.api.serializers.DefaultRegisterUserSerializer',  # noqa: E501
     'REGISTER_SERIALIZER_PASSWORD_CONFIRM': True,
 
+    'REGISTER_OUTPUT_SERIALIZER_CLASS': 'rest_registration.api.serializers.DefaultUserProfileSerializer',  # noqa: E501
+
     'REGISTER_VERIFICATION_ENABLED': True,
     'REGISTER_VERIFICATION_PERIOD': datetime.timedelta(days=7),
     'REGISTER_VERIFICATION_URL': None,
@@ -60,6 +62,7 @@ DEFAULTS = {
 
 IMPORT_STRINGS = (
     'REGISTER_SERIALIZER_CLASS',
+    'REGISTER_OUTPUT_SERIALIZER_CLASS',
     'LOGIN_SERIALIZER_CLASS',
     'PROFILE_SERIALIZER_CLASS',
     'SUCCESS_RESPONSE_BUILDER',
