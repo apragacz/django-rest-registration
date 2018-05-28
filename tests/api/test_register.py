@@ -11,21 +11,32 @@ from rest_registration.settings import registration_settings
 from .base import APIViewTestCase
 
 REGISTER_VERIFICATION_URL = '/verify-account/'
+VERIFICATION_FROM_EMAIL = 'no-reply@example.com'
 REST_REGISTRATION_WITH_VERIFICATION = {
     'REGISTER_VERIFICATION_ENABLED': True,
     'REGISTER_VERIFICATION_URL': REGISTER_VERIFICATION_URL,
-    'VERIFICATION_FROM_EMAIL': 'no-reply@example.com',
+    'VERIFICATION_FROM_EMAIL': VERIFICATION_FROM_EMAIL,
 }
 
 REST_REGISTRATION_WITH_VERIFICATION_NO_PASSWORD = {
     'REGISTER_VERIFICATION_ENABLED': True,
     'REGISTER_VERIFICATION_URL': REGISTER_VERIFICATION_URL,
-    'VERIFICATION_FROM_EMAIL': 'no-reply@example.com',
+    'VERIFICATION_FROM_EMAIL': VERIFICATION_FROM_EMAIL,
     'REGISTER_SERIALIZER_PASSWORD_CONFIRM': False,
 }
 
 REST_REGISTRATION_WITHOUT_VERIFICATION = {
     'REGISTER_VERIFICATION_ENABLED': False,
+}
+
+REST_REGISTRATION_WITH_HTML_EMAIL_VERIFICATION = {
+    'REGISTER_VERIFICATION_ENABLED': True,
+    'REGISTER_VERIFICATION_URL': REGISTER_VERIFICATION_URL,
+    'REGISTER_VERIFICATION_EMAIL_TEMPLATES': {
+        'subject':  'rest_registration/register/subject.txt',
+        'html_body':  'rest_registration/register/body.html',
+    },
+    'VERIFICATION_FROM_EMAIL': VERIFICATION_FROM_EMAIL,
 }
 
 
@@ -71,12 +82,46 @@ class RegisterViewTestCase(APIViewTestCase):
         self.assertFalse(user.is_active)
         # Check verification e-mail.
         sent_email = sent_emails[0]
-        self.assertEqual(
-            sent_email.from_email,
-            REST_REGISTRATION_WITH_VERIFICATION['VERIFICATION_FROM_EMAIL'],
-        )
+        self.assertEqual(sent_email.from_email, VERIFICATION_FROM_EMAIL)
         self.assertListEqual(sent_email.to, [data['email']])
         url = self.assert_one_url_line_in_text(sent_email.body)
+
+        verification_data = self.assert_valid_verification_url(
+            url,
+            expected_path=REGISTER_VERIFICATION_URL,
+            expected_query_keys={'signature', 'user_id', 'timestamp'},
+        )
+        url_user_id = int(verification_data['user_id'])
+        self.assertEqual(url_user_id, user_id)
+        url_sig_timestamp = int(verification_data['timestamp'])
+        self.assertGreaterEqual(url_sig_timestamp, time_before)
+        self.assertLessEqual(url_sig_timestamp, time_after)
+        signer = RegisterSigner(verification_data)
+        signer.verify()
+
+    # TODO: unskip this test when &times entity problem will be fixed.
+    @override_settings(
+        REST_REGISTRATION=REST_REGISTRATION_WITH_HTML_EMAIL_VERIFICATION,
+    )
+    def test_register_with_html_email_ok(self):
+        data = self._get_register_user_data(password='testpassword')
+        request = self.create_post_request(data)
+        time_before = math.floor(time.time())
+        with self.assert_one_mail_sent() as sent_emails:
+            response = self.view_func(request)
+        time_after = math.ceil(time.time())
+        self.assert_valid_response(response, status.HTTP_201_CREATED)
+        user_id = response.data['id']
+        # Check database state.
+        user = self.user_class.objects.get(id=user_id)
+        self.assertEqual(user.username, data['username'])
+        self.assertTrue(user.check_password(data['password']))
+        self.assertFalse(user.is_active)
+        # Check verification e-mail.
+        sent_email = sent_emails[0]
+        self.assertEqual(sent_email.from_email, VERIFICATION_FROM_EMAIL)
+        self.assertListEqual(sent_email.to, [data['email']])
+        url = self.assert_one_url_in_brackets_in_text(sent_email.body)
 
         verification_data = self.assert_valid_verification_url(
             url,
@@ -111,10 +156,7 @@ class RegisterViewTestCase(APIViewTestCase):
         self.assertFalse(user.is_active)
         # Check verification e-mail.
         sent_email = sent_emails[0]
-        self.assertEqual(
-            sent_email.from_email,
-            REST_REGISTRATION_WITH_VERIFICATION['VERIFICATION_FROM_EMAIL'],
-        )
+        self.assertEqual(sent_email.from_email, VERIFICATION_FROM_EMAIL)
         self.assertListEqual(sent_email.to, [data['email']])
         url = self.assert_one_url_line_in_text(sent_email.body)
 

@@ -190,6 +190,7 @@ REST_REGISTRATION = {
 
     'VERIFICATION_FROM_EMAIL': None,
     'VERIFICATION_REPLY_TO_EMAIL': None,
+    'VERIFICATION_EMAIL_HTML_TO_TEXT_CONVERTER': 'rest_registration.utils.convert_html_to_text_preserving_urls',
 
     'SUCCESS_RESPONSE_BUILDER': 'rest_registration.utils.build_default_success_response',
 }

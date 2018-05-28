@@ -1,4 +1,5 @@
 import contextlib
+import re
 from collections import Sequence
 
 from django.contrib.auth import get_user_model
@@ -82,24 +83,31 @@ class TestCase(DjangoTestCase):
         with self._assert_mails_sent(0) as sent_emails:
             yield sent_emails
 
-    def _assert_url_lines_in_text(self, text, expected_num):
+    def _assert_urls_in_text(self, text, expected_num, line_url_pattern):
         lines = [line.rstrip() for line in text.split('\n')]
-        url_lines = [
-            line for line in lines
-            if line.startswith('http://') or line.startswith('https://')
-        ]
-        num_of_url_lines = len(url_lines)
-        msg_format = "Found {num_of_url_lines} url lines instead of {expected_num} in:\n{text}"  # noqa: E501
+        urls = []
+        for line in lines:
+            for match in re.finditer(line_url_pattern, line):
+                match_groupdict = match.groupdict()
+                urls.append(match_groupdict['url'])
+        num_of_urls = len(urls)
+        msg_format = "Found {num_of_urls} urls instead of {expected_num} in:\n{text}"  # noqa: E501
         msg = msg_format.format(
-            num_of_url_lines=num_of_url_lines,
+            num_of_urls=num_of_urls,
             expected_num=expected_num,
             text=text,
         )
-        self.assertEqual(num_of_url_lines, expected_num, msg=msg)
-        return url_lines
+        self.assertEqual(num_of_urls, expected_num, msg=msg)
+        return urls
 
     def assert_one_url_line_in_text(self, text):
-        url_lines = self._assert_url_lines_in_text(text, 1)
+        url_lines = self._assert_urls_in_text(
+            text, 1, r'^(?P<url>https?://.*)$')
+        return url_lines[0]
+
+    def assert_one_url_in_brackets_in_text(self, text):
+        url_lines = self._assert_urls_in_text(
+            text, 1, r'\((?P<url>https?://.*)\)')
         return url_lines[0]
 
 

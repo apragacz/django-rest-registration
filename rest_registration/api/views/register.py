@@ -8,7 +8,7 @@ from rest_registration.decorators import (
     api_view_serializer_class_getter
 )
 from rest_registration.exceptions import BadRequest
-from rest_registration.notifications import send_verification
+from rest_registration.notifications import send_verification_notification
 from rest_registration.settings import registration_settings
 from rest_registration.utils import (
     get_ok_response,
@@ -65,7 +65,7 @@ def register(request):
         }, request=request)
         template_config = (
             registration_settings.REGISTER_VERIFICATION_EMAIL_TEMPLATES)
-        send_verification(user, signer, template_config)
+        send_verification_notification(user, signer, template_config)
 
     return Response(user_data, status=status.HTTP_201_CREATED)
 

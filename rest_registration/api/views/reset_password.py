@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view
 
 from rest_registration.decorators import api_view_serializer_class
 from rest_registration.exceptions import UserNotFound
-from rest_registration.notifications import send_verification
+from rest_registration.notifications import send_verification_notification
 from rest_registration.settings import registration_settings
 from rest_registration.utils import (
     get_ok_response,
@@ -65,7 +65,7 @@ def send_reset_password_link(request):
 
     template_config = (
         registration_settings.RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES)
-    send_verification(user, signer, template_config)
+    send_verification_notification(user, signer, template_config)
 
     return get_ok_response('Reset link sent')
 
