@@ -81,6 +81,51 @@ class ChecksTestCase(TestCase):
             ErrorCode.NO_TOKEN_AUTH_INSTALLED,
         ])
 
+    @override_settings(
+        REST_REGISTRATION={
+            'REGISTER_VERIFICATION_URL': '/verify-account/',
+            'REGISTER_EMAIL_VERIFICATION_URL': '/verify-email/',
+            'RESET_PASSWORD_VERIFICATION_URL': '/reset-password/',
+            'VERIFICATION_FROM_EMAIL': 'jon.doe@example.com',
+            'REGISTER_VERIFICATION_EMAIL_TEMPLATES': {},
+        },
+    )
+    def test_checks_invalid_register_verification_email_templates_config(self):
+        errors = simulate_checks()
+        self.assert_error_codes_match(errors, [
+            ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
+        ])
+
+    @override_settings(
+        REST_REGISTRATION={
+            'REGISTER_VERIFICATION_URL': '/verify-account/',
+            'REGISTER_EMAIL_VERIFICATION_URL': '/verify-email/',
+            'RESET_PASSWORD_VERIFICATION_URL': '/reset-password/',
+            'VERIFICATION_FROM_EMAIL': 'jon.doe@example.com',
+            'RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES': {},
+        },
+    )
+    def test_checks_invalid_register_email_verification_email_templates_config(self):  # noqa: E501
+        errors = simulate_checks()
+        self.assert_error_codes_match(errors, [
+            ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
+        ])
+
+    @override_settings(
+        REST_REGISTRATION={
+            'REGISTER_VERIFICATION_URL': '/verify-account/',
+            'REGISTER_EMAIL_VERIFICATION_URL': '/verify-email/',
+            'RESET_PASSWORD_VERIFICATION_URL': '/reset-password/',
+            'VERIFICATION_FROM_EMAIL': 'jon.doe@example.com',
+            'RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES': {},
+        },
+    )
+    def test_checks_invalid_reset_password_verification_email_templates_config(self):  # noqa: E501
+        errors = simulate_checks()
+        self.assert_error_codes_match(errors, [
+            ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
+        ])
+
     def assert_error_codes_match(self, errors, expected_error_codes):
         error_ids = sorted(e.id for e in errors)
         expected_error_ids = sorted(

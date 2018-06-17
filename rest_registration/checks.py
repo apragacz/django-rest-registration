@@ -4,6 +4,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.settings import api_settings
 
 from rest_registration.decorators import simple_check
+from rest_registration.notifications.email import parse_template_config
 from rest_registration.settings import registration_settings
 
 
@@ -14,6 +15,7 @@ class ErrorCode(object):
     NO_VER_FROM_EMAIL = 'E004'
     NO_TOKEN_AUTH_CONFIG = 'E005'
     NO_TOKEN_AUTH_INSTALLED = 'E006'
+    INVALID_EMAIL_TEMPLATE_CONFIG = 'E007'
 
 
 @register()
@@ -86,6 +88,45 @@ def token_auth_installed_check():
     )
 
 
+@register()
+@simple_check(
+    'REGISTER_VERIFICATION_EMAIL_TEMPLATES is invalid',
+    ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
+)
+def valid_register_verification_email_template_config_check():
+    return _is_email_template_config_valid(
+        registration_settings.REGISTER_VERIFICATION_EMAIL_TEMPLATES)
+
+
+@register()
+@simple_check(
+    'RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES is invalid',
+    ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
+)
+def valid_reset_password_verification_email_template_config_check():
+    return _is_email_template_config_valid(
+        registration_settings.RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES)
+
+
+@register()
+@simple_check(
+    'REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES is invalid',
+    ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
+)
+def valid_register_email_verification_email_template_config_check():
+    return _is_email_template_config_valid(
+        registration_settings.REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES)
+
+
+def _is_email_template_config_valid(template_config_data):
+    try:
+        parse_template_config(template_config_data)
+    except Exception:
+        return False
+    else:
+        return True
+
+
 def implies(premise, conclusion):
     return not premise or conclusion
 
@@ -97,4 +138,7 @@ __ALL_CHECKS__ = [
     verification_from_check,
     token_auth_config_check,
     token_auth_installed_check,
+    valid_register_verification_email_template_config_check,
+    valid_reset_password_verification_email_template_config_check,
+    valid_register_email_verification_email_template_config_check,
 ]
