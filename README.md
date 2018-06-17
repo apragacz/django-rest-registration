@@ -202,3 +202,34 @@ The `USER_*` fields can be set directly in the user class
 (specified by `settings.AUTH_USER_MODEL`) without using
 the `USER_` prefix (`EMAIL_FIELD`, etc.). These settings will override these
 provided in `settings.REST_REGISTRATION`.
+
+You can send the verification emails as HTML, by specifying `html_body` instead of `body`; for example:
+
+```python
+REST_REGISTRATION = {
+    ...
+
+    'REGISTER_VERIFICATION_EMAIL_TEMPLATES': {
+        'subject':  'rest_registration/register/subject.txt',
+        'html_body':  'rest_registration/register/body.html',
+    },
+
+    ...
+}
+```
+
+This will automatically create fallback plain text message from the HTML. If you want to have custom fallback messsage you can also provide separate template for text:
+
+```python
+REST_REGISTRATION = {
+    ...
+
+    'REGISTER_VERIFICATION_EMAIL_TEMPLATES': {
+        'subject':  'rest_registration/register/subject.txt',
+        'text_body':  'rest_registration/register/body.text',
+        'html_body':  'rest_registration/register/body.html',
+    },
+
+    ...
+}
+```
