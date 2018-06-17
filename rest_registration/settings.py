@@ -52,6 +52,8 @@ DEFAULTS = {
         'body':  'rest_registration/register_email/body.txt',
     },
 
+    'CHANGE_PASSWORD_SERIALIZER_PASSWORD_CONFIRM': True,
+
     'PROFILE_SERIALIZER_CLASS': 'rest_registration.api.serializers.DefaultUserProfileSerializer',  # noqa: E501
 
     'VERIFICATION_FROM_EMAIL': None,

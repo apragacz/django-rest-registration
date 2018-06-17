@@ -3,13 +3,17 @@ from rest_framework import permissions, serializers
 from rest_framework.decorators import api_view, permission_classes
 
 from rest_registration.decorators import api_view_serializer_class
+from rest_registration.settings import registration_settings
 from rest_registration.utils import get_ok_response
 
 
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField()
     password = serializers.CharField()
-    password_confirm = serializers.CharField()
+
+    @property
+    def has_password_confirm(self):
+        return registration_settings.CHANGE_PASSWORD_SERIALIZER_PASSWORD_CONFIRM  # noqa: E501
 
     def validate_old_password(self, old_password):
         user = self.context['request'].user
@@ -22,9 +26,16 @@ class ChangePasswordSerializer(serializers.Serializer):
         validate_password(password, user=user)
         return password
 
+    def get_fields(self):
+        fields = super().get_fields()
+        if self.has_password_confirm:
+            fields['password_confirm'] = serializers.CharField()
+        return fields
+
     def validate(self, data):
-        if data['password'] != data['password_confirm']:
-            raise serializers.ValidationError('Passwords don\'t match')
+        if self.has_password_confirm:
+            if data['password'] != data['password_confirm']:
+                raise serializers.ValidationError('Passwords don\'t match')
         return data
 
 
