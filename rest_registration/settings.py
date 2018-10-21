@@ -39,6 +39,7 @@ DEFAULTS = {
 
     'RESET_PASSWORD_VERIFICATION_PERIOD': datetime.timedelta(days=1),
     'RESET_PASSWORD_VERIFICATION_URL': None,
+    'RESET_PASSWORD_VERIFICATION_ONE_TIME_USE': False,
     'RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES': {
         'subject': 'rest_registration/reset_password/subject.txt',
         'body': 'rest_registration/reset_password/body.txt',

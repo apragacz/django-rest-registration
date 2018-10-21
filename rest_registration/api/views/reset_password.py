@@ -28,6 +28,21 @@ class ResetPasswordSigner(URLParamsSigner):
     def get_valid_period(self):
         return registration_settings.RESET_PASSWORD_VERIFICATION_PERIOD
 
+    def _calculate_salt(self, data):
+        if registration_settings.RESET_PASSWORD_VERIFICATION_ONE_TIME_USE:
+            user_id = data['user_id']
+            user = get_user_by_id(user_id)
+            # Use current user password hash as a part of the salt.
+            # If the password gets changed, then assume that the change
+            # was caused by previous password reset and the signature
+            # is not valid anymore because changed password hash implies
+            # changed salt used when verifying the input data.
+            salt = '{self.SALT_BASE}:{user.password}'.format(
+                self=self, user=user)
+        else:
+            salt = self.SALT_BASE
+        return salt
+
 
 class SendResetPasswordLinkSerializer(serializers.Serializer):
     login = serializers.CharField(required=True)
