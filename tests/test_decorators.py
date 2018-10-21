@@ -70,7 +70,7 @@ class SerializerClassGetterTestCase(TestCase):
         response = renderer.get_raw_data_form(
             data, test_view_instance, method, request,
         )
-        self.assertEquals(response.data, {})
+        self.assertEqual(response.data, {})
 
     def test_views_serializer_getter_returns_correct_value(self):
         view_list = [
