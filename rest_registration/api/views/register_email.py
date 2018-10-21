@@ -6,12 +6,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_registration.decorators import api_view_serializer_class
 from rest_registration.notifications import send_verification_notification
 from rest_registration.settings import registration_settings
-from rest_registration.utils import (
-    get_ok_response,
-    get_user_by_id,
-    get_user_setting,
-    verify_signer_or_bad_request
-)
+from rest_registration.utils.responses import get_ok_response
+from rest_registration.utils.users import get_user_by_id, get_user_setting
+from rest_registration.utils.verification import verify_signer_or_bad_request
 from rest_registration.verification import URLParamsSigner
 
 

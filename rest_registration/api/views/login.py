@@ -15,7 +15,7 @@ from rest_registration.decorators import (
 )
 from rest_registration.exceptions import BadRequest
 from rest_registration.settings import registration_settings
-from rest_registration.utils import get_ok_response
+from rest_registration.utils.responses import get_ok_response
 
 
 @api_view_serializer_class_getter(

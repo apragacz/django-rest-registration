@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view, permission_classes
 
 from rest_registration.decorators import api_view_serializer_class
 from rest_registration.settings import registration_settings
-from rest_registration.utils import get_ok_response
+from rest_registration.utils.responses import get_ok_response
 
 
 class ChangePasswordSerializer(serializers.Serializer):

@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from rest_registration.settings import registration_settings
-from rest_registration.utils import (
+from rest_registration.utils.users import (
     authenticate_by_login_and_password_or_none,
     get_user_setting
 )

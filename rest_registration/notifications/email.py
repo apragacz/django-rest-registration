@@ -6,7 +6,8 @@ from django.template.exceptions import TemplateDoesNotExist
 from django.template.loader import get_template, render_to_string
 
 from rest_registration.settings import registration_settings
-from rest_registration.utils import get_user_setting, identity
+from rest_registration.utils.common import identity
+from rest_registration.utils.users import get_user_setting
 
 EmailTemplateConfig = namedtuple('EmailTemplateConfig', (
     'subject_template_name',
