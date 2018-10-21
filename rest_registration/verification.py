@@ -18,23 +18,24 @@ def get_dict_repr(data):
 
 
 class DataSigner(object):
-    signature_field = 'signature'
-    timestamp_field = 'timestamp'
-    salt = 'rest-registration-default-salt'
-    use_timestamp = False
-    valid_period = None
+    SIGNATURE_FIELD = 'signature'
+    TIMESTAMP_FIELD = 'timestamp'
+    SALT_BASE = 'rest-registration-default-salt'
+    USE_TIMESTAMP = False
+    VALID_PERIOD = None
 
     def __init__(self, data):
-        if self.use_timestamp and self.timestamp_field not in data:
+        if self.USE_TIMESTAMP and self.TIMESTAMP_FIELD not in data:
             data = data.copy()
-            data[self.timestamp_field] = get_current_timestamp()
+            data[self.TIMESTAMP_FIELD] = get_current_timestamp()
         self._data = data
-        self._signer = Signer(self.salt)
+        self._salt = self._calculate_salt(data)
+        self._signer = Signer(self._salt)
 
     def _calculate_signature(self, data):
-        if self.signature_field in data:
+        if self.SIGNATURE_FIELD in data:
             data = data.copy()
-            del data[self.signature_field]
+            del data[self.SIGNATURE_FIELD]
         return self._signer.signature(get_dict_repr(data))
 
     def calculate_signature(self):
@@ -42,38 +43,51 @@ class DataSigner(object):
 
     def get_signed_data(self):
         data = self._data.copy()
-        data[self.signature_field] = self.calculate_signature()
+        data[self.SIGNATURE_FIELD] = self.calculate_signature()
         return data
+
+    def get_valid_period(self):
+        return self.VALID_PERIOD
+
+    def _calculate_salt(self, data):
+        return self.SALT_BASE
 
     def verify(self):
         data = self._data
-        signature = data.get(self.signature_field, None)
+        signature = data.get(self.SIGNATURE_FIELD, None)
         if signature is None:
             raise BadSignature()
         expected_signature = self.calculate_signature()
         if not constant_time_compare(signature, expected_signature):
             raise BadSignature()
 
-        if self.use_timestamp and self.valid_period is not None:
-            timestamp = data[self.timestamp_field]
+        valid_period = self.get_valid_period()
+
+        if self.USE_TIMESTAMP and valid_period is not None:
+            timestamp = data[self.TIMESTAMP_FIELD]
             timestamp = int(timestamp)
             current_timestamp = get_current_timestamp()
-            valid_period_secs = self.valid_period.total_seconds()
+            valid_period_secs = valid_period.total_seconds()
             if current_timestamp - timestamp > valid_period_secs:
                 raise SignatureExpired()
 
 
 class URLParamsSigner(DataSigner):
-    base_url = None
+    BASE_URL = None
+
+    def get_base_url(self):
+        return self.BASE_URL
 
     def __init__(self, data, request=None, strict=True):
-        assert not strict or self.base_url, 'base_url is not defined'
+        base_url = self.get_base_url()
+        assert not strict or base_url, 'base_url is not defined'
         super().__init__(data)
         self.request = request
 
     def get_url(self):
+        base_url = self.get_base_url()
         params = urlencode(self.get_signed_data())
-        url = self.base_url + "?" + params
+        url = '{base_url}?{params}'.format(base_url=base_url, params=params)
         if self.request:
             url = self.request.build_absolute_uri(url)
         return url

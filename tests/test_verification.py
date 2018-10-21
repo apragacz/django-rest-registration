@@ -15,14 +15,14 @@ class ExampleSigner(DataSigner):
 
 
 class ExampleTimestampSigner(DataSigner):
-    use_timestamp = True
-    valid_period = datetime.timedelta(days=1)
+    USE_TIMESTAMP = True
+    VALID_PERIOD = datetime.timedelta(days=1)
 
 
 class ExampleURLSigner(URLParamsSigner):
-    base_url = '/verify/'
-    use_timestamp = True
-    valid_period = datetime.timedelta(days=1)
+    BASE_URL = '/verify/'
+    USE_TIMESTAMP = True
+    VALID_PERIOD = datetime.timedelta(days=1)
 
 
 class BaseTestSignerMixin(object):
@@ -118,5 +118,5 @@ class ExampleURLSignerTestCase(BaseTestSignerMixin, TestCase):
             'email': self.test_email,
         })
         url = signer.get_url()
-        self.assertIn(self.cls.base_url, url)
+        self.assertIn(self.cls.BASE_URL, url)
         self.assertIn(urlencode({'email': self.test_email}), url)

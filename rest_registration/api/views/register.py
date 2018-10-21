@@ -17,15 +17,13 @@ from rest_registration.verification import URLParamsSigner
 
 
 class RegisterSigner(URLParamsSigner):
-    salt = 'register'
-    use_timestamp = True
+    SALT_BASE = 'register'
+    USE_TIMESTAMP = True
 
-    @property
-    def base_url(self):
+    def get_base_url(self):
         return registration_settings.REGISTER_VERIFICATION_URL
 
-    @property
-    def valid_period(self):
+    def get_valid_period(self):
         return registration_settings.REGISTER_VERIFICATION_PERIOD
 
 
