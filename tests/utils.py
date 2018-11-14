@@ -1,6 +1,6 @@
 import contextlib
 import re
-from collections import Sequence
+from collections.abc import Sequence
 
 from django.contrib.auth import get_user_model
 from django.core import mail
