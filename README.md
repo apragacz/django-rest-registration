@@ -28,7 +28,7 @@ WARNING: `django-rest-registration` is only Python 3 compatible.
 ## Current limitations
 
 * Supports only one email per user (as model field)
-* Heavily based on Django (1.10+, 2.0+) an Django-REST-Framework (3.3+)
+* Heavily based on Django (1.10+, 2.0+) and Django-REST-Framework (3.3+)
 * Python3 only
 * No JWT support
 
