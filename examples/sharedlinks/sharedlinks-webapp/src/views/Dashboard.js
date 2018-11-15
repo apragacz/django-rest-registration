@@ -38,7 +38,7 @@ const LoggedLinkActions = ({onVoteUpClick, onVoteDownClick}) => (
 const LinkRow = ({link, loggedIn, ...propRest}) => (
   <TableRow>
     <TableRowColumn>
-      <a href={link.url} target="_blank" rel="noopener">
+      <a href={link.url} target="_blank" rel="noopener noreferrer">
         {link.title}
       </a>
     </TableRowColumn>

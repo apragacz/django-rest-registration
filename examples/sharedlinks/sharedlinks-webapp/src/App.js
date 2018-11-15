@@ -49,7 +49,7 @@ class NotLoggedMenu extends Component {
     const {
       onSignInClick,
       onSignUpClick,
-      ...propsRest,
+      ...propsRest
     } = this.props;
     return (
       <MenuContainer{...propsRest}>
@@ -68,7 +68,7 @@ class LoggedMenu extends Component {
   render() {
     const {
       onSignOutClick,
-      ...propsRest,
+      ...propsRest
     } = this.props;
     const { auth } = this.context;
     return (
