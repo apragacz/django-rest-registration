@@ -1,0 +1,3 @@
+Sphinx
+sphinx-jinja
+doc8

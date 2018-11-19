@@ -1,5 +1,5 @@
 import datetime
-from collections import namedtuple
+from collections import OrderedDict, namedtuple
 
 _Field = namedtuple('_Field', [
     'name',
@@ -133,16 +133,19 @@ MISC_SETTINGS_FIELDS = [
     ),
 ]
 
-SETTINGS_FIELDS_LIST = [
-    USER_SETTINGS_FIELDS,
-    REGISTER_SETTINGS_FIELDS,
-    LOGIN_SETTINGS_FIELDS,
-    RESET_PASSWORD_SETTINGS_FIELDS,
-    REGISTER_EMAIL_SETTINGS_FIELDS,
-    GLOBAL_VERIFICATION_SETTINGS_FIELDS,
-    CHANGE_PASSWORD_SETTINGS_FIELDS,
-    PROFILE_SETTINGS_FIELDS,
-    MISC_SETTINGS_FIELDS,
-]
+SETTINGS_FIELDS_GROUPS_MAP = OrderedDict([
+    ('user', USER_SETTINGS_FIELDS),
+    ('register', REGISTER_SETTINGS_FIELDS),
+    ('login', LOGIN_SETTINGS_FIELDS),
+    ('reset_password', RESET_PASSWORD_SETTINGS_FIELDS),
+    ('register_email', REGISTER_EMAIL_SETTINGS_FIELDS),
+    ('global_verification', GLOBAL_VERIFICATION_SETTINGS_FIELDS),
+    ('change_password', CHANGE_PASSWORD_SETTINGS_FIELDS),
+    ('profile', PROFILE_SETTINGS_FIELDS),
+    ('misc', MISC_SETTINGS_FIELDS),
+])
 
-SETTINGS_FIELDS = [f for fields in SETTINGS_FIELDS_LIST for f in fields]
+
+SETTINGS_FIELDS_GROUPS = list(SETTINGS_FIELDS_GROUPS_MAP.values())
+
+SETTINGS_FIELDS = [f for fields in SETTINGS_FIELDS_GROUPS for f in fields]

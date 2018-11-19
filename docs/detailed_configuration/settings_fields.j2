@@ -1,0 +1,20 @@
+{% for f in settings_fields %}
+
+'{{ f.name }}'
+~{{ '~' * f.name|length }}~
+{% if (f.default|pprint).split('\n')|length > 1 %}
+Default:
+
+.. code:: python
+
+    {{ f.default|pprint|indent(width=4) }}
+
+{% else %}
+Default: ``{{ f.default|pprint }}``
+{% endif %}
+{% if f.help %}
+{{ f.help }}
+{% else %}
+No description available, please add it!
+{% endif %}
+{% endfor %}

@@ -47,9 +47,27 @@ def get_long_description(markdown_filepath):
         return read_contents(markdown_filepath)
 
 
+def get_cmdclass():
+    cmdclass = {}
+    try:
+        from sphinx.setup_command import BuildDoc
+    except ImportError:
+        pass
+    else:
+        cmdclass['build_sphinx'] = BuildDoc
+    return cmdclass
+
+
 setup(
     version=get_version('rest_registration'),
     packages=find_packages(exclude=['tests.*', 'tests']),
     long_description=get_long_description('README.md'),
     install_requires=get_requirements('requirements/requirements-base.txt'),
+    cmdclass=get_cmdclass(),
+    command_options={
+        'build_sphinx': {
+            'source_dir': ('setup.py', 'docs'),
+            'build_dir': ('setup.py', 'docs/_build'),
+        },
+    },
 )

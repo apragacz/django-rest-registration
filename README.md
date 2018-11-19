@@ -84,7 +84,7 @@ Below is sample, minimal config you can provide in your django settings which wi
 REST_REGISTRATION = {
     'REGISTER_VERIFICATION_ENABLED': False,
 
-    'RESET_PASSWORD_VERIFICATION_URL': 'https://frontend-url/reset-password/',
+    'RESET_PASSWORD_VERIFICATION_URL': 'https://frontend-host/reset-password/',
 
     'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
 
@@ -96,9 +96,9 @@ However, the preferred base configuration would be:
 
 ```python
 REST_REGISTRATION = {
-    'REGISTER_VERIFICATION_URL': 'https://frontend-url/verify-user/',
-    'RESET_PASSWORD_VERIFICATION_URL': 'https://frontend-url/reset-password/',
-    'REGISTER_EMAIL_VERIFICATION_URL': 'https://frontend-url/verify-email/',
+    'REGISTER_VERIFICATION_URL': 'https://frontend-host/verify-user/',
+    'RESET_PASSWORD_VERIFICATION_URL': 'https://frontend-host/reset-password/',
+    'REGISTER_EMAIL_VERIFICATION_URL': 'https://frontend-host/verify-email/',
 
     'VERIFICATION_FROM_EMAIL': 'no-reply@example.com',
 }
@@ -112,15 +112,15 @@ them to corresponding REST API views via HTTP POST request.
 Let's explain it by example:
 
 we're assuming that the `django-rest-registration` views are served at
-https://backend-url/api/v1/accounts/.
-The frontend endpoint https://frontend-url/verify-email/ would receive
+https://backend-host/api/v1/accounts/.
+The frontend endpoint https://frontend-host/verify-email/ would receive
 following GET parameters:
 * `user_id`
 * `email`
 * `timestamp`
 * `signature`
 
-and then it should perform AJAX request to https://backend-url/api/v1/accounts/verify-email/
+and then it should perform AJAX request to https://backend-host/api/v1/accounts/verify-email/
 via HTTP POST with following JSON payload:
 
 ```javascript

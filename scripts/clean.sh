@@ -9,3 +9,4 @@ rm -fv TEST-*.xml
 rm -fv .coverage
 rm -fv coverage.xml
 rm -rfv dist/
+rm -rfv docs/_build
