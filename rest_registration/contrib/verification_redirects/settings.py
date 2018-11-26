@@ -1,6 +1,6 @@
 from django.test.signals import setting_changed
 
-from rest_registration.settings import NestedSettings
+from rest_registration.utils.nested_settings import NestedSettings
 
 DEFAULTS = {
     'VERIFY_REGISTRATION_SUCCESS_URL': None,

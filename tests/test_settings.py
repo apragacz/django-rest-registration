@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.test.utils import override_settings
 
-from rest_registration.settings import NestedSettings
+from rest_registration.utils.nested_settings import NestedSettings
 
 
 class RegistrationSettingsTestCase(TestCase):
