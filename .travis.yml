@@ -12,7 +12,7 @@ matrix:
   - python: "3.5"
     env: TOXENV=lint
   - python: "3.5"
-    env: TOXENV=readme
+    env: TOXENV=packagecheck
     addons:
       apt_packages: pandoc
 

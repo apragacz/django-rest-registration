@@ -3,3 +3,4 @@ Pygments>=2.2.0
 pypandoc
 twine
 wheel
+readme_renderer[md]
