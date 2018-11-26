@@ -1,77 +1,11 @@
-import datetime
-
 from django.conf import settings as root_settings
 from django.test.signals import setting_changed
 from rest_framework.settings import perform_import
 
-DEFAULTS = {
-    'USER_LOGIN_FIELDS': None,
-    'USER_HIDDEN_FIELDS': (
-        'is_active',
-        'is_staff',
-        'is_superuser',
-        'user_permissions',
-        'groups',
-        'date_joined',
-    ),
-    'USER_PUBLIC_FIELDS': None,
-    'USER_EDITABLE_FIELDS': None,
-    'USER_EMAIL_FIELD': 'email',
+from rest_registration.settings_fields import SETTINGS_FIELDS
 
-    'USER_VERIFICATION_FLAG_FIELD': 'is_active',
-
-    'REGISTER_SERIALIZER_CLASS': 'rest_registration.api.serializers.DefaultRegisterUserSerializer',  # noqa: E501
-    'REGISTER_SERIALIZER_PASSWORD_CONFIRM': True,
-
-    'REGISTER_OUTPUT_SERIALIZER_CLASS': 'rest_registration.api.serializers.DefaultUserProfileSerializer',  # noqa: E501
-
-    'REGISTER_VERIFICATION_ENABLED': True,
-    'REGISTER_VERIFICATION_PERIOD': datetime.timedelta(days=7),
-    'REGISTER_VERIFICATION_URL': None,
-    'REGISTER_VERIFICATION_EMAIL_TEMPLATES': {
-        'subject':  'rest_registration/register/subject.txt',
-        'body':  'rest_registration/register/body.txt',
-    },
-
-    'LOGIN_SERIALIZER_CLASS': 'rest_registration.api.serializers.DefaultLoginSerializer',  # noqa: E501
-    'LOGIN_AUTHENTICATE_SESSION': None,
-    'LOGIN_RETRIEVE_TOKEN': None,
-
-    'RESET_PASSWORD_VERIFICATION_PERIOD': datetime.timedelta(days=1),
-    'RESET_PASSWORD_VERIFICATION_URL': None,
-    'RESET_PASSWORD_VERIFICATION_ONE_TIME_USE': False,
-    'RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES': {
-        'subject': 'rest_registration/reset_password/subject.txt',
-        'body': 'rest_registration/reset_password/body.txt',
-    },
-
-    'REGISTER_EMAIL_VERIFICATION_ENABLED': True,
-    'REGISTER_EMAIL_VERIFICATION_PERIOD': datetime.timedelta(days=7),
-    'REGISTER_EMAIL_VERIFICATION_URL': None,
-    'REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES': {
-        'subject':  'rest_registration/register_email/subject.txt',
-        'body':  'rest_registration/register_email/body.txt',
-    },
-
-    'CHANGE_PASSWORD_SERIALIZER_PASSWORD_CONFIRM': True,
-
-    'PROFILE_SERIALIZER_CLASS': 'rest_registration.api.serializers.DefaultUserProfileSerializer',  # noqa: E501
-
-    'VERIFICATION_FROM_EMAIL': None,
-    'VERIFICATION_REPLY_TO_EMAIL': None,
-    'VERIFICATION_EMAIL_HTML_TO_TEXT_CONVERTER': 'rest_registration.utils.html.convert_html_to_text_preserving_urls',  # noqa: E501
-
-    'SUCCESS_RESPONSE_BUILDER': 'rest_registration.utils.responses.build_default_success_response',  # noqa: E501
-}
-
-IMPORT_STRINGS = (
-    'REGISTER_SERIALIZER_CLASS',
-    'REGISTER_OUTPUT_SERIALIZER_CLASS',
-    'LOGIN_SERIALIZER_CLASS',
-    'PROFILE_SERIALIZER_CLASS',
-    'VERIFICATION_EMAIL_HTML_TO_TEXT_CONVERTER',
-    'SUCCESS_RESPONSE_BUILDER',
-)
+DEFAULTS = {f.name: f.default for f in SETTINGS_FIELDS}
+IMPORT_STRINGS = [f.name for f in SETTINGS_FIELDS if f.import_string]
 
 
 class NestedSettings(object):
