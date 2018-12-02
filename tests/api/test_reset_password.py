@@ -6,6 +6,7 @@ from django.test.utils import override_settings
 from rest_framework import status
 
 from rest_registration.api.views.reset_password import ResetPasswordSigner
+from tests.utils import shallow_merge_dicts
 
 from .base import APIViewTestCase
 
@@ -14,11 +15,6 @@ VERIFICATION_FROM_EMAIL = 'no-reply@example.com'
 REST_REGISTRATION_WITH_RESET_PASSWORD = {
     'RESET_PASSWORD_VERIFICATION_URL': RESET_PASSWORD_VERIFICATION_URL,
     'VERIFICATION_FROM_EMAIL': VERIFICATION_FROM_EMAIL,
-}
-REST_REGISTRATION_WITH_ONE_TIME_RESET_PASSWORD = {
-    'RESET_PASSWORD_VERIFICATION_URL': RESET_PASSWORD_VERIFICATION_URL,
-    'VERIFICATION_FROM_EMAIL': VERIFICATION_FROM_EMAIL,
-    'RESET_PASSWORD_VERIFICATION_ONE_TIME_USE': True,
 }
 
 
@@ -63,6 +59,22 @@ class SendResetPasswordLinkViewTestCase(BaseResetPasswordViewTestCase):
 
     def test_send_link_inactive_user(self):
         user = self.create_test_user(username='testusername', is_active=False)
+        request = self.create_post_request({
+            'login': user.username,
+        })
+        with self.assert_no_mail_sent():
+            response = self.view_func(request)
+            self.assert_response_is_not_found(response)
+
+    @override_settings(
+        REST_REGISTRATION=shallow_merge_dicts(
+            REST_REGISTRATION_WITH_RESET_PASSWORD, {
+                'RESET_PASSWORD_VERIFICATION_ENABLED': False,
+            }
+        ),
+    )
+    def test_reset_password_disabled(self):
+        user = self.create_test_user(username='testusername')
         request = self.create_post_request({
             'login': user.username,
         })
@@ -117,7 +129,11 @@ class ResetPasswordViewTestCase(BaseResetPasswordViewTestCase):
         self.assertTrue(user.check_password(new_second_password))
 
     @override_settings(
-        REST_REGISTRATION=REST_REGISTRATION_WITH_ONE_TIME_RESET_PASSWORD,
+        REST_REGISTRATION=shallow_merge_dicts(
+            REST_REGISTRATION_WITH_RESET_PASSWORD, {
+                'RESET_PASSWORD_VERIFICATION_ONE_TIME_USE': True,
+            }
+        ),
     )
     def test_one_time_reset_twice_fail(self):
         old_password = 'password1'
@@ -138,6 +154,26 @@ class ResetPasswordViewTestCase(BaseResetPasswordViewTestCase):
         self.assert_response_is_bad_request(response)
         user.refresh_from_db()
         self.assertTrue(user.check_password(new_first_password))
+
+    @override_settings(
+        REST_REGISTRATION=shallow_merge_dicts(
+            REST_REGISTRATION_WITH_RESET_PASSWORD, {
+                'RESET_PASSWORD_VERIFICATION_ENABLED': False,
+            }
+        ),
+    )
+    def test_reset_password_disabled(self):
+        old_password = 'password1'
+        new_password = 'eaWrivtig5'
+        user = self.create_test_user(password=old_password)
+        signer = ResetPasswordSigner({'user_id': user.pk})
+        data = signer.get_signed_data()
+        data['password'] = new_password
+        request = self.create_post_request(data)
+        response = self.view_func(request)
+        self.assert_response_is_not_found(response)
+        user.refresh_from_db()
+        self.assertTrue(user.check_password(old_password))
 
     def test_reset_inactive_user(self):
         old_password = 'password1'

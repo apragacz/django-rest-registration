@@ -72,6 +72,7 @@ LOGIN_SETTINGS_FIELDS = [
     Field('LOGIN_RETRIEVE_TOKEN'),
 ]
 RESET_PASSWORD_SETTINGS_FIELDS = [
+    Field('RESET_PASSWORD_VERIFICATION_ENABLED', default=True),
     Field(
         'RESET_PASSWORD_VERIFICATION_PERIOD',
         default=datetime.timedelta(days=1),

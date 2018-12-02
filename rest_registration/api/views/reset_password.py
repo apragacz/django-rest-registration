@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from django.http import Http404
 from rest_framework import serializers
 from rest_framework.decorators import api_view
 
@@ -59,6 +60,8 @@ def send_reset_password_link(request):
     '''
     Send email with reset password link.
     '''
+    if not registration_settings.RESET_PASSWORD_VERIFICATION_ENABLED:
+        raise Http404()
     serializer = SendResetPasswordLinkSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     login = serializer.validated_data['login']
@@ -101,6 +104,8 @@ def reset_password(request):
 
 
 def process_reset_password_data(input_data):
+    if not registration_settings.RESET_PASSWORD_VERIFICATION_ENABLED:
+        raise Http404()
     serializer = ResetPasswordSerializer(data=input_data)
     serializer.is_valid(raise_exception=True)
 

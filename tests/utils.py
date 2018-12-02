@@ -148,3 +148,11 @@ class EmailMessageContainer(Sequence):
         assert not self._set
         self._mails = list(mails)
         self._set = True
+
+
+def shallow_merge_dicts(d, *other_dicts):
+    result = {}
+    result.update(d)
+    for other_dict in other_dicts:
+        result.update(other_dict)
+    return result
