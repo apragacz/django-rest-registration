@@ -29,15 +29,52 @@ class ChecksTestCase(TestCase):
 
     @override_settings(
         REST_REGISTRATION={
+            'REGISTER_VERIFICATION_ENABLED': False,
+            'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
+            'RESET_PASSWORD_VERIFICATION_ENABLED': False,
+        },
+    )
+    def test_checks_minimal_setup(self):
+        errors = simulate_checks()
+        self.assert_error_codes_match(errors, [])
+
+    @override_settings(
+        REST_REGISTRATION={
             'REGISTER_VERIFICATION_URL': '/verify-account/',
             'REGISTER_EMAIL_VERIFICATION_URL': '/verify-email/',
             'RESET_PASSWORD_VERIFICATION_URL': '/reset-password/',
             'VERIFICATION_FROM_EMAIL': 'jon.doe@example.com',
         },
     )
-    def test_checks_minimal_setup(self):
+    def test_checks_preferred_setup(self):
         errors = simulate_checks()
         self.assert_error_codes_match(errors, [])
+
+    @override_settings(
+        REST_REGISTRATION={
+            'REGISTER_VERIFICATION_URL': '/verify-account/',
+            'REGISTER_EMAIL_VERIFICATION_URL': '/verify-email/',
+            'RESET_PASSWORD_VERIFICATION_URL': '/reset-password/',
+        },
+    )
+    def test_checks_preferred_setup_missing_sender_email(self):
+        errors = simulate_checks()
+        self.assert_error_codes_match(errors, [
+            ErrorCode.NO_VER_FROM_EMAIL,
+        ])
+
+    @override_settings(
+        REST_REGISTRATION={
+            'REGISTER_VERIFICATION_ENABLED': False,
+            'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
+            'RESET_PASSWORD_VERIFICATION_URL': '/reset-password/',
+        },
+    )
+    def test_checks_one_verification_url_missing_sender_email(self):
+        errors = simulate_checks()
+        self.assert_error_codes_match(errors, [
+            ErrorCode.NO_VER_FROM_EMAIL,
+        ])
 
     @override_settings(
         REST_REGISTRATION={

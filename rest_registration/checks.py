@@ -24,7 +24,10 @@ class ErrorCode(object):
     ErrorCode.NO_RESET_PASSWORD_VER_URL,
 )
 def reset_password_verification_url_check():
-    return registration_settings.RESET_PASSWORD_VERIFICATION_URL
+    return implies(
+        registration_settings.RESET_PASSWORD_VERIFICATION_ENABLED,
+        registration_settings.RESET_PASSWORD_VERIFICATION_URL,
+    )
 
 
 @register()
@@ -59,7 +62,14 @@ def register_email_verification_url_check():
     ErrorCode.NO_VER_FROM_EMAIL,
 )
 def verification_from_check():
-    return registration_settings.VERIFICATION_FROM_EMAIL
+    return implies(
+        any([
+            registration_settings.REGISTER_VERIFICATION_ENABLED,
+            registration_settings.REGISTER_EMAIL_VERIFICATION_ENABLED,
+            registration_settings.RESET_PASSWORD_VERIFICATION_ENABLED,
+        ]),
+        registration_settings.VERIFICATION_FROM_EMAIL,
+    )
 
 
 @register()
