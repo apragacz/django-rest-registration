@@ -3,7 +3,8 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.http import Http404
 from rest_framework import serializers
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 
 from rest_registration.decorators import api_view_serializer_class
 from rest_registration.exceptions import UserNotFound
@@ -56,6 +57,7 @@ def get_login_fields():
 
 @api_view_serializer_class(SendResetPasswordLinkSerializer)
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def send_reset_password_link(request):
     '''
     Send email with reset password link.
@@ -95,6 +97,7 @@ class ResetPasswordSerializer(serializers.Serializer):
 
 @api_view_serializer_class(ResetPasswordSerializer)
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def reset_password(request):
     '''
     Reset password, given the signature and timestamp from the link.
