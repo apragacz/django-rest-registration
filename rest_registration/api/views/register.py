@@ -1,7 +1,8 @@
 from django.http import Http404
 from rest_framework import serializers, status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 
 from rest_registration.decorators import (
     api_view_serializer_class,
@@ -30,6 +31,7 @@ class RegisterSigner(URLParamsSigner):
 @api_view_serializer_class_getter(
     lambda: registration_settings.REGISTER_SERIALIZER_CLASS)
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def register(request):
     '''
     Register new user.
@@ -73,6 +75,7 @@ class VerifyRegistrationSerializer(serializers.Serializer):
 
 @api_view_serializer_class(VerifyRegistrationSerializer)
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def verify_registration(request):
     '''
     Verify registration via signature.
