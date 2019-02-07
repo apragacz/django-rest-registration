@@ -1,5 +1,6 @@
 import math
 import time
+from unittest import skip
 from unittest.mock import patch
 
 from django.test.utils import override_settings
@@ -39,32 +40,26 @@ class SendResetPasswordLinkViewTestCase(BaseResetPasswordViewTestCase):
             time_after = math.ceil(time.time())
             self.assert_valid_response(response, status.HTTP_200_OK)
         sent_email = sent_emails[0]
-        self.assertEqual(
-            sent_email.from_email,
-            REST_REGISTRATION_WITH_RESET_PASSWORD['VERIFICATION_FROM_EMAIL'],
-        )
-        self.assertListEqual(sent_email.to, [user.email])
-        url = self.assert_one_url_line_in_text(sent_email.body)
-        verification_data = self.assert_valid_verification_url(
-            url,
-            expected_path=RESET_PASSWORD_VERIFICATION_URL,
-            expected_query_keys={'signature', 'user_id', 'timestamp'},
-        )
-        self.assertEqual(int(verification_data['user_id']), user.id)
-        url_sig_timestamp = int(verification_data['timestamp'])
-        self.assertGreaterEqual(url_sig_timestamp, time_before)
-        self.assertLessEqual(url_sig_timestamp, time_after)
-        signer = ResetPasswordSigner(verification_data)
-        signer.verify()
+        self._assert_valid_send_link_email(
+            sent_email, user, time_before, time_after)
 
-    def test_send_link_inactive_user(self):
+    @skip("TODO: Issue #35")
+    def test_send_link_disabled_user(self):
+        pass
+
+    def test_send_link_unverified_user(self):
         user = self.create_test_user(username='testusername', is_active=False)
         request = self.create_post_request({
             'login': user.username,
         })
-        with self.assert_no_mail_sent():
+        time_before = math.floor(time.time())
+        with self.assert_one_mail_sent() as sent_emails:
             response = self.view_func(request)
-            self.assert_response_is_not_found(response)
+            time_after = math.ceil(time.time())
+            self.assert_valid_response(response, status.HTTP_200_OK)
+        sent_email = sent_emails[0]
+        self._assert_valid_send_link_email(
+            sent_email, user, time_before, time_after)
 
     @override_settings(
         REST_REGISTRATION=shallow_merge_dicts(
@@ -90,6 +85,26 @@ class SendResetPasswordLinkViewTestCase(BaseResetPasswordViewTestCase):
         with self.assert_mails_sent(0):
             response = self.view_func(request)
             self.assert_response_is_not_found(response)
+
+    def _assert_valid_send_link_email(
+            self, sent_email, user, time_before, time_after):
+        self.assertEqual(
+            sent_email.from_email,
+            REST_REGISTRATION_WITH_RESET_PASSWORD['VERIFICATION_FROM_EMAIL'],
+        )
+        self.assertListEqual(sent_email.to, [user.email])
+        url = self.assert_one_url_line_in_text(sent_email.body)
+        verification_data = self.assert_valid_verification_url(
+            url,
+            expected_path=RESET_PASSWORD_VERIFICATION_URL,
+            expected_query_keys={'signature', 'user_id', 'timestamp'},
+        )
+        self.assertEqual(int(verification_data['user_id']), user.id)
+        url_sig_timestamp = int(verification_data['timestamp'])
+        self.assertGreaterEqual(url_sig_timestamp, time_before)
+        self.assertLessEqual(url_sig_timestamp, time_after)
+        signer = ResetPasswordSigner(verification_data)
+        signer.verify()
 
 
 class ResetPasswordViewTestCase(BaseResetPasswordViewTestCase):
@@ -175,7 +190,11 @@ class ResetPasswordViewTestCase(BaseResetPasswordViewTestCase):
         user.refresh_from_db()
         self.assertTrue(user.check_password(old_password))
 
-    def test_reset_inactive_user(self):
+    @skip("TODO: Issue #35")
+    def test_reset_disabled_user(self):
+        pass
+
+    def test_reset_unverified_user(self):
         old_password = 'password1'
         new_password = 'eaWrivtig5'
         user = self.create_test_user(password=old_password, is_active=False)
@@ -184,9 +203,9 @@ class ResetPasswordViewTestCase(BaseResetPasswordViewTestCase):
         data['password'] = new_password
         request = self.create_post_request(data)
         response = self.view_func(request)
-        self.assert_response_is_not_found(response)
+        self.assert_response_is_ok(response)
         user.refresh_from_db()
-        self.assertTrue(user.check_password(old_password))
+        self.assertTrue(user.check_password(new_password))
 
     def test_reset_short_password(self):
         old_password = 'password1'

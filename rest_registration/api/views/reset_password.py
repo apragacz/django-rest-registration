@@ -70,7 +70,8 @@ def send_reset_password_link(request):
 
     user = None
     for login_field in get_login_fields():
-        user = get_user_by_lookup_dict({login_field: login}, default=None)
+        user = get_user_by_lookup_dict(
+            {login_field: login}, default=None, require_verified=False)
         if user:
             break
 
@@ -117,7 +118,7 @@ def process_reset_password_data(input_data):
     signer = ResetPasswordSigner(data)
     verify_signer_or_bad_request(signer)
 
-    user = get_user_by_id(data['user_id'])
+    user = get_user_by_id(data['user_id'], require_verified=False)
     try:
         validate_password(password, user=user)
     except ValidationError as exc:
