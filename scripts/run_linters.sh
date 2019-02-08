@@ -25,4 +25,4 @@ main() {
     log "All linters finished successully."
 }
 
-main
+main "$@"
