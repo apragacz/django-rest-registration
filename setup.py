@@ -87,6 +87,6 @@ setup(
         'Topic :: Internet :: WWW/HTTP',
     ],
     install_requires=get_requirements('requirements/requirements-base.txt'),
-    python_requires='>=3.5',
+    python_requires='>=3.4',
     url='https://github.com/apragacz/django-rest-registration',
 )
