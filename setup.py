@@ -13,23 +13,20 @@ def read_contents(local_filepath):
         return f.read()
 
 
-def get_pip_req_module():
-    try:
-        from pip._internal import req
-    except ImportError:
-        # Fallback for pip<10.0.0 .
-        from pip import req
-    return req
-
-
 def get_requirements(requirements_filepath):
     '''
     Return list of this package requirements via local filepath.
     '''
-    pip_req = get_pip_req_module()
-    requirements = pip_req.parse_requirements(
-        requirements_filepath, session=uuid.uuid1())
-    return [str(ir.req) for ir in list(requirements)]
+    requirements = []
+    with open(os.path.join(ROOT_DIR, requirements_filepath), 'rt') as f:
+        for line in f:
+            if line.startswith('#'):
+                continue
+            line = line.rstrip()
+            if not line:
+                continue
+            requirements.append(line)
+    return requirements
 
 
 def get_version(package):
@@ -90,7 +87,7 @@ setup(
         'Topic :: Internet',
         'Topic :: Internet :: WWW/HTTP',
     ],
-    install_requires=get_requirements('requirements.txt'),
-    python_requires='>=3.4',
+    install_requires=get_requirements('requirements/requirements-base.txt'),
+    python_requires='>=3.5',
     url='https://github.com/apragacz/django-rest-registration',
 )
