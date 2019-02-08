@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import os.path
 import re
-import uuid
 
 from setuptools import find_packages, setup
 
