@@ -48,45 +48,8 @@ def get_long_description(markdown_filepath):
 
 
 setup(
-    name='django-rest-registration',
     version=get_version('rest_registration'),
     packages=find_packages(exclude=['tests.*', 'tests']),
-    include_package_data=True,
-    author='Andrzej Pragacz',
-    author_email='apragacz@o2.pl',
-    description=(
-        'User registration REST API, based on django-rest-framework'
-    ),
-    license='MIT',
-    keywords=' '.join((
-        'django',
-        'rest',
-        'api',
-        'rest-framework',
-        'registration',
-        'register',
-        'login',
-        'sign-up',
-        'signin',
-    )),
     long_description=get_long_description('README.md'),
-    classifiers=[
-        'Development Status :: 4 - Beta',
-        'Environment :: Web Environment',
-        'Framework :: Django',
-        'Framework :: Django :: 1.10',
-        'Framework :: Django :: 2.0',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
-        'Operating System :: POSIX',
-        'Operating System :: POSIX :: Linux',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3 :: Only',
-        'Topic :: Internet',
-        'Topic :: Internet :: WWW/HTTP',
-    ],
     install_requires=get_requirements('requirements/requirements-base.txt'),
-    python_requires='>=3.4',
-    url='https://github.com/apragacz/django-rest-registration',
 )
