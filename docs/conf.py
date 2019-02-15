@@ -10,6 +10,9 @@ import os.path
 import re
 import sys
 
+import django  # noqa: E402
+from django.conf import settings  # noqa: E402
+
 # -- Path setup --------------------------------------------------------------
 DOCS_DIR = os.path.abspath(os.path.dirname(__file__))
 ROOT_DIR = os.path.dirname(DOCS_DIR)
@@ -20,6 +23,10 @@ from rest_registration.settings_fields import (  # isort:skip
     SETTINGS_FIELDS,
     SETTINGS_FIELDS_GROUPS_MAP,
 )  # noqa: E402
+
+settings.configure()
+django.setup()
+
 
 # -- Project information -----------------------------------------------------
 
