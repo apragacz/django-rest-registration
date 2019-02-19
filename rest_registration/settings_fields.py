@@ -1,6 +1,8 @@
 import datetime
 from collections import OrderedDict, namedtuple
 
+from rest_registration.utils.text import detect_indent_num, deindent
+
 _Field = namedtuple('_Field', [
     'name',
     'default',
@@ -15,6 +17,12 @@ class Field(_Field):
         return super().__new__(
             cls, name=name, default=default,
             help=help, import_string=import_string)
+
+    @property
+    def sphinx_docstring(self):
+        docstring = self.help if self.help else ''
+        indent_num = detect_indent_num(docstring)
+        return deindent(docstring, indent_num)
 
 
 USER_SETTINGS_FIELDS = [
@@ -41,24 +49,74 @@ REGISTER_SETTINGS_FIELDS = [
         'REGISTER_SERIALIZER_CLASS',
         default='rest_registration.api.serializers.DefaultRegisterUserSerializer',  # noqa: E501,
         import_string=True,
+        help="""
+            The default serializer used by register endpoint.
+            It is used to validate the input data and save (create)
+            the newly registered user. You can use your custom serializer
+            to customise validation logic and the way the user is created
+            in the database.
+            """,
     ),
-    Field('REGISTER_SERIALIZER_PASSWORD_CONFIRM', default=True),
+    Field(
+        'REGISTER_SERIALIZER_PASSWORD_CONFIRM',
+        default=True,
+        help="""
+            Used by ``DefaultRegisterUserSerializer``.
+            If ``True``, the serializer requires
+            additional field ``password_confirm`` which value should be
+            the same as the value of ``password`` field.
+
+            It may be useful to disable it if you perform password confirmation
+            at the frontend level.
+            """,
+    ),
 
     Field(
         'REGISTER_OUTPUT_SERIALIZER_CLASS',
         default='rest_registration.api.serializers.DefaultUserProfileSerializer',  # noqa: E501,
         import_string=True,
+        help="""
+            The default serializer used by register endpoint.
+            It is used output the data associated with
+            the newly registered user. You can use your custom serializer
+            to customise the output representation of the user.
+            """,
     ),
 
-    Field('REGISTER_VERIFICATION_ENABLED', default=True),
-    Field('REGISTER_VERIFICATION_PERIOD', default=datetime.timedelta(days=7)),
-    Field('REGISTER_VERIFICATION_URL'),
+    Field(
+        'REGISTER_VERIFICATION_ENABLED',
+        default=True,
+        help="""
+            If enabled, then newly registered user will not
+            be verified (user field specified by
+            ``USER_VERIFICATION_FLAG_FIELD`` will be false),
+            and verification e-mail with activation link
+            will be sent to the user email (specified by ``USER_EMAIL_FIELD``).
+            """,
+    ),
+    Field(
+        'REGISTER_VERIFICATION_PERIOD',
+        default=datetime.timedelta(days=7),
+        help="""
+            Specifies how long the activation link will be valid.
+            """,
+    ),
+    Field(
+        'REGISTER_VERIFICATION_URL',
+        help="""
+            Frontend URL to which the query parameters will be appended
+            to create the activation link for newly registered user.
+            """,
+    ),
     Field(
         'REGISTER_VERIFICATION_EMAIL_TEMPLATES',
         default={
             'subject': 'rest_registration/register/subject.txt',
             'body': 'rest_registration/register/body.txt',
         },
+        help="""
+            Directory of templates used to generate the verification email.
+            """,
     ),
 ]
 

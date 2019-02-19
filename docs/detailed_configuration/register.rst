@@ -4,6 +4,21 @@ Registration
 API Views
 ---------
 
+There are two views used in the registration workflow:
+
+.. autofunction:: rest_registration.api.views.register
+
+.. autofunction:: rest_registration.api.views.verify_registration
+
+Assuming that the `django-rest-registration` views are served at
+https://backend-host/api/v1/accounts/
+then the ``register``, ``verify_registration`` views are served as:
+
+* https://backend-host/api/v1/accounts/register/
+* https://backend-host/api/v1/accounts/verify-registration/
+
+accordingly.
+
 List of settings
 ----------------
 
