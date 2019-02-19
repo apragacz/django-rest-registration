@@ -1,7 +1,7 @@
 import datetime
 from collections import OrderedDict, namedtuple
 
-from rest_registration.utils.text import detect_indent_num, deindent
+from rest_registration.utils.text import deindent, detect_indent_num
 
 _Field = namedtuple('_Field', [
     'name',
