@@ -12,8 +12,8 @@ Default:
 {% else %}
 Default: ``{{ f.default|pprint }}``
 {% endif %}
-{% if f.sphinx_docstring %}
-{{ f.sphinx_docstring }}
+{% if f.help %}
+{{ f.help }}
 {% else %}
 No description available, please add it!
 {% endif %}
