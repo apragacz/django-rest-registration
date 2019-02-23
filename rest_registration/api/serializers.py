@@ -15,16 +15,35 @@ class MetaObj(object):
 
 
 class DefaultLoginSerializer(serializers.Serializer):
+    """
+    Default serializer used for user login. It will use
+    :ref:`user-login-fields-setting` setting to compare the login
+    to the user login fields defined by this setting.
+    """
     login = serializers.CharField()
     password = serializers.CharField()
 
     def get_authenticated_user(self):
+        """
+        Return authenticated user if login and password match.
+        Return ``None`` otherwise.
+        """
         data = self.validated_data
         return authenticate_by_login_and_password_or_none(
             data['login'], data['password'])
 
 
 class DefaultUserProfileSerializer(serializers.ModelSerializer):
+    """
+    Default serializer used for user profile. It will use these:
+
+    * User fields
+    * :ref:`user-hidden-fields-setting` setting
+    * :ref:`user-public-fields-setting` setting
+    * :ref:`user-editable-fields-setting` setting
+
+    to automagically generate the required serializer fields.
+    """
 
     def __init__(self, *args, **kwargs):
         user_class = get_user_model()
