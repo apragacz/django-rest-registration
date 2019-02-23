@@ -4,6 +4,25 @@ User profile
 API Views
 ---------
 
+There is one view used for retrieving user profile and applying changes:
+
+.. _profile-view:
+
+profile
+~~~~~~~
+
+.. autofunction:: rest_registration.api.views.profile
+
+Default serializers
+-------------------
+
+.. _default-user-profile-serializer:
+
+DefaultUserProfileSerializer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: rest_registration.api.serializers.DefaultUserProfileSerializer
+
 List of settings
 ----------------
 

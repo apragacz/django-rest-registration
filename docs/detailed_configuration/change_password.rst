@@ -4,6 +4,13 @@ Changing password
 API Views
 ---------
 
+.. _change-password-view:
+
+change-password
+~~~~~~~~~~~~~~~
+
+.. autofunction:: rest_registration.api.views.change_password
+
 List of settings
 ----------------
 

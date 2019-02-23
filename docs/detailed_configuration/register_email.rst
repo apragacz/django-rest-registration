@@ -4,6 +4,22 @@ Email Registration
 API Views
 ---------
 
+There are two views used in the email registration / change workflow:
+
+.. _register-email-view:
+
+register-email
+~~~~~~~~~~~~~~
+
+.. autofunction:: rest_registration.api.views.register_email
+
+.. _verify-email-view:
+
+verify-email
+~~~~~~~~~~~~
+
+.. autofunction:: rest_registration.api.views.verify_email
+
 List of settings
 ----------------
 
