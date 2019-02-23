@@ -1,3 +1,5 @@
+.. _html-email:
+
 HTML e-mail configuration
 =========================
 

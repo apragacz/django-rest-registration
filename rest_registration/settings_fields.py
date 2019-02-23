@@ -19,7 +19,9 @@ class Field(_Field):
 
 
 USER_SETTINGS_FIELDS = [
-    Field('USER_LOGIN_FIELDS'),
+    Field(
+        'USER_LOGIN_FIELDS',
+    ),
     Field(
         'USER_HIDDEN_FIELDS',
         default=(
@@ -31,10 +33,20 @@ USER_SETTINGS_FIELDS = [
             'date_joined',
         ),
     ),
-    Field('USER_PUBLIC_FIELDS'),
-    Field('USER_EDITABLE_FIELDS'),
-    Field('USER_EMAIL_FIELD', default='email'),
-    Field('USER_VERIFICATION_FLAG_FIELD', default='is_active'),
+    Field(
+        'USER_PUBLIC_FIELDS',
+    ),
+    Field(
+        'USER_EDITABLE_FIELDS',
+    ),
+    Field(
+        'USER_EMAIL_FIELD',
+        default='email',
+    ),
+    Field(
+        'USER_VERIFICATION_FLAG_FIELD',
+        default='is_active',
+    ),
 ]
 
 REGISTER_SETTINGS_FIELDS = [
@@ -43,7 +55,7 @@ REGISTER_SETTINGS_FIELDS = [
         default='rest_registration.api.serializers.DefaultRegisterUserSerializer',  # noqa: E501,
         import_string=True,
         help=dedent("""\
-            The default serializer used by register endpoint.
+            The serializer used by :ref:`register-view` endpoint.
             It is used to validate the input data and save (create)
             the newly registered user. You can use your custom serializer
             to customise validation logic and the way the user is created
@@ -82,7 +94,7 @@ REGISTER_SETTINGS_FIELDS = [
         help=dedent("""\
             If enabled, then newly registered user will not
             be verified (user field specified by
-            ``USER_VERIFICATION_FLAG_FIELD`` will be false),
+            :ref:`user-verification-flag-field-setting` will be false),
             and verification e-mail with activation link
             will be sent to the user email (specified by ``USER_EMAIL_FIELD``).
             """),
@@ -109,6 +121,9 @@ REGISTER_SETTINGS_FIELDS = [
         },
         help=dedent("""\
             Directory of templates used to generate the verification email.
+            There are separate templates for email body and subject.
+            If you want to generate html emails please refer to
+            :ref:`html-email`.
             """),
     ),
 ]

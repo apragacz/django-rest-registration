@@ -6,7 +6,17 @@ API Views
 
 There are two views used in the registration workflow:
 
+.. _register-view:
+
+register
+~~~~~~~~
+
 .. autofunction:: rest_registration.api.views.register
+
+.. _verify-registration-view:
+
+verify-registration
+~~~~~~~~~~~~~~~~~~~
 
 .. autofunction:: rest_registration.api.views.verify_registration
 
@@ -18,6 +28,16 @@ then the ``register``, ``verify_registration`` views are served as:
 * https://backend-host/api/v1/accounts/verify-registration/
 
 accordingly.
+
+Default serializers
+-------------------
+
+.. _default-register-user-serializer:
+
+DefaultRegisterUserSerializer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: rest_registration.api.serializers.DefaultRegisterUserSerializer
 
 List of settings
 ----------------

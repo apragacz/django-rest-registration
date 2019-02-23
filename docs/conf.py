@@ -222,6 +222,7 @@ jinja_base = DOCS_DIR
 jinja_contexts = {
     'detailed_configuration__all_settings': {
         'settings_fields': SETTINGS_FIELDS,
+        'generate_setting_refs': True,
     }
 }
 
@@ -230,4 +231,5 @@ for group_name, settings_fields in SETTINGS_FIELDS_GROUPS_MAP.items():
         group_name=group_name)
     jinja_contexts[ctx_key] = {
         'settings_fields': settings_fields,
+        'generate_setting_refs': False,
     }

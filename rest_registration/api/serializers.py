@@ -40,6 +40,15 @@ class DefaultUserProfileSerializer(serializers.ModelSerializer):
 
 
 class DefaultRegisterUserSerializer(serializers.ModelSerializer):
+    """
+    Default serializer used for user registration. It will use these:
+
+    * User fields
+    * :ref:`user-hidden-fields-setting` setting
+    * :ref:`user-public-fields-setting` setting
+
+    to automagically generate the required serializer fields.
+    """
 
     def __init__(self, *args, **kwargs):
         user_class = get_user_model()

@@ -1,5 +1,9 @@
 {% for f in settings_fields %}
 
+{% if generate_setting_refs %}
+.. _{{ f.name|lower|replace('_', '-') }}-setting:
+{% endif %}
+
 '{{ f.name }}'
 ~{{ '~' * f.name|length }}~
 {% if (f.default|pprint).split('\n')|length > 1 %}
