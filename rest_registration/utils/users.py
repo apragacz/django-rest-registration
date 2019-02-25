@@ -1,12 +1,26 @@
 from django.contrib import auth
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.http import Http404
-from rest_framework.generics import get_object_or_404
+from django.shortcuts import get_object_or_404 as _get_object_or_404
 
 from rest_registration.exceptions import UserNotFound
 from rest_registration.settings import registration_settings
 
 _RAISE_EXCEPTION = object()
+
+
+def get_object_or_404(queryset, *filter_args, **filter_kwargs):
+    """
+    Same as Django's standard shortcut, but make sure to also raise 404
+    if the filter_kwargs don't match the required types.
+
+    This function was copied from rest_framework.generics because of issue #36.
+    """
+    try:
+        return _get_object_or_404(queryset, *filter_args, **filter_kwargs)
+    except (TypeError, ValueError, ValidationError):
+        raise Http404
 
 
 def get_user_setting(name):
