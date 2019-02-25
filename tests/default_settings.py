@@ -73,7 +73,6 @@ ROOT_URLCONF = 'tests.default_urls'
 # during initial system check.
 REST_REGISTRATION = {
     'REGISTER_VERIFICATION_ENABLED': False,
-    'RESET_PASSWORD_VERIFICATION_URL': '/reset-password/',
     'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
-    'VERIFICATION_FROM_EMAIL': 'no-reply@example.com',
+    'RESET_PASSWORD_VERIFICATION_ENABLED': False,
 }
