@@ -94,6 +94,29 @@ class ChecksTestCase(TestCase):
     @override_settings(
         INSTALLED_APPS=(
             'django.contrib.admin',
+            'django.contrib.contenttypes',
+            'django.contrib.sessions',
+            'django.contrib.messages',
+            'django.contrib.staticfiles',
+
+            'rest_framework',
+            'rest_registration',
+        ),
+        REST_REGISTRATION={
+            'REGISTER_VERIFICATION_ENABLED': False,
+            'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
+            'RESET_PASSWORD_VERIFICATION_ENABLED': False,
+        },
+    )
+    def test_checks_missing_auth_installed(self):
+        errors = simulate_checks()
+        self.assert_error_codes_match(errors, [
+            ErrorCode.NO_AUTH_INSTALLED,
+        ])
+
+    @override_settings(
+        INSTALLED_APPS=(
+            'django.contrib.admin',
             'django.contrib.auth',
             'django.contrib.contenttypes',
             'django.contrib.sessions',

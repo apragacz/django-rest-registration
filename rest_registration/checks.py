@@ -16,6 +16,16 @@ class ErrorCode(object):
     NO_TOKEN_AUTH_CONFIG = 'E005'
     NO_TOKEN_AUTH_INSTALLED = 'E006'
     INVALID_EMAIL_TEMPLATE_CONFIG = 'E007'
+    NO_AUTH_INSTALLED = 'E008'
+
+
+@register()
+@simple_check(
+    'django.contrib.auth is not in INSTALLED_APPS',
+    ErrorCode.NO_AUTH_INSTALLED,
+)
+def auth_installed_check():
+    return 'django.contrib.auth' in settings.INSTALLED_APPS
 
 
 @register()
@@ -142,6 +152,7 @@ def implies(premise, conclusion):
 
 
 __ALL_CHECKS__ = [
+    auth_installed_check,
     reset_password_verification_url_check,
     register_verification_url_check,
     register_email_verification_url_check,
