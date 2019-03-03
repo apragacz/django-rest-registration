@@ -2,7 +2,15 @@
 
 set -euo pipefail
 
-readonly BASE_DIR="$( cd "$( dirname "$( dirname "${BASH_SOURCE[0]}" )" )" && pwd )"
+readonly SCRIPT_NAME="$( basename "${BASH_SOURCE[0]}" )"
+readonly SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-cd "${BASE_DIR}"
-pylint --rcfile=setup.cfg rest_registration tests -E "$@"
+# shellcheck source=./utils.sh
+source "${SCRIPT_DIR}/utils.sh"
+
+main() {
+    cd "${BASE_DIR}"
+    pylint --rcfile=setup.cfg "${MODULE_NAME}" "${TEST_MODULE_NAME}" -E "$@"
+}
+
+main "$@"

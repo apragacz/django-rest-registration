@@ -1,3 +1,4 @@
 Sphinx
+sphinx-autobuild
 sphinx-jinja
 doc8

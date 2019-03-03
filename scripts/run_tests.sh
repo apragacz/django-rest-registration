@@ -2,6 +2,14 @@
 
 set -euo pipefail
 
-readonly BASE_DIR="$( cd "$( dirname "$( dirname "${BASH_SOURCE[0]}" )" )" && pwd )"
+readonly SCRIPT_NAME="$( basename "${BASH_SOURCE[0]}" )"
+readonly SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-PYTHONPATH="${BASE_DIR}" py.test "$@"
+# shellcheck source=./utils.sh
+source "${SCRIPT_DIR}/utils.sh"
+
+main() {
+    PYTHONPATH="${BASE_DIR}" py.test "$@"
+}
+
+main "$@"
