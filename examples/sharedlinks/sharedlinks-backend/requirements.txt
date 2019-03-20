@@ -1,5 +1,5 @@
-Django==2.1.5
+Django==2.1.7
 django-cors-headers==2.4.0
-django-rest-registration==0.3.14
+django-rest-registration==0.4.1
 django-rest-swagger==2.2.0
 djangorestframework==3.9.1
