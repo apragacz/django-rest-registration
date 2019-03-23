@@ -81,7 +81,7 @@ e-mail. You also need also to replace ``'no-reply@example.com'`` with the
 e-mail address which will be used as the sender of the reset e-mail.
 
 The frontend urls are not provided by the library but should be provided
-by the user of the library, because ``django-rest-registration`` is
+by the user of the library, because Django REST Registration is
 frontend-agnostic. The frontend urls will receive parameters as GET
 query and should pass them to corresponding REST API views via HTTP POST
 request.

@@ -1,7 +1,7 @@
 Installation
 ============
 
-You can install ``django-rest-registration`` lastest version via pip:
+You can install Django REST Registration latest version via pip:
 
 ::
 
