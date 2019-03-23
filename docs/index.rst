@@ -11,7 +11,6 @@ User registration REST API, based on django-rest-framework.
 WARNING: ``django-rest-registration`` is only Python 3 compatible.
 
 .. toctree::
-   :caption: Installation and configuration
    :maxdepth: 2
 
    install
