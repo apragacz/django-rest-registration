@@ -18,6 +18,13 @@ REST_REGISTRATION_WITH_VERIFICATION = {
     'VERIFICATION_FROM_EMAIL': VERIFICATION_FROM_EMAIL,
 }
 
+REST_REGISTRATION_WITH_VERIFICATION_AUTO_LOGIN = {
+    'REGISTER_VERIFICATION_ENABLED': True,
+    'REGISTER_VERIFICATION_URL': REGISTER_VERIFICATION_URL,
+    'VERIFICATION_FROM_EMAIL': VERIFICATION_FROM_EMAIL,
+    'REGISTER_VERIFICATION_AUTO_LOGIN': True,
+}
+
 REST_REGISTRATION_WITH_VERIFICATION_NO_PASSWORD = {
     'REGISTER_VERIFICATION_ENABLED': True,
     'REGISTER_VERIFICATION_URL': REGISTER_VERIFICATION_URL,
@@ -264,14 +271,29 @@ class RegisterViewTestCase(APIViewTestCase):
 class VerifyRegistrationViewTestCase(APIViewTestCase):
     VIEW_NAME = 'verify-registration'
 
-    @override_settings(REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION)
-    def test_verify_ok(self):
+    def create_verify_and_user(self, session=False):
         user = self.create_test_user(is_active=False)
         self.assertFalse(user.is_active)
         signer = RegisterSigner({'user_id': user.pk})
         data = signer.get_signed_data()
         request = self.create_post_request(data)
+        if session:
+            self.add_session_to_request(request)
         response = self.view_func(request)
+        return user, response
+
+    @override_settings(REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION)
+    def test_verify_ok(self):
+        user, response = self.create_verify_and_user()
+        self.assert_valid_response(response, status.HTTP_200_OK)
+        user.refresh_from_db()
+        self.assertTrue(user.is_active)
+
+    @override_settings(REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION_AUTO_LOGIN)
+    def test_verify_ok_login(self):
+        with patch('django.contrib.auth.login') as mock:
+            user, response = self.create_verify_and_user()
+            mock.assert_called()
         self.assert_valid_response(response, status.HTTP_200_OK)
         user.refresh_from_db()
         self.assertTrue(user.is_active)
@@ -313,12 +335,8 @@ class VerifyRegistrationViewTestCase(APIViewTestCase):
         }
     )
     def test_verify_disabled(self):
-        user = self.create_test_user(is_active=False)
-        self.assertFalse(user.is_active)
-        signer = RegisterSigner({'user_id': user.pk})
-        data = signer.get_signed_data()
-        request = self.create_post_request(data)
-        response = self.view_func(request)
+        user, response = self.create_verify_and_user()
+
         self.assert_invalid_response(response, status.HTTP_404_NOT_FOUND)
         user.refresh_from_db()
         self.assertFalse(user.is_active)

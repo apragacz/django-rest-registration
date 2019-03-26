@@ -126,6 +126,14 @@ REGISTER_SETTINGS_FIELDS = [
             :ref:`html-email`.
             """),
     ),
+    Field(
+        'REGISTER_VERIFICATION_AUTO_LOGIN',
+        default=False,
+        help=dedent("""\
+        Specifies whether a user will be logged in automatically when they
+        verify their registration.
+        """),
+    ),
 ]
 
 LOGIN_SETTINGS_FIELDS = [
