@@ -83,16 +83,30 @@ class APIViewTestCase(BaseViewTestCase):
         )
 
     def assert_valid_verification_url(
-            self, url, expected_path=None, expected_query_keys=None):
-        parsed_url = urlparse(url)
+            self, url, expected_path=None, expected_fields=None,
+            url_parser=None):
+        if url_parser is None:
+            url_parser = self._parse_verification_url
+        try:
+            url_path, verification_data = url_parser(url, expected_fields)
+        except ValueError as e:
+            self.fail(str(e))
         if expected_path is not None:
-            self.assertEqual(parsed_url.path, expected_path)
-        query = parse_qs(parsed_url.query, strict_parsing=True)
-        if expected_query_keys is not None:
-            self.assertSetEqual(set(query), set(expected_query_keys))
+            self.assertEqual(url_path, expected_path)
+        if expected_fields is not None:
+            self.assertSetEqual(
+                set(verification_data.keys()), set(expected_fields))
+        return verification_data
 
-        for values in query.values():
-            self.assert_len_equals(values, 1)
+    def _parse_verification_url(self, url, verification_field_names):
+        parsed_url = urlparse(url)
+        query = parse_qs(parsed_url.query, strict_parsing=True)
+
+        for key, values in query.items():
+            if len(values) == 0:
+                raise ValueError("no values for '{key}".format(key=key))
+            if len(values) > 1:
+                raise ValueError("multiple values for '{key}'".format(key=key))
 
         verification_data = {key: values[0] for key, values in query.items()}
-        return verification_data
+        return parsed_url.path, verification_data

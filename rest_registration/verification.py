@@ -1,9 +1,10 @@
 import pickle
 import time
-from urllib.parse import urlencode
 
 from django.core.signing import BadSignature, SignatureExpired, Signer
 from django.utils.crypto import constant_time_compare
+
+from rest_registration.settings import registration_settings
 
 PICKLE_REPR_PROTOCOL = 4
 
@@ -85,9 +86,5 @@ class URLParamsSigner(DataSigner):
         self.request = request
 
     def get_url(self):
-        base_url = self.get_base_url()
-        params = urlencode(self.get_signed_data())
-        url = '{base_url}?{params}'.format(base_url=base_url, params=params)
-        if self.request:
-            url = self.request.build_absolute_uri(url)
-        return url
+        url_builder = registration_settings.VERIFICATION_URL_BUILDER
+        return url_builder(self)

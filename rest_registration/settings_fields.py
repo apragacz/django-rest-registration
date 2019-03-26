@@ -185,6 +185,20 @@ GLOBAL_VERIFICATION_SETTINGS_FIELDS = [
         default='rest_registration.utils.html.convert_html_to_text_preserving_urls',  # noqa: E501
         import_string=True,
     ),
+    Field(
+        'VERIFICATION_URL_BUILDER',
+        default='rest_registration.utils.verification.build_default_verification_url',  # noqa: E501
+        import_string=True,
+        help=dedent("""\
+            The builder function receives the ``signer`` object and construct
+            the url using ``signer.get_base_url()``
+            and ``signer.get_signed_data()``. The default url builder will use
+            the base url and append the signed data as HTTP GET query string.
+            It is be solely up to the implementer of custom builder function
+            to encode the signed values properly in the URL.
+            """),
+
+    ),
 ]
 
 CHANGE_PASSWORD_SETTINGS_FIELDS = [

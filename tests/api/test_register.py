@@ -2,13 +2,16 @@ import math
 import time
 from unittest import mock
 from unittest.mock import patch
+from urllib.parse import quote_plus as urlquote
+from urllib.parse import unquote_plus as urlunquote
+from urllib.parse import urlparse
 
 from django.test.utils import override_settings
 from rest_framework import status
 
 from rest_registration.api.views.register import RegisterSigner
 from rest_registration.settings import registration_settings
-from tests.utils import shallow_merge_dicts
+from tests.utils import TestCase, shallow_merge_dicts
 
 from .base import APIViewTestCase
 
@@ -36,10 +39,9 @@ REST_REGISTRATION_WITH_HTML_EMAIL_VERIFICATION = {
 
 
 @override_settings(REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION)
-class RegisterViewTestCase(APIViewTestCase):
-    VIEW_NAME = 'register'
+class RegisterSerializerTestCase(TestCase):
 
-    def test_register_serializer_ok(self):
+    def test_ok(self):
         serializer_class = registration_settings.REGISTER_SERIALIZER_CLASS
         serializer = serializer_class(data={})
         field_names = {f for f in serializer.get_fields()}
@@ -56,7 +58,7 @@ class RegisterViewTestCase(APIViewTestCase):
             },
         ),
     )
-    def test_register_serializer_no_password_ok(self):
+    def test_no_password_ok(self):
         serializer_class = registration_settings.REGISTER_SERIALIZER_CLASS
         serializer = serializer_class(data={})
         field_names = {f for f in serializer.get_fields()}
@@ -64,6 +66,52 @@ class RegisterViewTestCase(APIViewTestCase):
             field_names,
             {'id', 'username', 'first_name', 'last_name', 'email', 'password'},
         )
+
+
+def build_custom_verification_url(signer):
+    base_url = signer.get_base_url()
+    signed_data = signer.get_signed_data()
+    if signer.USE_TIMESTAMP:
+        timestamp = signed_data.pop(signer.TIMESTAMP_FIELD)
+    else:
+        timestamp = None
+    signature = signed_data.pop(signer.SIGNATURE_FIELD)
+    segments = [signed_data[k] for k in sorted(signed_data.keys())]
+    segments.append(signature)
+    if timestamp:
+        segments.append(timestamp)
+    quoted_segments = [urlquote(str(s)) for s in segments]
+
+    url = base_url
+    if not url.endswith('/'):
+        url += '/'
+    url += '/'.join(quoted_segments)
+    url += '/'
+    if signer.request:
+        url = signer.request.build_absolute_uri(url)
+
+    return url
+
+
+def parse_custom_verification_url(url, verification_field_names):
+    parsed_url = urlparse(url)
+    num_of_fields = len(verification_field_names)
+    url_path = parsed_url.path.rstrip('/')
+    url_segments = url_path.rsplit('/', num_of_fields)
+    if len(url_segments) != num_of_fields + 1:
+        raise ValueError("Could not parse {url}".format(url=url))
+
+    data_segments = url_segments[1:]
+    url_path = url_segments[0] + '/'
+    verification_data = {
+        name: urlunquote(value)
+        for name, value in zip(verification_field_names, data_segments)}
+    return url_path, verification_data
+
+
+@override_settings(REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION)
+class RegisterViewTestCase(APIViewTestCase):
+    VIEW_NAME = 'register'
 
     def test_register_ok(self):
         data = self._get_register_user_data(password='testpassword')
@@ -88,7 +136,7 @@ class RegisterViewTestCase(APIViewTestCase):
         verification_data = self.assert_valid_verification_url(
             url,
             expected_path=REGISTER_VERIFICATION_URL,
-            expected_query_keys={'signature', 'user_id', 'timestamp'},
+            expected_fields={'signature', 'user_id', 'timestamp'},
         )
         url_user_id = int(verification_data['user_id'])
         self.assertEqual(url_user_id, user_id)
@@ -98,7 +146,47 @@ class RegisterViewTestCase(APIViewTestCase):
         signer = RegisterSigner(verification_data)
         signer.verify()
 
-    # TODO: unskip this test when &times entity problem will be fixed.
+    @override_settings(
+        REST_REGISTRATION=shallow_merge_dicts(
+            REST_REGISTRATION_WITH_VERIFICATION, {
+                'VERIFICATION_URL_BUILDER': build_custom_verification_url,
+            },
+        ),
+    )
+    def test_register_with_custom_verification_url_ok(self):
+        data = self._get_register_user_data(password='testpassword')
+        request = self.create_post_request(data)
+        time_before = math.floor(time.time())
+        with self.assert_one_mail_sent() as sent_emails:
+            response = self.view_func(request)
+        time_after = math.ceil(time.time())
+        self.assert_valid_response(response, status.HTTP_201_CREATED)
+        user_id = response.data['id']
+        # Check database state.
+        user = self.user_class.objects.get(id=user_id)
+        self.assertEqual(user.username, data['username'])
+        self.assertTrue(user.check_password(data['password']))
+        self.assertFalse(user.is_active)
+        # Check verification e-mail.
+        sent_email = sent_emails[0]
+        self.assertEqual(sent_email.from_email, VERIFICATION_FROM_EMAIL)
+        self.assertListEqual(sent_email.to, [data['email']])
+        url = self.assert_one_url_line_in_text(sent_email.body)
+
+        verification_data = self.assert_valid_verification_url(
+            url,
+            expected_path=REGISTER_VERIFICATION_URL,
+            expected_fields=['user_id', 'signature', 'timestamp'],
+            url_parser=parse_custom_verification_url,
+        )
+        url_user_id = int(verification_data['user_id'])
+        self.assertEqual(url_user_id, user_id)
+        url_sig_timestamp = int(verification_data['timestamp'])
+        self.assertGreaterEqual(url_sig_timestamp, time_before)
+        self.assertLessEqual(url_sig_timestamp, time_after)
+        signer = RegisterSigner(verification_data)
+        signer.verify()
+
     @override_settings(
         REST_REGISTRATION=REST_REGISTRATION_WITH_HTML_EMAIL_VERIFICATION,
     )
@@ -125,7 +213,7 @@ class RegisterViewTestCase(APIViewTestCase):
         verification_data = self.assert_valid_verification_url(
             url,
             expected_path=REGISTER_VERIFICATION_URL,
-            expected_query_keys={'signature', 'user_id', 'timestamp'},
+            expected_fields={'signature', 'user_id', 'timestamp'},
         )
         url_user_id = int(verification_data['user_id'])
         self.assertEqual(url_user_id, user_id)
@@ -166,7 +254,7 @@ class RegisterViewTestCase(APIViewTestCase):
         verification_data = self.assert_valid_verification_url(
             url,
             expected_path=REGISTER_VERIFICATION_URL,
-            expected_query_keys={'signature', 'user_id', 'timestamp'},
+            expected_fields={'signature', 'user_id', 'timestamp'},
         )
         url_user_id = int(verification_data['user_id'])
         self.assertEqual(url_user_id, user_id)

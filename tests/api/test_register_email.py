@@ -62,7 +62,7 @@ class RegisterEmailViewTestCase(BaseRegisterEmailViewTestCase):
         verification_data = self.assert_valid_verification_url(
             url,
             expected_path=REGISTER_EMAIL_VERIFICATION_URL,
-            expected_query_keys={'signature', 'user_id', 'timestamp', 'email'},
+            expected_fields={'signature', 'user_id', 'timestamp', 'email'},
         )
         self.assertEqual(verification_data['email'], self.new_email)
         self.assertEqual(int(verification_data['user_id']), self.user.id)

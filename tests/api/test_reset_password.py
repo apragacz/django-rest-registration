@@ -97,7 +97,7 @@ class SendResetPasswordLinkViewTestCase(BaseResetPasswordViewTestCase):
         verification_data = self.assert_valid_verification_url(
             url,
             expected_path=RESET_PASSWORD_VERIFICATION_URL,
-            expected_query_keys={'signature', 'user_id', 'timestamp'},
+            expected_fields={'signature', 'user_id', 'timestamp'},
         )
         self.assertEqual(int(verification_data['user_id']), user.id)
         url_sig_timestamp = int(verification_data['timestamp'])
