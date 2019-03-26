@@ -34,14 +34,7 @@ def login(request):
     if not user:
         raise BadRequest('Login or password invalid.')
 
-    if should_authenticate_session():
-        auth.login(request, user)
-
-    extra_data = {}
-
-    if should_retrieve_token():
-        token, _ = Token.objects.get_or_create(user=user)
-        extra_data['token'] = token.key
+    extra_data = perform_login(request, user)
 
     return get_ok_response('Login successful', extra_data=extra_data)
 
@@ -90,3 +83,16 @@ def should_retrieve_token():
 
 def rest_auth_has_class(cls):
     return cls in api_settings.DEFAULT_AUTHENTICATION_CLASSES
+
+
+def perform_login(request, user):
+    if should_authenticate_session():
+        auth.login(request, user)
+
+    extra_data = {}
+
+    if should_retrieve_token():
+        token, _ = Token.objects.get_or_create(user=user)
+        extra_data['token'] = token.key
+
+    return extra_data

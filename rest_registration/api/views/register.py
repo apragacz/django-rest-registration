@@ -4,6 +4,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
+from rest_registration.api.views.login import perform_login
 from rest_registration.decorators import (
     api_view_serializer_class,
     api_view_serializer_class_getter
@@ -77,11 +78,14 @@ class VerifyRegistrationSerializer(serializers.Serializer):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def verify_registration(request):
-    '''
+    """
     Verify registration via signature.
-    '''
-    process_verify_registration_data(request.data)
-    return get_ok_response('User verified successfully')
+    """
+    user = process_verify_registration_data(request.data)
+    extra_data = None
+    if registration_settings.REGISTER_VERIFICATION_AUTO_LOGIN:
+        extra_data = perform_login(request, user)
+    return get_ok_response('User verified successfully', extra_data=extra_data)
 
 
 def process_verify_registration_data(input_data):
@@ -98,3 +102,5 @@ def process_verify_registration_data(input_data):
     user = get_user_by_id(data['user_id'], require_verified=False)
     setattr(user, verification_flag_field, True)
     user.save()
+
+    return user
