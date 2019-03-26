@@ -130,9 +130,9 @@ REGISTER_SETTINGS_FIELDS = [
         'REGISTER_VERIFICATION_AUTO_LOGIN',
         default=False,
         help=dedent("""\
-        Specifies whether a user will be logged in automatically when they
-        verify their registration.
-        """),
+            Specifies whether a user will be logged in automatically when they
+            verify their registration.
+            """),
     ),
 ]
 

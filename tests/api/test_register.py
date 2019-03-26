@@ -1,5 +1,6 @@
 import math
 import time
+from unittest import mock
 from unittest.mock import patch
 
 from django.test.utils import override_settings
@@ -289,11 +290,13 @@ class VerifyRegistrationViewTestCase(APIViewTestCase):
         user.refresh_from_db()
         self.assertTrue(user.is_active)
 
-    @override_settings(REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION_AUTO_LOGIN)
+    @override_settings(
+        REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION_AUTO_LOGIN,
+    )
     def test_verify_ok_login(self):
-        with patch('django.contrib.auth.login') as mock:
+        with patch('django.contrib.auth.login') as login_mock:
             user, response = self.create_verify_and_user()
-            mock.assert_called()
+            login_mock.assert_called_once_with(mock.ANY, user)
         self.assert_valid_response(response, status.HTTP_200_OK)
         user.refresh_from_db()
         self.assertTrue(user.is_active)
