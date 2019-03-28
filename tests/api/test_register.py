@@ -8,6 +8,7 @@ from rest_framework import status
 
 from rest_registration.api.views.register import RegisterSigner
 from rest_registration.settings import registration_settings
+from tests.utils import shallow_merge_dicts
 
 from .base import APIViewTestCase
 
@@ -17,20 +18,6 @@ REST_REGISTRATION_WITH_VERIFICATION = {
     'REGISTER_VERIFICATION_ENABLED': True,
     'REGISTER_VERIFICATION_URL': REGISTER_VERIFICATION_URL,
     'VERIFICATION_FROM_EMAIL': VERIFICATION_FROM_EMAIL,
-}
-
-REST_REGISTRATION_WITH_VERIFICATION_AUTO_LOGIN = {
-    'REGISTER_VERIFICATION_ENABLED': True,
-    'REGISTER_VERIFICATION_URL': REGISTER_VERIFICATION_URL,
-    'VERIFICATION_FROM_EMAIL': VERIFICATION_FROM_EMAIL,
-    'REGISTER_VERIFICATION_AUTO_LOGIN': True,
-}
-
-REST_REGISTRATION_WITH_VERIFICATION_NO_PASSWORD = {
-    'REGISTER_VERIFICATION_ENABLED': True,
-    'REGISTER_VERIFICATION_URL': REGISTER_VERIFICATION_URL,
-    'VERIFICATION_FROM_EMAIL': VERIFICATION_FROM_EMAIL,
-    'REGISTER_SERIALIZER_PASSWORD_CONFIRM': False,
 }
 
 REST_REGISTRATION_WITHOUT_VERIFICATION = {
@@ -63,7 +50,11 @@ class RegisterViewTestCase(APIViewTestCase):
         )
 
     @override_settings(
-        REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION_NO_PASSWORD,
+        REST_REGISTRATION=shallow_merge_dicts(
+            REST_REGISTRATION_WITH_VERIFICATION, {
+                'REGISTER_SERIALIZER_PASSWORD_CONFIRM': False,
+            },
+        ),
     )
     def test_register_serializer_no_password_ok(self):
         serializer_class = registration_settings.REGISTER_SERIALIZER_CLASS
@@ -145,7 +136,11 @@ class RegisterViewTestCase(APIViewTestCase):
         signer.verify()
 
     @override_settings(
-        REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION_NO_PASSWORD,
+        REST_REGISTRATION=shallow_merge_dicts(
+            REST_REGISTRATION_WITH_VERIFICATION, {
+                'REGISTER_SERIALIZER_PASSWORD_CONFIRM': False,
+            },
+        ),
     )
     def test_register_no_password_confirm_ok(self):
         data = self._get_register_user_data(password='testpassword')
@@ -291,7 +286,11 @@ class VerifyRegistrationViewTestCase(APIViewTestCase):
         self.assertTrue(user.is_active)
 
     @override_settings(
-        REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION_AUTO_LOGIN,
+        REST_REGISTRATION=shallow_merge_dicts(
+            REST_REGISTRATION_WITH_VERIFICATION, {
+                'REGISTER_VERIFICATION_AUTO_LOGIN': True,
+            },
+        ),
     )
     def test_verify_ok_login(self):
         with patch('django.contrib.auth.login') as login_mock:
