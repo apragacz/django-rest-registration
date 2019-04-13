@@ -24,19 +24,27 @@ Assuming that the Django REST registration views are served at
 ``https://backend-host/api/v1/accounts/``
 then the ``send_reset_password_link``, ``reset_password`` views are served as:
 
-* ``https://backend-host/api/v1/accounts/send-reset-password-link/``
-* ``https://backend-host/api/v1/accounts/reset-password/``
+*   ``https://backend-host/api/v1/accounts/send-reset-password-link/``
+*   ``https://backend-host/api/v1/accounts/reset-password/``
 
 accordingly.
+
+.. _reset-password-verification-workflow:
 
 Verification workflow
 ---------------------
 
-We're assuming that the Django REST Registration views are served at
-``https://backend-host/api/v1/accounts/``
-and you configured :ref:`reset-password-verification-url-setting` to be
-``https://frontend-host/reset-password/``
+Let's describe it by example.
+We're assuming that:
 
+-   the Django REST Registration views are served at
+    ``https://backend-host/api/v1/accounts/``
+-   you have :ref:`reset-password-verification-enabled-setting` set to ``True``
+    (this by default)
+-   you configured :ref:`reset-password-verification-url-setting` to be
+    ``https://frontend-host/reset-password/``
+
+Then the verification workflow looks as follows:
 
 1.  The user who wants to reset his/her password sends AJAX POST request to
     ``https://backend-host/api/v1/accounts/send-reset-password-link/`` endpoint.
@@ -61,7 +69,8 @@ and you configured :ref:`reset-password-verification-url-setting` to be
     - ``timestamp``
     - ``signature``
 
-    and after obtaining the new password it should perform AJAX request to
+    and after obtaining the new password from the user
+    it should perform AJAX request to
     ``https://backend-host/api/v1/accounts/reset-password/``
     via HTTP POST with following JSON payload:
 

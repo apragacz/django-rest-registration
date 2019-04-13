@@ -24,19 +24,27 @@ Assuming that the Django REST Registration views are served at
 ``https://backend-host/api/v1/accounts/``
 then the ``register_email``, ``verify_email`` views are served as:
 
-* ``https://backend-host/api/v1/accounts/register-email/``
-* ``https://backend-host/api/v1/accounts/verify-email/``
+*   ``https://backend-host/api/v1/accounts/register-email/``
+*   ``https://backend-host/api/v1/accounts/verify-email/``
 
 accordingly.
+
+.. _register-email-verification-workflow:
 
 Verification workflow
 ---------------------
 
-We're assuming that the Django REST Registration views are served at
-``https://backend-host/api/v1/accounts/``
-and you configured :ref:`register-email-verification-url-setting` to be
-``https://frontend-host/verify-email/``
+Let's describe it by example.
+We're assuming that:
 
+-   the Django REST Registration views are served at
+    ``https://backend-host/api/v1/accounts/``
+-   you have :ref:`register-email-verification-enabled-setting` set to ``True``
+    (this by default)
+-   you configured :ref:`register-email-verification-url-setting` to be
+    ``https://frontend-host/verify-email/``
+
+Then the verification workflow looks as follows:
 
 1.  The user who wants to register new email (which is currently equivalent
     to changing the e-mail) sends AJAX POST request to

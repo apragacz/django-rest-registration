@@ -1,8 +1,17 @@
+.. _quickstart:
+
 Quickstart
 ==========
 
-Then, you should add it to the ``INSTALLED_APPS`` so the app templates
-for notification emails can be accessed:
+Assuming you have installed Django REST Registration
+(more installation options can be found :ref:`here<installation>`):
+
+::
+
+    pip install django-rest-registration
+
+you should add it to the ``INSTALLED_APPS`` in your Django settings
+so the app templates for notification emails can be accessed:
 
 .. code:: python
 
@@ -12,8 +21,8 @@ for notification emails can be accessed:
         'rest_registration',
     )
 
-After that, you can use the urls in your urlconfig, for instance (using
-new Django 2.x syntax):
+After that, you can use the urls in your Django urlconfig, for instance
+(using new Django 2.x syntax):
 
 .. code:: python
 
@@ -32,13 +41,18 @@ new Django 2.x syntax):
 
 In Django 1.x you can use old ``url`` instead of ``path``.
 
+In this example, the Django REST Registraton API views will be served under
+``https://your-backend-host/api/v1/accounts/``.
+Obviously, you can choose different URI path than ``api/v1/accounts/``,
+depending on your preferences.
+
 
 Minimal Configuration
 ---------------------
 
-You can configure ``django-rest-registraton`` using the
-``REST_REGISTRATION`` setting in your django settings (similarly to
-``django-rest-framework``).
+You can configure Django REST Registraton using the
+``REST_REGISTRATION`` setting in your Django settings (similarly to
+Django REST Framework).
 
 If you don't do that, Django system checks will inform you
 about invalid configuration.
@@ -58,11 +72,19 @@ which will satisfy the system checks:
 Preferred Configuration
 -----------------------
 
-The minimal configuration is very limited, because it disables verification
-for new users (``REGISTER_VERIFICATION_ENABLED``), verification
-for e-mail change (``REGISTER_EMAIL_VERIFICATION_ENABLED``) and
-verification for reset password  (``RESET_PASSWORD_VERIFICATION_ENABLED``).
-However, the preferred base configuration would be:
+The minimal configuration is very limited, because it:
+
+-   disables e-mail verification for new users
+    (:ref:`register-verification-enabled-setting`), which means that the user
+    can set the e-mail to one not belonging to him/her,
+-   disables e-mail verification for e-mail change
+    (:ref:`register-email-verification-enabled-setting`), which again means
+    that the user can change the e-mail to one not belonging to him/her,
+-   disabled verification for reset password
+    (:ref:`reset-password-verification-enabled-setting`) which basically
+    disables the ability to reset password.
+
+Therefore, the preferred base configuration would be:
 
 .. code:: python
 
@@ -77,39 +99,29 @@ However, the preferred base configuration would be:
 
 You need to replace ``'https://frontend-host/reset-password/'``
 with the URL on your frontend which will be pointed in the "reset password"
-e-mail. You also need also to replace ``'no-reply@example.com'`` with the
-e-mail address which will be used as the sender of the reset e-mail.
+e-mail. This also applies to the other verification urls above.
+You also need also to replace ``'no-reply@example.com'`` with the
+e-mail address which will be used as the sender of the verification e-mails.
+
+In case when any verification is enabled, your Django application needs to be
+`properly configured so it can send e-mails <https://docs.djangoproject.com/en/dev/topics/email/>`__.
 
 The frontend urls are not provided by the library but should be provided
-by the user of the library, because Django REST Registration is
-frontend-agnostic. The frontend urls will receive parameters as GET
+by the user of the library (you), because Django REST Registration is
+frontend-agnostic.
+
+If you want to understand how the verification workflows work and how the
+provided frontend endpoints should work please read:
+
+-   :ref:`Register
+    verification workflow <register-verification-workflow>`
+-   :ref:`Register e-mail
+    verification workflow <register-email-verification-workflow>`
+-   :ref:`Reset password
+    verification workflow <reset-password-verification-workflow>`
+
+In most cases, the frontend urls should receive parameters as GET
 query and should pass them to corresponding REST API views via HTTP POST
-request.
-
-Let's explain it by example:
-
-we're assuming that the ``django-rest-registration`` views are served at
-https://backend-host/api/v1/accounts/. The frontend endpoint
-https://frontend-host/verify-email/ would receive following GET
-parameters:
-
-- ``user_id``
-- ``email``
-- ``timestamp``
-- ``signature``
-
-and then it should perform AJAX request to
-https://backend-host/api/v1/accounts/verify-email/ via HTTP POST with
-following JSON payload:
-
-.. code:: javascript
-
-    {
-        "user_id": "<user id>",
-        "email": "<email>",
-        "timestamp": "<timestamp>",
-        "signature": "<signature>"
-    }
-
-and then show a message to the user depending on the response from
-backend server.
+request. The one exception is reset password workflow, where the page under
+frontend endpoint should also gather the new password from the user and send
+it along other data via HTTP POST to the REST API endpoint.

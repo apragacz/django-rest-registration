@@ -1,3 +1,5 @@
+.. _installation:
+
 Installation
 ============
 
@@ -12,3 +14,6 @@ Or install directly from source via GitHub:
 ::
 
     pip install git+https://github.com/apragacz/django-rest-registration
+
+Once you installed Django REST Registration you should configure it
+which is described in :ref:`the next step <quickstart>`.

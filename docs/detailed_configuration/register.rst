@@ -24,19 +24,27 @@ Assuming that the Django REST registration views are served at
 ``https://backend-host/api/v1/accounts/``
 then the ``register``, ``verify_registration`` views are served as:
 
-* ``https://backend-host/api/v1/accounts/register/``
-* ``https://backend-host/api/v1/accounts/verify-registration/``
+*   ``https://backend-host/api/v1/accounts/register/``
+*   ``https://backend-host/api/v1/accounts/verify-registration/``
 
 accordingly.
+
+.. _register-verification-workflow:
 
 Verification workflow
 ---------------------
 
-We're assuming that the Django REST Registration views are served at
-``https://backend-host/api/v1/accounts/``
-and you configured :ref:`register-verification-url-setting` to be
-``https://frontend-host/verify-user/``
+Let's describe it by example.
+We're assuming that:
 
+-   the Django REST Registration views are served at
+    ``https://backend-host/api/v1/accounts/``
+-   you have :ref:`register-verification-enabled-setting` set to ``True``
+    (this by default)
+-   you configured :ref:`register-verification-url-setting` to be
+    ``https://frontend-host/verify-user/``
+
+Then the verification workflow looks as follows:
 
 1.  The user who wants to register itself sends AJAX POST request to
     ``https://backend-host/api/v1/accounts/register/`` endpoint.
