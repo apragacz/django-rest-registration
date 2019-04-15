@@ -36,17 +36,6 @@ def get_version(package):
     return re.search("__version__ = ['\"]([^'\"]+)['\"]", init_py).group(1)
 
 
-def get_long_description(markdown_filepath):
-    '''
-    Return the long description in RST format, when possible.
-    '''
-    try:
-        import pypandoc
-        return pypandoc.convert(markdown_filepath, 'rst')
-    except ImportError:
-        return read_contents(markdown_filepath)
-
-
 def get_cmdclass():
     cmdclass = {}
     try:
@@ -61,7 +50,6 @@ def get_cmdclass():
 setup(
     version=get_version('rest_registration'),
     packages=find_packages(exclude=['tests.*', 'tests']),
-    long_description=get_long_description('README.md'),
     install_requires=get_requirements('requirements/requirements-base.txt'),
     cmdclass=get_cmdclass(),
     command_options={
