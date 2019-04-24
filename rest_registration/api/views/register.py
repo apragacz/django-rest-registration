@@ -28,6 +28,24 @@ class RegisterSigner(URLParamsSigner):
     def get_valid_period(self):
         return registration_settings.REGISTER_VERIFICATION_PERIOD
 
+    def _calculate_salt(self, data):
+        if registration_settings.REGISTER_VERIFICATION_ONE_TIME_USE:
+            user_id = data['user_id']
+            user = get_user_by_id(user_id, require_verified=False)
+            # Use current user verification flag as a part of the salt.
+            # If the verification flag gets changed, then assume that
+            # the change was caused by previous verification and the signature
+            # is not valid anymore because changed user verification flag
+            # implies changed salt used when verifying the input data.
+            verification_flag_field = get_user_setting(
+                'VERIFICATION_FLAG_FIELD')
+            verification_flag = getattr(user, verification_flag_field)
+            salt = '{self.SALT_BASE}:{verification_flag}'.format(
+                self=self, verification_flag=verification_flag)
+        else:
+            salt = self.SALT_BASE
+        return salt
+
 
 @api_view_serializer_class_getter(
     lambda: registration_settings.REGISTER_SERIALIZER_CLASS)

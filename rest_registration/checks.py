@@ -19,6 +19,10 @@ class ErrorCode(object):
     NO_AUTH_INSTALLED = 'E008'
 
 
+class WarningCode(object):
+    REGISTER_VERIFICATION_MULTIPLE_AUTO_LOGIN = 'W001'
+
+
 @register()
 @simple_check(
     'django.contrib.auth is not in INSTALLED_APPS',
@@ -110,6 +114,23 @@ def token_auth_installed_check():
 
 @register()
 @simple_check(
+    'REGISTER_VERIFICATION_AUTO_LOGIN is enabled,'
+    ' but REGISTER_VERIFICATION_ONE_TIME_USE is not enabled.'
+    ' This can allow multiple logins using the verification url.',
+    WarningCode.REGISTER_VERIFICATION_MULTIPLE_AUTO_LOGIN,
+)
+def register_verification_one_time_auto_login_check():
+    return implies(
+        all([
+            registration_settings.REGISTER_VERIFICATION_ENABLED,
+            registration_settings.REGISTER_VERIFICATION_AUTO_LOGIN,
+        ]),
+        registration_settings.REGISTER_VERIFICATION_ONE_TIME_USE,
+    )
+
+
+@register()
+@simple_check(
     'REGISTER_VERIFICATION_EMAIL_TEMPLATES is invalid',
     ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
 )
@@ -159,6 +180,7 @@ __ALL_CHECKS__ = [
     verification_from_check,
     token_auth_config_check,
     token_auth_installed_check,
+    register_verification_one_time_auto_login_check,
     valid_register_verification_email_template_config_check,
     valid_reset_password_verification_email_template_config_check,
     valid_register_email_verification_email_template_config_check,

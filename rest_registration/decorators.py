@@ -1,7 +1,7 @@
 import functools
 import types
 
-from django.core.checks import Error
+from django.core.checks import Error, Warning
 
 
 def api_view_serializer_class_getter(serializer_class_getter):
@@ -35,7 +35,8 @@ def api_view_serializer_class(serializer_class):
     return api_view_serializer_class_getter(lambda: serializer_class)
 
 
-def simple_check(error_message, error_code, obj=None):
+def simple_check(error_message, error_code, obj=None, warning=False):
+    message_cls = Warning if warning else Error
 
     def decorator(predicate):
 
@@ -43,21 +44,21 @@ def simple_check(error_message, error_code, obj=None):
         def check_fun(app_configs, **kwargs):
             from rest_registration.apps import RestRegistrationConfig
 
-            errors = []
+            messages = []
             if not predicate():
                 err_id = '{RestRegistrationConfig.name}.{error_code}'.format(
                     RestRegistrationConfig=RestRegistrationConfig,
                     error_code=error_code,
                 )
-                errors.append(
-                    Error(
+                messages.append(
+                    message_cls(
                         error_message,
                         obj=obj,
                         hint=None,
                         id=err_id,
                     )
                 )
-            return errors
+            return messages
 
         return check_fun
 

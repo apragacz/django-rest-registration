@@ -355,21 +355,61 @@ class RegisterViewTestCase(APIViewTestCase):
 class VerifyRegistrationViewTestCase(APIViewTestCase):
     VIEW_NAME = 'verify-registration'
 
-    def create_verify_and_user(self, session=False):
+    def prepare_user(self):
         user = self.create_test_user(is_active=False)
         self.assertFalse(user.is_active)
+        return user
+
+    def prepare_request(self, user, session=False):
         signer = RegisterSigner({'user_id': user.pk})
         data = signer.get_signed_data()
         request = self.create_post_request(data)
         if session:
             self.add_session_to_request(request)
-        response = self.view_func(request)
-        return user, response
+        return request
+
+    def prepare_user_and_request(self, session=False):
+        user = self.prepare_user()
+        request = self.prepare_request(user, session=session)
+        return user, request
 
     @override_settings(REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION)
     def test_verify_ok(self):
-        user, response = self.create_verify_and_user()
+        user, request = self.prepare_user_and_request()
+        response = self.view_func(request)
         self.assert_valid_response(response, status.HTTP_200_OK)
+        user.refresh_from_db()
+        self.assertTrue(user.is_active)
+
+    @override_settings(REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION)
+    def test_verify_ok_idempotent(self):
+        user = self.prepare_user()
+        request1 = self.prepare_request(user)
+        request2 = self.prepare_request(user)
+
+        self.view_func(request1)
+
+        response = self.view_func(request2)
+        self.assert_valid_response(response, status.HTTP_200_OK)
+        user.refresh_from_db()
+        self.assertTrue(user.is_active)
+
+    @override_settings(
+        REST_REGISTRATION=shallow_merge_dicts(
+            REST_REGISTRATION_WITH_VERIFICATION, {
+                'REGISTER_VERIFICATION_ONE_TIME_USE': True,
+            },
+        ),
+    )
+    def test_verify_one_time_use(self):
+        user = self.prepare_user()
+        request1 = self.prepare_request(user)
+        request2 = self.prepare_request(user)
+
+        self.view_func(request1)
+
+        response = self.view_func(request2)
+        self.assert_valid_response(response, status.HTTP_400_BAD_REQUEST)
         user.refresh_from_db()
         self.assertTrue(user.is_active)
 
@@ -382,7 +422,8 @@ class VerifyRegistrationViewTestCase(APIViewTestCase):
     )
     def test_verify_ok_login(self):
         with patch('django.contrib.auth.login') as login_mock:
-            user, response = self.create_verify_and_user()
+            user, request = self.prepare_user_and_request()
+            response = self.view_func(request)
             login_mock.assert_called_once_with(mock.ANY, user)
         self.assert_valid_response(response, status.HTTP_200_OK)
         user.refresh_from_db()
@@ -425,7 +466,8 @@ class VerifyRegistrationViewTestCase(APIViewTestCase):
         }
     )
     def test_verify_disabled(self):
-        user, response = self.create_verify_and_user()
+        user, request = self.prepare_user_and_request()
+        response = self.view_func(request)
 
         self.assert_invalid_response(response, status.HTTP_404_NOT_FOUND)
         user.refresh_from_db()

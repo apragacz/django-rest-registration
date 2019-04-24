@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.test.utils import override_settings
 
 from rest_registration.apps import RestRegistrationConfig
-from rest_registration.checks import __ALL_CHECKS__, ErrorCode
+from rest_registration.checks import __ALL_CHECKS__, ErrorCode, WarningCode
 from rest_registration.settings import DEFAULTS
 
 
@@ -61,6 +61,21 @@ class ChecksTestCase(TestCase):
         errors = simulate_checks()
         self.assert_error_codes_match(errors, [
             ErrorCode.NO_VER_FROM_EMAIL,
+        ])
+
+    @override_settings(
+        REST_REGISTRATION={
+            'REGISTER_VERIFICATION_URL': '/verify-account/',
+            'REGISTER_VERIFICATION_AUTO_LOGIN': True,
+            'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
+            'RESET_PASSWORD_VERIFICATION_ENABLED': False,
+            'VERIFICATION_FROM_EMAIL': 'jon.doe@example.com',
+        },
+    )
+    def test_checks_multiple_time_auto_login(self):
+        errors = simulate_checks()
+        self.assert_error_codes_match(errors, [
+            WarningCode.REGISTER_VERIFICATION_MULTIPLE_AUTO_LOGIN,
         ])
 
     @override_settings(
