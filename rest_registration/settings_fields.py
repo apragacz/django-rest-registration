@@ -163,6 +163,18 @@ RESET_PASSWORD_SETTINGS_FIELDS = [
     ),
 ]
 REGISTER_EMAIL_SETTINGS_FIELDS = [
+    Field(
+        'REGISTER_EMAIL_SERIALIZER_CLASS',
+        default='rest_registration.api.serializers.DefaultRegisterEmailSerializer',  # noqa: E501
+        import_string=True,
+        help=dedent("""\
+            The serializer used by :ref:`register-email-view` endpoint.
+            It is used to validate the input data and obtain new e-mail.
+            You can use your custom serializer
+            to customise validation logic. Please remember that it should
+            implement ``get_email`` method.
+            """),
+    ),
     Field('REGISTER_EMAIL_VERIFICATION_ENABLED', default=True),
     Field(
         'REGISTER_EMAIL_VERIFICATION_PERIOD',

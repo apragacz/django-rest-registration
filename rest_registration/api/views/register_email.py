@@ -3,7 +3,10 @@ from rest_framework import serializers
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
-from rest_registration.decorators import api_view_serializer_class
+from rest_registration.decorators import (
+    api_view_serializer_class,
+    api_view_serializer_class_getter
+)
 from rest_registration.notifications import send_verification_notification
 from rest_registration.settings import registration_settings
 from rest_registration.utils.responses import get_ok_response
@@ -23,11 +26,8 @@ class RegisterEmailSigner(URLParamsSigner):
         return registration_settings.REGISTER_EMAIL_VERIFICATION_PERIOD
 
 
-class RegisterEmailSerializer(serializers.Serializer):
-    email = serializers.EmailField(required=True)
-
-
-@api_view_serializer_class(RegisterEmailSerializer)
+@api_view_serializer_class_getter(
+    lambda: registration_settings.REGISTER_EMAIL_SERIALIZER_CLASS)
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def register_email(request):
@@ -36,10 +36,11 @@ def register_email(request):
     '''
     user = request.user
 
-    serializer = RegisterEmailSerializer(data=request.data)
+    serializer_class = registration_settings.REGISTER_EMAIL_SERIALIZER_CLASS
+    serializer = serializer_class(data=request.data)
     serializer.is_valid(raise_exception=True)
 
-    email = serializer.validated_data['email']
+    email = serializer.get_email()
 
     template_config = (
         registration_settings.REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES)

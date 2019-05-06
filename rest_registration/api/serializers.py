@@ -33,6 +33,19 @@ class DefaultLoginSerializer(serializers.Serializer):
             data['login'], data['password'])
 
 
+class DefaultRegisterEmailSerializer(serializers.Serializer):
+    """
+    Default serializer used for e-mail registration (e-mail change).
+    """
+    email = serializers.EmailField(required=True)
+
+    def get_email(self):
+        """
+        Return user email.
+        """
+        return self.validated_data['email']
+
+
 class DefaultUserProfileSerializer(serializers.ModelSerializer):
     """
     Default serializer used for user profile. It will use these:
