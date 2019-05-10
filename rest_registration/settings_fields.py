@@ -147,6 +147,13 @@ LOGIN_SETTINGS_FIELDS = [
     Field('LOGIN_RETRIEVE_TOKEN'),
 ]
 RESET_PASSWORD_SETTINGS_FIELDS = [
+    Field(
+        'SEND_RESET_PASSWORD_LINK_SERIALIZER_CLASS',
+        default='rest_registration.api.serializers.DefaultSendResetPasswordLinkSerializer',  # noqa: E501,
+        import_string=True,
+        help=dedent("""\
+            """)
+    ),
     Field('RESET_PASSWORD_VERIFICATION_ENABLED', default=True),
     Field(
         'RESET_PASSWORD_VERIFICATION_PERIOD',

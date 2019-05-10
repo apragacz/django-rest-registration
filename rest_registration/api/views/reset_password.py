@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.http import Http404
@@ -6,16 +5,14 @@ from rest_framework import serializers
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 
-from rest_registration.decorators import api_view_serializer_class
-from rest_registration.exceptions import UserNotFound
+from rest_registration.decorators import (
+    api_view_serializer_class,
+    api_view_serializer_class_getter
+)
 from rest_registration.notifications import send_verification_notification
 from rest_registration.settings import registration_settings
 from rest_registration.utils.responses import get_ok_response
-from rest_registration.utils.users import (
-    get_user_by_id,
-    get_user_by_lookup_dict,
-    get_user_setting
-)
+from rest_registration.utils.users import get_user_by_id
 from rest_registration.utils.verification import verify_signer_or_bad_request
 from rest_registration.verification import URLParamsSigner
 
@@ -46,16 +43,8 @@ class ResetPasswordSigner(URLParamsSigner):
         return salt
 
 
-class SendResetPasswordLinkSerializer(serializers.Serializer):
-    login = serializers.CharField(required=True)
-
-
-def get_login_fields():
-    user_class = get_user_model()
-    return get_user_setting('LOGIN_FIELDS') or [user_class.USERNAME_FIELD]
-
-
-@api_view_serializer_class(SendResetPasswordLinkSerializer)
+@api_view_serializer_class_getter(
+    lambda: registration_settings.SEND_RESET_PASSWORD_LINK_SERIALIZER_CLASS)
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def send_reset_password_link(request):
@@ -64,20 +53,10 @@ def send_reset_password_link(request):
     '''
     if not registration_settings.RESET_PASSWORD_VERIFICATION_ENABLED:
         raise Http404()
-    serializer = SendResetPasswordLinkSerializer(data=request.data)
+    serializer_class = registration_settings.SEND_RESET_PASSWORD_LINK_SERIALIZER_CLASS  # noqa: E501
+    serializer = serializer_class(data=request.data)
     serializer.is_valid(raise_exception=True)
-    login = serializer.validated_data['login']
-
-    user = None
-    for login_field in get_login_fields():
-        user = get_user_by_lookup_dict(
-            {login_field: login}, default=None, require_verified=False)
-        if user:
-            break
-
-    if not user:
-        raise UserNotFound()
-
+    user = serializer.get_user()
     signer = ResetPasswordSigner({
         'user_id': user.pk,
     }, request=request)
