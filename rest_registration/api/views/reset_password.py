@@ -9,6 +9,7 @@ from rest_registration.decorators import (
     api_view_serializer_class,
     api_view_serializer_class_getter
 )
+from rest_registration.exceptions import UserNotFound
 from rest_registration.notifications import send_verification_notification
 from rest_registration.settings import registration_settings
 from rest_registration.utils.responses import get_ok_response
@@ -56,7 +57,9 @@ def send_reset_password_link(request):
     serializer_class = registration_settings.SEND_RESET_PASSWORD_LINK_SERIALIZER_CLASS  # noqa: E501
     serializer = serializer_class(data=request.data)
     serializer.is_valid(raise_exception=True)
-    user = serializer.get_user()
+    user = serializer.get_user_or_none()
+    if not user:
+        raise UserNotFound()
     signer = ResetPasswordSigner({
         'user_id': user.pk,
     }, request=request)

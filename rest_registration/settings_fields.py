@@ -152,6 +152,11 @@ RESET_PASSWORD_SETTINGS_FIELDS = [
         default='rest_registration.api.serializers.DefaultSendResetPasswordLinkSerializer',  # noqa: E501,
         import_string=True,
         help=dedent("""\
+            The serializer used by :ref:`send-reset-password-link-view`
+            endpoint. You can use your custom serializer
+            to customise validation logic and perform additonal checks.
+            Please remember that it should implement ``get_user_or_none``
+            method which is used to obtain the user matching the criteria.
             """)
     ),
     Field('RESET_PASSWORD_VERIFICATION_ENABLED', default=True),

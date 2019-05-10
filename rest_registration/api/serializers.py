@@ -3,7 +3,6 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from rest_registration.exceptions import UserNotFound
 from rest_registration.settings import registration_settings
 from rest_registration.utils.users import (
     authenticate_by_login_and_password_or_none,
@@ -52,7 +51,11 @@ class DefaultRegisterEmailSerializer(serializers.Serializer):
 class DefaultSendResetPasswordLinkSerializer(serializers.Serializer):
     login = serializers.CharField(required=True)
 
-    def get_user(self):
+    def get_user_or_none(self):
+        """
+        Return user if login matches.
+        Return ``None`` otherwise.
+        """
         login = self.validated_data['login']
         user = None
         for login_field in get_user_login_fields():
@@ -61,8 +64,6 @@ class DefaultSendResetPasswordLinkSerializer(serializers.Serializer):
             if user:
                 break
 
-        if not user:
-            raise UserNotFound()
         return user
 
 
