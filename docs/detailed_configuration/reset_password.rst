@@ -86,6 +86,17 @@ Then the verification workflow looks as follows:
     and then show a message to the user depending on the response from
     backend server.
 
+Default serializers
+-------------------
+
+.. _default-send-reset-password-link-serializer:
+
+DefaultSendResetPasswordLinkSerializer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: rest_registration.api.serializers.DefaultSendResetPasswordLinkSerializer
+   :members:
+
 List of settings
 ----------------
 
