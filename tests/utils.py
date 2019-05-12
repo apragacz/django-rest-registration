@@ -8,6 +8,8 @@ from django.test import TestCase as DjangoTestCase
 from django.urls import reverse
 from django_dynamic_fixture import G
 
+from rest_registration.verification import get_current_timestamp
+
 
 class TestCase(DjangoTestCase):
 
@@ -83,6 +85,13 @@ class TestCase(DjangoTestCase):
         with self._assert_mails_sent(0) as sent_emails:
             yield sent_emails
 
+    @contextlib.contextmanager
+    def timer(self, get_current_timestamp=get_current_timestamp):
+        timer = Timer(get_current_timestamp=get_current_timestamp)
+        timer.set_start_time()
+        yield timer
+        timer.set_end_time()
+
     def _assert_urls_in_text(self, text, expected_num, line_url_pattern):
         lines = [line.rstrip() for line in text.split('\n')]
         urls = []
@@ -135,6 +144,7 @@ class BaseViewTestCase(TestCase):
 class EmailMessageContainer(Sequence):
 
     def __init__(self):
+        super().__init__()
         self._mails = []
         self._set = False
 
@@ -148,6 +158,41 @@ class EmailMessageContainer(Sequence):
         assert not self._set
         self._mails = list(mails)
         self._set = True
+
+
+class Timer(object):
+
+    def __init__(self, get_current_timestamp=get_current_timestamp):
+        super().__init__()
+        self._get_current_timestamp = get_current_timestamp
+        self._start_time = None
+        self._end_time = None
+
+    @property
+    def start_time(self):
+        assert self._start_time is not None, "start_time was not set"
+        return self._start_time
+
+    @start_time.setter
+    def start_time(self, value):
+        assert self._start_time is None, "start_time is already set"
+        self._start_time = value
+
+    @property
+    def end_time(self):
+        assert self._end_time is not None, "end_time was not set"
+        return self._end_time
+
+    @end_time.setter
+    def end_time(self, value):
+        assert self._end_time is None, "end_time is already set"
+        self._end_time = value
+
+    def set_start_time(self):
+        self.start_time = self._get_current_timestamp()
+
+    def set_end_time(self):
+        self.end_time = self._get_current_timestamp()
 
 
 def shallow_merge_dicts(d, *other_dicts):
