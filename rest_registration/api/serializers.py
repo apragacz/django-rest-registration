@@ -49,14 +49,34 @@ class DefaultRegisterEmailSerializer(serializers.Serializer):
 
 
 class DefaultSendResetPasswordLinkSerializer(serializers.Serializer):
-    login = serializers.CharField(required=True)
+    """
+    Default serializer used for sending reset password link.
+
+    It will use :ref:`send-reset-password-link-serializer-use-email-setting`
+    setting.
+    """
+
+    def get_fields(self):
+        fields = super().get_fields()
+        if registration_settings.SEND_RESET_PASSWORD_LINK_SERIALIZER_USE_EMAIL:
+            fields['email'] = serializers.CharField(required=True)
+        else:
+            fields['login'] = serializers.CharField(required=True)
+        return fields
 
     def get_user_or_none(self):
         """
-        Return user if login matches.
+        Return user if matching given criteria (login fields / e-mail).
         Return ``None`` otherwise.
         """
-        login = self.validated_data['login']
+        if registration_settings.SEND_RESET_PASSWORD_LINK_SERIALIZER_USE_EMAIL:
+            email = self.validated_data['email']
+            return self._get_user_by_email_or_none(email)
+        else:
+            login = self.validated_data['login']
+            return self._get_user_by_login_or_none(login)
+
+    def _get_user_by_login_or_none(self, login):
         user = None
         for login_field in get_user_login_fields():
             user = get_user_by_lookup_dict(
@@ -65,6 +85,11 @@ class DefaultSendResetPasswordLinkSerializer(serializers.Serializer):
                 break
 
         return user
+
+    def _get_user_by_email_or_none(self, email):
+        email_field = get_user_setting('EMAIL_FIELD')
+        return get_user_by_lookup_dict(
+            {email_field: email}, default=None, require_verified=False)
 
 
 class DefaultUserProfileSerializer(serializers.ModelSerializer):

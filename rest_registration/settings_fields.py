@@ -159,6 +159,16 @@ RESET_PASSWORD_SETTINGS_FIELDS = [
             method which is used to obtain the user matching the criteria.
             """)
     ),
+    Field(
+        'SEND_RESET_PASSWORD_LINK_SERIALIZER_USE_EMAIL',
+        default=False,
+        help=dedent("""\
+            Used specifically by ``DefaultSendResetPasswordLinkSerializer``.
+
+            If ``True``, use e-mail field instead of login fields to find
+            the user who should receive the reset password link.
+            """)
+    ),
     Field('RESET_PASSWORD_VERIFICATION_ENABLED', default=True),
     Field(
         'RESET_PASSWORD_VERIFICATION_PERIOD',
