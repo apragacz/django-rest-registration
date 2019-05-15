@@ -39,6 +39,31 @@ class SendResetPasswordLinkViewTestCase(BaseResetPasswordViewTestCase):
         sent_email = sent_emails[0]
         self._assert_valid_send_link_email(sent_email, user, timer)
 
+    @override_settings(
+        REST_REGISTRATION=shallow_merge_dicts(
+            REST_REGISTRATION_WITH_RESET_PASSWORD, {
+                'USER_VERIFICATION_ID_FIELD': 'username',
+            },
+        ),
+    )
+    def test_send_link_with_username_as_verification_id_ok(self):
+        user = self.create_test_user(username='testusername')
+        request = self.create_post_request({
+            'login': user.username,
+        })
+        with self.assert_one_mail_sent() as sent_emails, self.timer() as timer:
+            response = self.view_func(request)
+            self.assert_valid_response(response, status.HTTP_200_OK)
+        sent_email = sent_emails[0]
+        verification_data = self._assert_valid_verification_email(
+            sent_email, user)
+        self.assertEqual(verification_data['user_id'], user.username)
+        url_sig_timestamp = int(verification_data['timestamp'])
+        self.assertGreaterEqual(url_sig_timestamp, timer.start_time)
+        self.assertLessEqual(url_sig_timestamp, timer.end_time)
+        signer = ResetPasswordSigner(verification_data)
+        signer.verify()
+
     def test_send_link_but_email_not_in_login_fields(self):
         user = self.create_test_user(
             username='testusername', email='testuser@example.com')
@@ -165,6 +190,11 @@ class SendResetPasswordLinkViewTestCase(BaseResetPasswordViewTestCase):
             self.assert_response_is_not_found(response)
 
     def _assert_valid_send_link_email(self, sent_email, user, timer):
+        verification_data = self._assert_valid_verification_email(
+            sent_email, user)
+        self._assert_valid_verification_data(verification_data, user, timer)
+
+    def _assert_valid_verification_email(self, sent_email, user):
         self.assertEqual(
             sent_email.from_email,
             REST_REGISTRATION_WITH_RESET_PASSWORD['VERIFICATION_FROM_EMAIL'],
@@ -176,6 +206,9 @@ class SendResetPasswordLinkViewTestCase(BaseResetPasswordViewTestCase):
             expected_path=RESET_PASSWORD_VERIFICATION_URL,
             expected_fields={'signature', 'user_id', 'timestamp'},
         )
+        return verification_data
+
+    def _assert_valid_verification_data(self, verification_data, user, timer):
         self.assertEqual(int(verification_data['user_id']), user.id)
         url_sig_timestamp = int(verification_data['timestamp'])
         self.assertGreaterEqual(url_sig_timestamp, timer.start_time)
@@ -192,6 +225,26 @@ class ResetPasswordViewTestCase(BaseResetPasswordViewTestCase):
         new_password = 'eaWrivtig5'
         user = self.create_test_user(password=old_password)
         signer = ResetPasswordSigner({'user_id': user.pk})
+        data = signer.get_signed_data()
+        data['password'] = new_password
+        request = self.create_post_request(data)
+        response = self.view_func(request)
+        self.assert_response_is_ok(response)
+        user.refresh_from_db()
+        self.assertTrue(user.check_password(new_password))
+
+    @override_settings(
+        REST_REGISTRATION=shallow_merge_dicts(
+            REST_REGISTRATION_WITH_RESET_PASSWORD, {
+                'USER_VERIFICATION_ID_FIELD': 'username',
+            },
+        ),
+    )
+    def test_reset_with_username_as_verification_id_ok(self):
+        old_password = 'password1'
+        new_password = 'eaWrivtig5'
+        user = self.create_test_user(password=old_password)
+        signer = ResetPasswordSigner({'user_id': user.username})
         data = signer.get_signed_data()
         data['password'] = new_password
         request = self.create_post_request(data)

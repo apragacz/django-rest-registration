@@ -13,7 +13,10 @@ from rest_registration.exceptions import UserNotFound
 from rest_registration.notifications import send_verification_notification
 from rest_registration.settings import registration_settings
 from rest_registration.utils.responses import get_ok_response
-from rest_registration.utils.users import get_user_by_id
+from rest_registration.utils.users import (
+    get_user_by_verification_id,
+    get_user_verification_id
+)
 from rest_registration.utils.verification import verify_signer_or_bad_request
 from rest_registration.verification import URLParamsSigner
 
@@ -30,8 +33,8 @@ class ResetPasswordSigner(URLParamsSigner):
 
     def _calculate_salt(self, data):
         if registration_settings.RESET_PASSWORD_VERIFICATION_ONE_TIME_USE:
-            user_id = data['user_id']
-            user = get_user_by_id(user_id, require_verified=False)
+            user = get_user_by_verification_id(
+                data['user_id'], require_verified=False)
             # Use current user password hash as a part of the salt.
             # If the password gets changed, then assume that the change
             # was caused by previous password reset and the signature
@@ -61,7 +64,7 @@ def send_reset_password_link(request):
     if not user:
         raise UserNotFound()
     signer = ResetPasswordSigner({
-        'user_id': user.pk,
+        'user_id': get_user_verification_id(user),
     }, request=request)
 
     template_config = (
@@ -100,7 +103,7 @@ def process_reset_password_data(input_data):
     signer = ResetPasswordSigner(data)
     verify_signer_or_bad_request(signer)
 
-    user = get_user_by_id(data['user_id'], require_verified=False)
+    user = get_user_by_verification_id(data['user_id'], require_verified=False)
     try:
         validate_password(password, user=user)
     except ValidationError as exc:

@@ -44,6 +44,17 @@ USER_SETTINGS_FIELDS = [
         default='email',
     ),
     Field(
+        'USER_VERIFICATION_ID_FIELD',
+        default='pk',
+        help=dedent("""\
+            Field used in verification, as part of signed data.
+
+            The given field should uniquely identify the user. This means that
+            using any user field which could change over time
+            (``email``, ``username``) is NOT recommended.
+            """),
+    ),
+    Field(
         'USER_VERIFICATION_FLAG_FIELD',
         default='is_active',
     ),

@@ -13,7 +13,11 @@ from rest_registration.exceptions import BadRequest
 from rest_registration.notifications import send_verification_notification
 from rest_registration.settings import registration_settings
 from rest_registration.utils.responses import get_ok_response
-from rest_registration.utils.users import get_user_by_id, get_user_setting
+from rest_registration.utils.users import (
+    get_user_by_verification_id,
+    get_user_setting,
+    get_user_verification_id
+)
 from rest_registration.utils.verification import verify_signer_or_bad_request
 from rest_registration.verification import URLParamsSigner
 
@@ -30,8 +34,8 @@ class RegisterSigner(URLParamsSigner):
 
     def _calculate_salt(self, data):
         if registration_settings.REGISTER_VERIFICATION_ONE_TIME_USE:
-            user_id = data['user_id']
-            user = get_user_by_id(user_id, require_verified=False)
+            user = get_user_by_verification_id(
+                data['user_id'], require_verified=False)
             # Use current user verification flag as a part of the salt.
             # If the verification flag gets changed, then assume that
             # the change was caused by previous verification and the signature
@@ -77,7 +81,7 @@ def register(request):
 
     if registration_settings.REGISTER_VERIFICATION_ENABLED:
         signer = RegisterSigner({
-            'user_id': user.pk,
+            'user_id': get_user_verification_id(user),
         }, request=request)
         template_config = (
             registration_settings.REGISTER_VERIFICATION_EMAIL_TEMPLATES)
@@ -117,7 +121,7 @@ def process_verify_registration_data(input_data):
     verify_signer_or_bad_request(signer)
 
     verification_flag_field = get_user_setting('VERIFICATION_FLAG_FIELD')
-    user = get_user_by_id(data['user_id'], require_verified=False)
+    user = get_user_by_verification_id(data['user_id'], require_verified=False)
     setattr(user, verification_flag_field, True)
     user.save()
 

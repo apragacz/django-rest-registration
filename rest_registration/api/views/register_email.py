@@ -10,7 +10,11 @@ from rest_registration.decorators import (
 from rest_registration.notifications import send_verification_notification
 from rest_registration.settings import registration_settings
 from rest_registration.utils.responses import get_ok_response
-from rest_registration.utils.users import get_user_by_id, get_user_setting
+from rest_registration.utils.users import (
+    get_user_by_verification_id,
+    get_user_setting,
+    get_user_verification_id
+)
 from rest_registration.utils.verification import verify_signer_or_bad_request
 from rest_registration.verification import URLParamsSigner
 
@@ -46,7 +50,7 @@ def register_email(request):
         registration_settings.REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES)
     if registration_settings.REGISTER_EMAIL_VERIFICATION_ENABLED:
         signer = RegisterEmailSigner({
-            'user_id': user.pk,
+            'user_id': get_user_verification_id(user),
             'email': email,
         }, request=request)
         send_verification_notification(
@@ -88,6 +92,6 @@ def process_verify_email_data(input_data):
     verify_signer_or_bad_request(signer)
 
     email_field = get_user_setting('EMAIL_FIELD')
-    user = get_user_by_id(data['user_id'])
+    user = get_user_by_verification_id(data['user_id'])
     setattr(user, email_field, data['email'])
     user.save()

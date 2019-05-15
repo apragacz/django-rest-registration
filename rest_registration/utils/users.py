@@ -56,10 +56,18 @@ def authenticate_by_login_and_password_or_none(login, password):
     return user
 
 
-def get_user_by_id(user_id, default=_RAISE_EXCEPTION, require_verified=True):
+def get_user_verification_id(user):
+    verification_id_field = get_user_setting('VERIFICATION_ID_FIELD')
+    return getattr(user, verification_id_field)
+
+
+def get_user_by_verification_id(
+        user_verification_id, default=_RAISE_EXCEPTION, require_verified=True):
+    verification_id_field = get_user_setting('VERIFICATION_ID_FIELD')
     return get_user_by_lookup_dict({
-        'pk': user_id,
-    }, require_verified=require_verified)
+        verification_id_field: user_verification_id},
+        default=default,
+        require_verified=require_verified)
 
 
 def get_user_by_lookup_dict(
