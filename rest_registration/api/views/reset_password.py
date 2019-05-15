@@ -31,7 +31,7 @@ class ResetPasswordSigner(URLParamsSigner):
     def _calculate_salt(self, data):
         if registration_settings.RESET_PASSWORD_VERIFICATION_ONE_TIME_USE:
             user_id = data['user_id']
-            user = get_user_by_id(user_id)
+            user = get_user_by_id(user_id, require_verified=False)
             # Use current user password hash as a part of the salt.
             # If the password gets changed, then assume that the change
             # was caused by previous password reset and the signature

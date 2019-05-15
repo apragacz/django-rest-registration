@@ -124,6 +124,24 @@ class SendResetPasswordLinkViewTestCase(BaseResetPasswordViewTestCase):
     @override_settings(
         REST_REGISTRATION=shallow_merge_dicts(
             REST_REGISTRATION_WITH_RESET_PASSWORD, {
+                'RESET_PASSWORD_VERIFICATION_ONE_TIME_USE': True,
+            }
+        ),
+    )
+    def test_send_link_unverified_user_one_time_use(self):
+        user = self.create_test_user(username='testusername', is_active=False)
+        request = self.create_post_request({
+            'login': user.username,
+        })
+        with self.assert_one_mail_sent() as sent_emails, self.timer() as timer:
+            response = self.view_func(request)
+            self.assert_valid_response(response, status.HTTP_200_OK)
+        sent_email = sent_emails[0]
+        self._assert_valid_send_link_email(sent_email, user, timer)
+
+    @override_settings(
+        REST_REGISTRATION=shallow_merge_dicts(
+            REST_REGISTRATION_WITH_RESET_PASSWORD, {
                 'RESET_PASSWORD_VERIFICATION_ENABLED': False,
             }
         ),
