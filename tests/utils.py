@@ -89,8 +89,10 @@ class TestCase(DjangoTestCase):
     def timer(self, get_current_timestamp=get_current_timestamp):
         timer = Timer(get_current_timestamp=get_current_timestamp)
         timer.set_start_time()
-        yield timer
-        timer.set_end_time()
+        try:
+            yield timer
+        finally:
+            timer.set_end_time()
 
     def _assert_urls_in_text(self, text, expected_num, line_url_pattern):
         lines = [line.rstrip() for line in text.split('\n')]

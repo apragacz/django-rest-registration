@@ -1,4 +1,3 @@
-import math
 import time
 from unittest.mock import patch
 
@@ -43,11 +42,9 @@ class RegisterEmailViewTestCase(BaseRegisterEmailViewTestCase):
         data = {
             'email': self.new_email,
         }
-        time_before = math.floor(time.time())
-        with self.assert_one_mail_sent() as sent_emails:
+        with self.assert_one_mail_sent() as sent_emails, self.timer() as timer:
             response = self._test_authenticated(data)
             self.assert_valid_response(response, status.HTTP_200_OK)
-        time_after = math.ceil(time.time())
         # Check database state.
         self.user.refresh_from_db()
         self.assertEqual(self.user.email, self.email)
@@ -67,8 +64,8 @@ class RegisterEmailViewTestCase(BaseRegisterEmailViewTestCase):
         self.assertEqual(verification_data['email'], self.new_email)
         self.assertEqual(int(verification_data['user_id']), self.user.id)
         url_sig_timestamp = int(verification_data['timestamp'])
-        self.assertGreaterEqual(url_sig_timestamp, time_before)
-        self.assertLessEqual(url_sig_timestamp, time_after)
+        self.assertGreaterEqual(url_sig_timestamp, timer.start_time)
+        self.assertLessEqual(url_sig_timestamp, timer.end_time)
         signer = RegisterEmailSigner(verification_data)
         signer.verify()
 
