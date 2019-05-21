@@ -20,6 +20,7 @@ from rest_registration.utils.users import (
 )
 from rest_registration.utils.verification import verify_signer_or_bad_request
 from rest_registration.verification import URLParamsSigner
+from rest_registration import signals
 
 
 class RegisterSigner(URLParamsSigner):
@@ -75,6 +76,7 @@ def register(request):
 
     user = serializer.save(**kwargs)
 
+    signals.user_registered.send(sender=None, user=user, request=request)
     output_serializer_class = registration_settings.REGISTER_OUTPUT_SERIALIZER_CLASS  # noqa: E501
     output_serializer = output_serializer_class(instance=user)
     user_data = output_serializer.data
@@ -104,6 +106,7 @@ def verify_registration(request):
     Verify registration via signature.
     """
     user = process_verify_registration_data(request.data)
+    signals.user_activated.send(sender=None, user=user, request=request)
     extra_data = None
     if registration_settings.REGISTER_VERIFICATION_AUTO_LOGIN:
         extra_data = perform_login(request, user)
