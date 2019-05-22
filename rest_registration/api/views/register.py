@@ -4,6 +4,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
+from rest_registration import signals
 from rest_registration.api.views.login import perform_login
 from rest_registration.decorators import (
     api_view_serializer_class,
@@ -20,7 +21,6 @@ from rest_registration.utils.users import (
 )
 from rest_registration.utils.verification import verify_signer_or_bad_request
 from rest_registration.verification import URLParamsSigner
-from rest_registration import signals
 
 
 class RegisterSigner(URLParamsSigner):
