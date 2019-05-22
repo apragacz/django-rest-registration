@@ -125,8 +125,7 @@ connecting functions which will listen for signals.
         A user-model instance representing the activated account.
 
    `request`
-       The :class:`~django.http.HttpRequest` in which the account was
-       activated.
+       The `Request <https://www.django-rest-framework.org/api-guide/requests/#requests>`_ in which the account was activated.
 
    This signal is automatically sent for you by the base
    :meth:`~django_rest_registration.api.views.register`, so unless
@@ -145,8 +144,7 @@ connecting functions which will listen for signals.
         A user-model instance representing the new account.
 
    `request`
-        The :class:`~django.http.HttpRequest` in which the new account
-        was registered.
+       The `Request <https://www.django-rest-framework.org/api-guide/requests/#requests>`_ in which the account was registered.
 
 
 List of settings
