@@ -9,6 +9,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.settings import api_settings
 
+from rest_registration import signals
 from rest_registration.decorators import (
     api_view_serializer_class,
     api_view_serializer_class_getter
@@ -38,6 +39,8 @@ def login(request):
         raise BadRequest('Login or password invalid.')
 
     extra_data = perform_login(request, user)
+
+    signals.user_logged_in.send(sender=login, user=user, request=request)
 
     return get_ok_response('Login successful', extra_data=extra_data)
 
@@ -69,6 +72,8 @@ def logout(request):
             user.auth_token.delete()
         except Token.DoesNotExist:
             raise BadRequest('Cannot remove non-existent token')
+
+    signals.user_logged_out.send(sender=logout, user=user, request=request)
 
     return get_ok_response('Logout successful')
 

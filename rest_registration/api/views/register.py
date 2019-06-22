@@ -69,17 +69,23 @@ def register(request):
 
     kwargs = {}
 
+    email = None
+
     if registration_settings.REGISTER_VERIFICATION_ENABLED:
         verification_flag_field = get_user_setting('VERIFICATION_FLAG_FIELD')
         kwargs[verification_flag_field] = False
         email_field = get_user_setting('EMAIL_FIELD')
-        if (email_field not in serializer.validated_data
-                or not serializer.validated_data[email_field]):
+        email = serializer.validated_data.get(email_field)
+        if not email:
             raise BadRequest("User without email cannot be verified")
 
     user = serializer.save(**kwargs)
 
-    signals.user_registered.send(sender=None, user=user, request=request)
+    signals.user_registered.send(sender=register, user=user, request=request)
+    if email:
+        signals.user_email_registered.send(
+            sender=register, user=user, email=email, old_emails=[],
+            request=request)
     output_serializer_class = registration_settings.REGISTER_OUTPUT_SERIALIZER_CLASS  # noqa: E501
     output_serializer = output_serializer_class(
         instance=user,
@@ -111,9 +117,10 @@ def verify_registration(request):
     """
     Verify registration via signature.
     """
-    user = process_verify_registration_data(
+    result = process_verify_registration_data(
         request.data, serializer_context={'request': request})
-    signals.user_activated.send(sender=None, user=user, request=request)
+    signal_verify_registration(request, result)
+    user, _ = result
     extra_data = None
     if registration_settings.REGISTER_VERIFICATION_AUTO_LOGIN:
         extra_data = perform_login(request, user)
@@ -139,5 +146,16 @@ def process_verify_registration_data(input_data, serializer_context=None):
     user = get_user_by_verification_id(data['user_id'], require_verified=False)
     setattr(user, verification_flag_field, True)
     user.save()
+    email_field = get_user_setting('EMAIL_FIELD')
+    email = getattr(user, email_field)
 
-    return user
+    return user, email
+
+
+def signal_verify_registration(request, processor_data):
+    user, email = processor_data
+    signals.user_verified.send(
+        sender=verify_registration, user=user, request=request)
+    signals.user_email_verified.send(
+        sender=verify_registration, user=user, email=email, old_emails=[],
+        request=request)

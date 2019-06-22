@@ -5,6 +5,7 @@ from rest_framework import serializers
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 
+from rest_registration import signals
 from rest_registration.decorators import (
     api_view_serializer_class,
     api_view_serializer_class_getter
@@ -74,6 +75,9 @@ def send_reset_password_link(request):
         registration_settings.RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES)
     send_verification_notification(user, signer, template_config)
 
+    signals.user_password_reset_requested.send(
+        sender=send_reset_password_link, user=user, request=request)
+
     return get_ok_response('Reset link sent')
 
 
@@ -91,8 +95,9 @@ def reset_password(request):
     '''
     Reset password, given the signature and timestamp from the link.
     '''
-    process_reset_password_data(
+    result = process_reset_password_data(
         request.data, serializer_context={'request': request})
+    signal_reset_password(request, result)
     return get_ok_response('Reset password successful')
 
 
@@ -119,3 +124,12 @@ def process_reset_password_data(input_data, serializer_context=None):
         raise serializers.ValidationError(exc.messages[0])
     user.set_password(password)
     user.save()
+
+    return user, password
+
+
+def signal_reset_password(request, processor_result):
+    user, password = processor_result
+    signals.user_password_changed.send(
+        sender=reset_password, user=user, password=password,
+        request=request)

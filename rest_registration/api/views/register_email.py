@@ -3,6 +3,7 @@ from rest_framework import serializers
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
+from rest_registration import signals
 from rest_registration.decorators import (
     api_view_serializer_class,
     api_view_serializer_class_getter
@@ -51,6 +52,8 @@ def register_email(request):
 
     template_config = (
         registration_settings.REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES)
+    email_field = get_user_setting('EMAIL_FIELD')
+    old_email = getattr(user, email_field)
     if registration_settings.REGISTER_EMAIL_VERIFICATION_ENABLED:
         signer = RegisterEmailSigner({
             'user_id': get_user_verification_id(user),
@@ -59,9 +62,12 @@ def register_email(request):
         send_verification_notification(
             user, signer, template_config, email=email)
     else:
-        email_field = get_user_setting('EMAIL_FIELD')
         setattr(user, email_field, email)
         user.save()
+
+    signals.user_email_registered.send(
+        sender=register_email, user=user, email=email, old_emails=[old_email],
+        request=request)
 
     return get_ok_response('Register email link email sent')
 
@@ -80,8 +86,9 @@ def verify_email(request):
     '''
     Verify email via signature.
     '''
-    process_verify_email_data(
+    result = process_verify_email_data(
         request.data, serializer_context={'request': request})
+    signal_verify_email(request, result)
     return get_ok_response('Email verified successfully')
 
 
@@ -102,5 +109,15 @@ def process_verify_email_data(input_data, serializer_context=None):
 
     email_field = get_user_setting('EMAIL_FIELD')
     user = get_user_by_verification_id(data['user_id'])
-    setattr(user, email_field, data['email'])
+    email = data['email']
+    old_email = getattr(user, email_field)
+    setattr(user, email_field, email)
     user.save()
+    return user, email, [old_email]
+
+
+def signal_verify_email(request, processor_result):
+    user, email, old_emails = processor_result
+    signals.user_email_verified.send(
+        sender=verify_email, user=user, email=email, old_emails=old_emails,
+        request=request)

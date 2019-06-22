@@ -2,6 +2,7 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import permissions, serializers
 from rest_framework.decorators import api_view, permission_classes
 
+from rest_registration import signals
 from rest_registration.decorators import api_view_serializer_class
 from rest_registration.settings import registration_settings
 from rest_registration.utils.responses import get_ok_response
@@ -53,6 +54,11 @@ def change_password(request):
     serializer.is_valid(raise_exception=True)
 
     user = request.user
-    user.set_password(serializer.validated_data['password'])
+    password = serializer.validated_data['password']
+    user.set_password(password)
     user.save()
+
+    signals.user_password_changed.send(
+        sender=change_password, user=user, password=password, request=request)
+
     return get_ok_response('Password changed successfully')

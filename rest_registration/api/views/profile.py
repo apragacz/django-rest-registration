@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from rest_registration import signals
 from rest_registration.decorators import api_view_serializer_class_getter
 from rest_registration.settings import registration_settings
 
@@ -25,6 +26,9 @@ def profile(request):
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        signals.user_profile_updated.send(
+            sender=profile, changed_data=serializer.validated_data,
+            request=request)
     else:  # request.method == 'GET':
         serializer = serializer_class(
             instance=request.user,
