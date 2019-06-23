@@ -27,7 +27,10 @@ def login(request):
     Logs in the user via given login and password.
     '''
     serializer_class = registration_settings.LOGIN_SERIALIZER_CLASS
-    serializer = serializer_class(data=request.data)
+    serializer = serializer_class(
+        data=request.data,
+        context={'request': request},
+    )
     serializer.is_valid(raise_exception=True)
     user = serializer.get_authenticated_user()
 
@@ -52,7 +55,10 @@ def logout(request):
     authenticated.
     '''
     user = request.user
-    serializer = LogoutSerializer(data=request.data)
+    serializer = LogoutSerializer(
+        data=request.data,
+        context={'request': request},
+    )
     serializer.is_valid(raise_exception=True)
     data = serializer.validated_data
 

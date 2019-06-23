@@ -21,10 +21,14 @@ def profile(request):
             instance=request.user,
             data=request.data,
             partial=partial,
+            context={'request': request},
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
     else:  # request.method == 'GET':
-        serializer = serializer_class(instance=request.user)
+        serializer = serializer_class(
+            instance=request.user,
+            context={'request': request},
+        )
 
     return Response(serializer.data)

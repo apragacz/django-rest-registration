@@ -58,7 +58,10 @@ def send_reset_password_link(request):
     if not registration_settings.RESET_PASSWORD_VERIFICATION_ENABLED:
         raise Http404()
     serializer_class = registration_settings.SEND_RESET_PASSWORD_LINK_SERIALIZER_CLASS  # noqa: E501
-    serializer = serializer_class(data=request.data)
+    serializer = serializer_class(
+        data=request.data,
+        context={'request': request},
+    )
     serializer.is_valid(raise_exception=True)
     user = serializer.get_user_or_none()
     if not user:
@@ -88,14 +91,20 @@ def reset_password(request):
     '''
     Reset password, given the signature and timestamp from the link.
     '''
-    process_reset_password_data(request.data)
+    process_reset_password_data(
+        request.data, serializer_context={'request': request})
     return get_ok_response('Reset password successful')
 
 
-def process_reset_password_data(input_data):
+def process_reset_password_data(input_data, serializer_context=None):
+    if serializer_context is None:
+        serializer_context = {}
     if not registration_settings.RESET_PASSWORD_VERIFICATION_ENABLED:
         raise Http404()
-    serializer = ResetPasswordSerializer(data=input_data)
+    serializer = ResetPasswordSerializer(
+        data=input_data,
+        context=serializer_context,
+    )
     serializer.is_valid(raise_exception=True)
 
     data = serializer.validated_data.copy()

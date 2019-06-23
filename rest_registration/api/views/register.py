@@ -61,7 +61,10 @@ def register(request):
     Register new user.
     '''
     serializer_class = registration_settings.REGISTER_SERIALIZER_CLASS
-    serializer = serializer_class(data=request.data)
+    serializer = serializer_class(
+        data=request.data,
+        context={'request': request},
+    )
     serializer.is_valid(raise_exception=True)
 
     kwargs = {}
@@ -78,7 +81,10 @@ def register(request):
 
     signals.user_registered.send(sender=None, user=user, request=request)
     output_serializer_class = registration_settings.REGISTER_OUTPUT_SERIALIZER_CLASS  # noqa: E501
-    output_serializer = output_serializer_class(instance=user)
+    output_serializer = output_serializer_class(
+        instance=user,
+        context={'request': request},
+    )
     user_data = output_serializer.data
 
     if registration_settings.REGISTER_VERIFICATION_ENABLED:
@@ -105,7 +111,8 @@ def verify_registration(request):
     """
     Verify registration via signature.
     """
-    user = process_verify_registration_data(request.data)
+    user = process_verify_registration_data(
+        request.data, serializer_context={'request': request})
     signals.user_activated.send(sender=None, user=user, request=request)
     extra_data = None
     if registration_settings.REGISTER_VERIFICATION_AUTO_LOGIN:
@@ -113,10 +120,15 @@ def verify_registration(request):
     return get_ok_response('User verified successfully', extra_data=extra_data)
 
 
-def process_verify_registration_data(input_data):
+def process_verify_registration_data(input_data, serializer_context=None):
+    if serializer_context is None:
+        serializer_context = {}
     if not registration_settings.REGISTER_VERIFICATION_ENABLED:
         raise Http404()
-    serializer = VerifyRegistrationSerializer(data=input_data)
+    serializer = VerifyRegistrationSerializer(
+        data=input_data,
+        context=serializer_context,
+    )
     serializer.is_valid(raise_exception=True)
 
     data = serializer.validated_data

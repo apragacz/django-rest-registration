@@ -46,8 +46,10 @@ def change_password(request):
     '''
     Change the user password.
     '''
-    serializer = ChangePasswordSerializer(data=request.data,
-                                          context={'request': request})
+    serializer = ChangePasswordSerializer(
+        data=request.data,
+        context={'request': request},
+    )
     serializer.is_valid(raise_exception=True)
 
     user = request.user

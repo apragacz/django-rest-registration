@@ -41,7 +41,10 @@ def register_email(request):
     user = request.user
 
     serializer_class = registration_settings.REGISTER_EMAIL_SERIALIZER_CLASS
-    serializer = serializer_class(data=request.data)
+    serializer = serializer_class(
+        data=request.data,
+        context={'request': request},
+    )
     serializer.is_valid(raise_exception=True)
 
     email = serializer.get_email()
@@ -77,14 +80,20 @@ def verify_email(request):
     '''
     Verify email via signature.
     '''
-    process_verify_email_data(request.data)
+    process_verify_email_data(
+        request.data, serializer_context={'request': request})
     return get_ok_response('Email verified successfully')
 
 
-def process_verify_email_data(input_data):
+def process_verify_email_data(input_data, serializer_context=None):
+    if serializer_context is None:
+        serializer_context = {}
     if not registration_settings.REGISTER_EMAIL_VERIFICATION_ENABLED:
         raise Http404()
-    serializer = VerifyEmailSerializer(data=input_data)
+    serializer = VerifyEmailSerializer(
+        data=input_data,
+        context=serializer_context,
+    )
     serializer.is_valid(raise_exception=True)
 
     data = serializer.validated_data
