@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework.test import force_authenticate
 
 from rest_registration.api.views.register_email import RegisterEmailSigner
-from tests.utils import shallow_merge_dicts
+from tests.utils import TestCase, shallow_merge_dicts
 
 from .base import APIViewTestCase
 
@@ -16,6 +16,31 @@ REST_REGISTRATION_WITH_EMAIL_VERIFICATION = {
     'REGISTER_EMAIL_VERIFICATION_URL': REGISTER_EMAIL_VERIFICATION_URL,
     'VERIFICATION_FROM_EMAIL': 'no-reply@example.com',
 }
+
+
+@override_settings(REST_REGISTRATION=REST_REGISTRATION_WITH_EMAIL_VERIFICATION)
+class RegisterEmailSignerTestCase(TestCase):
+
+    def test_signer_with_different_secret_keys(self):
+        email = 'testuser1@example.com'
+        user = self.create_test_user(is_active=False)
+        data_to_sign = {
+            'user_id': user.pk,
+            'email': email,
+        }
+        secrets = [
+            '#0ka!t#6%28imjz+2t%l(()yu)tg93-1w%$du0*po)*@l+@+4h',
+            'feb7tjud7m=91$^mrk8dq&nz(0^!6+1xk)%gum#oe%(n)8jic7',
+        ]
+        signatures = []
+        for secret in secrets:
+            with override_settings(
+                    SECRET_KEY=secret):
+                signer = RegisterEmailSigner(data_to_sign)
+                data = signer.get_signed_data()
+                signatures.append(data[signer.SIGNATURE_FIELD])
+
+        assert signatures[0] != signatures[1]
 
 
 class BaseRegisterEmailViewTestCase(APIViewTestCase):

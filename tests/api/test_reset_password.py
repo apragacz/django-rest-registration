@@ -6,7 +6,7 @@ from django.test.utils import override_settings
 from rest_framework import status
 
 from rest_registration.api.views.reset_password import ResetPasswordSigner
-from tests.utils import shallow_merge_dicts
+from tests.utils import TestCase, shallow_merge_dicts
 
 from .base import APIViewTestCase
 
@@ -16,6 +16,27 @@ REST_REGISTRATION_WITH_RESET_PASSWORD = {
     'RESET_PASSWORD_VERIFICATION_URL': RESET_PASSWORD_VERIFICATION_URL,
     'VERIFICATION_FROM_EMAIL': VERIFICATION_FROM_EMAIL,
 }
+
+
+@override_settings(REST_REGISTRATION=REST_REGISTRATION_WITH_RESET_PASSWORD)
+class ResetPasswordSignerTestCase(TestCase):
+
+    def test_signer_with_different_secret_keys(self):
+        user = self.create_test_user(is_active=False)
+        data_to_sign = {'user_id': user.pk}
+        secrets = [
+            '#0ka!t#6%28imjz+2t%l(()yu)tg93-1w%$du0*po)*@l+@+4h',
+            'feb7tjud7m=91$^mrk8dq&nz(0^!6+1xk)%gum#oe%(n)8jic7',
+        ]
+        signatures = []
+        for secret in secrets:
+            with override_settings(
+                    SECRET_KEY=secret):
+                signer = ResetPasswordSigner(data_to_sign)
+                data = signer.get_signed_data()
+                signatures.append(data[signer.SIGNATURE_FIELD])
+
+        assert signatures[0] != signatures[1]
 
 
 @override_settings(

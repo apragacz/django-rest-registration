@@ -31,7 +31,7 @@ class DataSigner(object):
             data[self.TIMESTAMP_FIELD] = get_current_timestamp()
         self._data = data
         self._salt = self._calculate_salt(data)
-        self._signer = Signer(self._salt)
+        self._signer = Signer(salt=self._salt)
 
     def _calculate_signature(self, data):
         if self.SIGNATURE_FIELD in data:

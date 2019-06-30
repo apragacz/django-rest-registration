@@ -67,6 +67,27 @@ class RegisterSerializerTestCase(TestCase):
         )
 
 
+@override_settings(REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION)
+class RegisterSignerTestCase(TestCase):
+
+    def test_signer_with_different_secret_keys(self):
+        user = self.create_test_user(is_active=False)
+        data_to_sign = {'user_id': user.pk}
+        secrets = [
+            '#0ka!t#6%28imjz+2t%l(()yu)tg93-1w%$du0*po)*@l+@+4h',
+            'feb7tjud7m=91$^mrk8dq&nz(0^!6+1xk)%gum#oe%(n)8jic7',
+        ]
+        signatures = []
+        for secret in secrets:
+            with override_settings(
+                    SECRET_KEY=secret):
+                signer = RegisterSigner(data_to_sign)
+                data = signer.get_signed_data()
+                signatures.append(data[signer.SIGNATURE_FIELD])
+
+        assert signatures[0] != signatures[1]
+
+
 def build_custom_verification_url(signer):
     base_url = signer.get_base_url()
     signed_data = signer.get_signed_data()
