@@ -14,7 +14,7 @@ def get_current_timestamp():
 
 
 def get_dict_repr(data):
-    data_items = sorted([(str(k), str(v)) for k, v in data.items()])
+    data_items = sorted((str(k), str(v)) for k, v in data.items())
     return pickle.dumps(data_items, PICKLE_REPR_PROTOCOL)
 
 
