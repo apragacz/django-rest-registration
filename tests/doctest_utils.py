@@ -6,7 +6,7 @@ def equals(first, second):
         first, second, operator.eq, '{first!r}\n  should equal to\n{second!r}')
 
 
-def _print_operator_test(first, second, op, fail_message_fmt):
+def _print_operator_test(first, second, op, fail_message_fmt):  # noqa: E501 pylint: disable=invalid-name
     if op(first, second):
         print('OK')  # noqa: T001
     else:

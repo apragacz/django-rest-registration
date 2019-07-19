@@ -42,7 +42,7 @@ def login(request):
     return get_ok_response('Login successful', extra_data=extra_data)
 
 
-class LogoutSerializer(serializers.Serializer):
+class LogoutSerializer(serializers.Serializer):  # noqa: E501 pylint: disable=abstract-method
     revoke_token = serializers.BooleanField(default=False)
 
 

@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.core.checks import register
+from django.core.exceptions import ImproperlyConfigured
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.settings import api_settings
 
@@ -8,7 +9,7 @@ from rest_registration.notifications.email import parse_template_config
 from rest_registration.settings import registration_settings
 
 
-class ErrorCode(object):
+class ErrorCode:  # pylint: disable=too-few-public-methods
     NO_RESET_PASSWORD_VER_URL = 'E001'
     NO_REGISTER_VER_URL = 'E002'
     NO_REGISTER_EMAIL_VER_URL = 'E003'
@@ -19,7 +20,7 @@ class ErrorCode(object):
     NO_AUTH_INSTALLED = 'E008'
 
 
-class WarningCode(object):
+class WarningCode:  # pylint: disable=too-few-public-methods
     REGISTER_VERIFICATION_MULTIPLE_AUTO_LOGIN = 'W001'
 
 
@@ -162,7 +163,7 @@ def valid_register_email_verification_email_template_config_check():
 def _is_email_template_config_valid(template_config_data):
     try:
         parse_template_config(template_config_data)
-    except Exception:
+    except ImproperlyConfigured:
         return False
     else:
         return True

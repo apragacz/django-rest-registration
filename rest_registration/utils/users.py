@@ -84,7 +84,6 @@ def get_user_by_lookup_dict(
     except Http404:
         if default is _RAISE_EXCEPTION:
             raise UserNotFound()
-        else:
-            return default
+        return default
     else:
         return user

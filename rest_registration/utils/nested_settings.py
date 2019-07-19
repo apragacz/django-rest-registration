@@ -2,7 +2,7 @@ from django.conf import settings as root_settings
 from rest_framework.settings import perform_import
 
 
-class NestedSettings(object):
+class NestedSettings:
     def __init__(
             self, user_settings, defaults, import_strings,
             root_setting_name):

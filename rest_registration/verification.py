@@ -18,7 +18,7 @@ def get_dict_repr(data):
     return pickle.dumps(data_items, PICKLE_REPR_PROTOCOL)
 
 
-class DataSigner(object):
+class DataSigner:
     SIGNATURE_FIELD = 'signature'
     TIMESTAMP_FIELD = 'timestamp'
     SALT_BASE = 'rest-registration-default-salt'

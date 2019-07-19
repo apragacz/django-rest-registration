@@ -25,7 +25,7 @@ class ExampleURLSigner(URLParamsSigner):
     VALID_PERIOD = datetime.timedelta(days=1)
 
 
-class BaseTestSignerMixin(object):
+class BaseTestSignerMixin:
     cls = None
     test_email = 'test@example.com'
 

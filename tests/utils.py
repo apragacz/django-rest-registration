@@ -41,7 +41,7 @@ class TestCase(DjangoTestCase):
             start=start,
             end=end,
         )
-        if not (start <= value < end):
+        if not start <= value < end:
             self.fail(self._formatMessage(msg, std_msg))
 
     def assert_is_not_between(self, value, start, end, msg=None):
@@ -86,8 +86,8 @@ class TestCase(DjangoTestCase):
             yield sent_emails
 
     @contextlib.contextmanager
-    def timer(self, get_current_timestamp=get_current_timestamp):
-        timer = Timer(get_current_timestamp=get_current_timestamp)
+    def timer(self, current_timestamp_getter=get_current_timestamp):
+        timer = Timer(current_timestamp_getter=current_timestamp_getter)
         timer.set_start_time()
         try:
             yield timer
@@ -162,11 +162,11 @@ class EmailMessageContainer(Sequence):
         self._set = True
 
 
-class Timer(object):
+class Timer:
 
-    def __init__(self, get_current_timestamp=get_current_timestamp):
+    def __init__(self, current_timestamp_getter=get_current_timestamp):
         super().__init__()
-        self._get_current_timestamp = get_current_timestamp
+        self._get_current_timestamp = current_timestamp_getter
         self._start_time = None
         self._end_time = None
 
@@ -197,9 +197,9 @@ class Timer(object):
         self.end_time = self._get_current_timestamp()
 
 
-def shallow_merge_dicts(d, *other_dicts):
+def shallow_merge_dicts(dictionary, *other_dicts):
     result = {}
-    result.update(d)
+    result.update(dictionary)
     for other_dict in other_dicts:
         result.update(other_dict)
     return result

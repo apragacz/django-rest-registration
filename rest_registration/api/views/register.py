@@ -98,7 +98,7 @@ def register(request):
     return Response(user_data, status=status.HTTP_201_CREATED)
 
 
-class VerifyRegistrationSerializer(serializers.Serializer):
+class VerifyRegistrationSerializer(serializers.Serializer):  # noqa: E501 pylint: disable=abstract-method
     user_id = serializers.CharField(required=True)
     timestamp = serializers.IntegerField(required=True)
     signature = serializers.CharField(required=True)

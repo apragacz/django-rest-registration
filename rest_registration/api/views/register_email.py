@@ -66,7 +66,7 @@ def register_email(request):
     return get_ok_response('Register email link email sent')
 
 
-class VerifyEmailSerializer(serializers.Serializer):
+class VerifyEmailSerializer(serializers.Serializer):  # noqa: E501 pylint: disable=abstract-method
     user_id = serializers.CharField(required=True)
     email = serializers.EmailField(required=True)
     timestamp = serializers.IntegerField(required=True)
