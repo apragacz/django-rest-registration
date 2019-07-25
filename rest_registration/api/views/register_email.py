@@ -3,6 +3,7 @@ from rest_framework import serializers
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
+from rest_registration import signals
 from rest_registration.decorators import (
     api_view_serializer_class,
     api_view_serializer_class_getter
@@ -59,9 +60,17 @@ def register_email(request):
         send_verification_notification(
             user, signer, template_config, email=email)
     else:
+        old_email = user.email
         email_field = get_user_setting('EMAIL_FIELD')
         setattr(user, email_field, email)
         user.save()
+        signals.user_changed_email.send(
+            sender=None,
+            user=user,
+            new_email=email,
+            old_email=old_email,
+            request=request,
+        )
 
     return get_ok_response('Register email link email sent')
 
@@ -99,8 +108,18 @@ def process_verify_email_data(input_data, serializer_context=None):
     data = serializer.validated_data
     signer = RegisterEmailSigner(data)
     verify_signer_or_bad_request(signer)
+    request = serializer_context.get('request')
 
     email_field = get_user_setting('EMAIL_FIELD')
     user = get_user_by_verification_id(data['user_id'])
+    old_email = user.email
     setattr(user, email_field, data['email'])
     user.save()
+
+    signals.user_changed_email.send(
+        sender=None,
+        user=user,
+        new_email=data['email'],
+        old_email=old_email,
+        request=request,
+    )
