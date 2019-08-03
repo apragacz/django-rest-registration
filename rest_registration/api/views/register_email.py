@@ -60,8 +60,8 @@ def register_email(request):
         send_verification_notification(
             user, signer, template_config, email=email)
     else:
-        old_email = user.email
         email_field = get_user_setting('EMAIL_FIELD')
+        old_email = getattr(user, email_field)
         setattr(user, email_field, email)
         user.save()
         signals.user_changed_email.send(
@@ -112,7 +112,7 @@ def process_verify_email_data(input_data, serializer_context=None):
 
     email_field = get_user_setting('EMAIL_FIELD')
     user = get_user_by_verification_id(data['user_id'])
-    old_email = user.email
+    old_email = getattr(user, email_field)
     setattr(user, email_field, data['email'])
     user.save()
 
