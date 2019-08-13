@@ -18,6 +18,7 @@ class ErrorCode:  # pylint: disable=too-few-public-methods
     NO_TOKEN_AUTH_INSTALLED = 'E006'
     INVALID_EMAIL_TEMPLATE_CONFIG = 'E007'
     NO_AUTH_INSTALLED = 'E008'
+    DRF_INCOMPATIBLE_DJANGO_AUTH_BACKEND = 'E009'
 
 
 class WarningCode:  # pylint: disable=too-few-public-methods
@@ -169,6 +170,32 @@ def _is_email_template_config_valid(template_config_data):
         return True
 
 
+# The backends below allow inactive users to autenticate, which makes them
+# incompatible with Django REST Framework authentication classes
+# which check whether the is_active flag is set before authenticating.
+#
+# See https://github.com/apragacz/django-rest-registration/issues/52
+#
+__DRF_INCOMPATIBLE_DJANGO_AUTH_BACKENDS__ = [
+    'django.contrib.auth.backends.AllowAllUsersModelBackend',
+    'django.contrib.auth.backends.AllowAllUsersRemoteUserBackend',
+]
+
+
+@register()
+@simple_check(
+    'One of following Django authentication backends (which are incompatible'
+    ' with Django REST Framework authentication classes) is being used:\n\n'
+    + '\n'.join(__DRF_INCOMPATIBLE_DJANGO_AUTH_BACKENDS__),
+    ErrorCode.DRF_INCOMPATIBLE_DJANGO_AUTH_BACKEND,
+)
+def drf_compatible_django_auth_backend_check():
+    return all(
+        incompat_cls_name not in settings.AUTHENTICATION_BACKENDS
+        for incompat_cls_name in __DRF_INCOMPATIBLE_DJANGO_AUTH_BACKENDS__
+    )
+
+
 def implies(premise, conclusion):
     return not premise or conclusion
 
@@ -185,4 +212,5 @@ __ALL_CHECKS__ = [
     valid_register_verification_email_template_config_check,
     valid_reset_password_verification_email_template_config_check,
     valid_register_email_verification_email_template_config_check,
+    drf_compatible_django_auth_backend_check,
 ]
