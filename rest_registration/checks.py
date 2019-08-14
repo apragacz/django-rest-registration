@@ -97,7 +97,10 @@ def verification_from_check():
 def token_auth_config_check():
     return implies(
         registration_settings.LOGIN_RETRIEVE_TOKEN,
-        TokenAuthentication in api_settings.DEFAULT_AUTHENTICATION_CLASSES,
+        any(
+            issubclass(cls, TokenAuthentication)
+            for cls in api_settings.DEFAULT_AUTHENTICATION_CLASSES
+        )
     )
 
 
