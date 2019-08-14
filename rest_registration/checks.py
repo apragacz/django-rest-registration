@@ -97,7 +97,7 @@ def token_auth_config_check():
     return implies(
         registration_settings.LOGIN_RETRIEVE_TOKEN,
         any(
-            issubclass(cls, TokenAuthentication),
+            issubclass(cls, TokenAuthentication)
             for cls in api_settings.DEFAULT_AUTHENTICATION_CLASSES
         )
     )
