@@ -1,7 +1,7 @@
 import functools
 import types
 
-from django.core.checks import Error, Warning
+from django.core import checks
 
 
 def api_view_serializer_class_getter(serializer_class_getter):
@@ -36,7 +36,7 @@ def api_view_serializer_class(serializer_class):
 
 
 def simple_check(error_message, error_code, obj=None, warning=False):
-    message_cls = Warning if warning else Error
+    message_cls = checks.Warning if warning else checks.Error
 
     def decorator(predicate):
 

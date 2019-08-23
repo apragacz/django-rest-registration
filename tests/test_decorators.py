@@ -14,7 +14,7 @@ from rest_registration.api import views
 from rest_registration.decorators import api_view_serializer_class_getter
 
 
-class ExampleSerializer(Serializer):
+class ExampleSerializer(Serializer):  # pylint: disable=abstract-method
     test_field = serializers.CharField()
 
 

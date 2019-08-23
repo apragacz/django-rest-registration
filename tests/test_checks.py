@@ -201,6 +201,38 @@ class ChecksTestCase(TestCase):
             ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
         ])
 
+    @override_settings(
+        AUTHENTICATION_BACKENDS=[
+            'django.contrib.auth.backends.AllowAllUsersModelBackend',
+        ],
+        REST_REGISTRATION={
+            'REGISTER_VERIFICATION_ENABLED': False,
+            'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
+            'RESET_PASSWORD_VERIFICATION_ENABLED': False,
+        },
+    )
+    def test_checks_invalid_auth_model_backend_used(self):
+        errors = simulate_checks()
+        self.assert_error_codes_match(errors, [
+            ErrorCode.DRF_INCOMPATIBLE_DJANGO_AUTH_BACKEND,
+        ])
+
+    @override_settings(
+        AUTHENTICATION_BACKENDS=[
+            'django.contrib.auth.backends.AllowAllUsersRemoteUserBackend',
+        ],
+        REST_REGISTRATION={
+            'REGISTER_VERIFICATION_ENABLED': False,
+            'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
+            'RESET_PASSWORD_VERIFICATION_ENABLED': False,
+        },
+    )
+    def test_checks_invalid_auth_remote_backend_used(self):
+        errors = simulate_checks()
+        self.assert_error_codes_match(errors, [
+            ErrorCode.DRF_INCOMPATIBLE_DJANGO_AUTH_BACKEND,
+        ])
+
     def assert_error_codes_match(self, errors, expected_error_codes):
         error_ids = sorted(e.id for e in errors)
         expected_error_ids = sorted(

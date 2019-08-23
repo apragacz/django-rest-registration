@@ -7,7 +7,7 @@ from rest_registration.settings import registration_settings
 from rest_registration.utils.responses import get_ok_response
 
 
-class ChangePasswordSerializer(serializers.Serializer):
+class ChangePasswordSerializer(serializers.Serializer):  # noqa: E501 pylint: disable=abstract-method
     old_password = serializers.CharField()
     password = serializers.CharField()
 
@@ -32,11 +32,11 @@ class ChangePasswordSerializer(serializers.Serializer):
             fields['password_confirm'] = serializers.CharField()
         return fields
 
-    def validate(self, data):
+    def validate(self, attrs):
         if self.has_password_confirm:
-            if data['password'] != data['password_confirm']:
+            if attrs['password'] != attrs['password_confirm']:
                 raise serializers.ValidationError('Passwords don\'t match')
-        return data
+        return attrs
 
 
 @api_view_serializer_class(ChangePasswordSerializer)
@@ -46,8 +46,10 @@ def change_password(request):
     '''
     Change the user password.
     '''
-    serializer = ChangePasswordSerializer(data=request.data,
-                                          context={'request': request})
+    serializer = ChangePasswordSerializer(
+        data=request.data,
+        context={'request': request},
+    )
     serializer.is_valid(raise_exception=True)
 
     user = request.user

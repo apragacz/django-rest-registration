@@ -4,6 +4,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
+from rest_registration import signals
 from rest_registration.api.views.login import perform_login
 from rest_registration.decorators import (
     api_view_serializer_class,
@@ -13,7 +14,11 @@ from rest_registration.exceptions import BadRequest
 from rest_registration.notifications import send_verification_notification
 from rest_registration.settings import registration_settings
 from rest_registration.utils.responses import get_ok_response
-from rest_registration.utils.users import get_user_by_id, get_user_setting
+from rest_registration.utils.users import (
+    get_user_by_verification_id,
+    get_user_setting,
+    get_user_verification_id
+)
 from rest_registration.utils.verification import verify_signer_or_bad_request
 from rest_registration.verification import URLParamsSigner
 
@@ -30,8 +35,8 @@ class RegisterSigner(URLParamsSigner):
 
     def _calculate_salt(self, data):
         if registration_settings.REGISTER_VERIFICATION_ONE_TIME_USE:
-            user_id = data['user_id']
-            user = get_user_by_id(user_id, require_verified=False)
+            user = get_user_by_verification_id(
+                data['user_id'], require_verified=False)
             # Use current user verification flag as a part of the salt.
             # If the verification flag gets changed, then assume that
             # the change was caused by previous verification and the signature
@@ -56,7 +61,10 @@ def register(request):
     Register new user.
     '''
     serializer_class = registration_settings.REGISTER_SERIALIZER_CLASS
-    serializer = serializer_class(data=request.data)
+    serializer = serializer_class(
+        data=request.data,
+        context={'request': request},
+    )
     serializer.is_valid(raise_exception=True)
 
     kwargs = {}
@@ -71,13 +79,17 @@ def register(request):
 
     user = serializer.save(**kwargs)
 
+    signals.user_registered.send(sender=None, user=user, request=request)
     output_serializer_class = registration_settings.REGISTER_OUTPUT_SERIALIZER_CLASS  # noqa: E501
-    output_serializer = output_serializer_class(instance=user)
+    output_serializer = output_serializer_class(
+        instance=user,
+        context={'request': request},
+    )
     user_data = output_serializer.data
 
     if registration_settings.REGISTER_VERIFICATION_ENABLED:
         signer = RegisterSigner({
-            'user_id': user.pk,
+            'user_id': get_user_verification_id(user),
         }, request=request)
         template_config = (
             registration_settings.REGISTER_VERIFICATION_EMAIL_TEMPLATES)
@@ -86,7 +98,7 @@ def register(request):
     return Response(user_data, status=status.HTTP_201_CREATED)
 
 
-class VerifyRegistrationSerializer(serializers.Serializer):
+class VerifyRegistrationSerializer(serializers.Serializer):  # noqa: E501 pylint: disable=abstract-method
     user_id = serializers.CharField(required=True)
     timestamp = serializers.IntegerField(required=True)
     signature = serializers.CharField(required=True)
@@ -99,17 +111,24 @@ def verify_registration(request):
     """
     Verify registration via signature.
     """
-    user = process_verify_registration_data(request.data)
+    user = process_verify_registration_data(
+        request.data, serializer_context={'request': request})
+    signals.user_activated.send(sender=None, user=user, request=request)
     extra_data = None
     if registration_settings.REGISTER_VERIFICATION_AUTO_LOGIN:
         extra_data = perform_login(request, user)
     return get_ok_response('User verified successfully', extra_data=extra_data)
 
 
-def process_verify_registration_data(input_data):
+def process_verify_registration_data(input_data, serializer_context=None):
+    if serializer_context is None:
+        serializer_context = {}
     if not registration_settings.REGISTER_VERIFICATION_ENABLED:
         raise Http404()
-    serializer = VerifyRegistrationSerializer(data=input_data)
+    serializer = VerifyRegistrationSerializer(
+        data=input_data,
+        context=serializer_context,
+    )
     serializer.is_valid(raise_exception=True)
 
     data = serializer.validated_data
@@ -117,7 +136,7 @@ def process_verify_registration_data(input_data):
     verify_signer_or_bad_request(signer)
 
     verification_flag_field = get_user_setting('VERIFICATION_FLAG_FIELD')
-    user = get_user_by_id(data['user_id'], require_verified=False)
+    user = get_user_by_verification_id(data['user_id'], require_verified=False)
     setattr(user, verification_flag_field, True)
     user.save()
 

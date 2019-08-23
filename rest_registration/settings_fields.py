@@ -12,7 +12,11 @@ _Field = namedtuple('_Field', [
 
 class Field(_Field):
 
-    def __new__(cls, name, *, default=None, help=None, import_string=False):
+    def __new__(
+            cls, name, *,
+            default=None,
+            help=None,  # pylint: disable=redefined-builtin
+            import_string=False):
         return super().__new__(
             cls, name=name, default=default,
             help=help, import_string=import_string)
@@ -42,6 +46,17 @@ USER_SETTINGS_FIELDS = [
     Field(
         'USER_EMAIL_FIELD',
         default='email',
+    ),
+    Field(
+        'USER_VERIFICATION_ID_FIELD',
+        default='pk',
+        help=dedent("""\
+            Field used in verification, as part of signed data.
+
+            The given field should uniquely identify the user. This means that
+            using any user field which could change over time
+            (``email``, ``username``) is NOT recommended.
+            """),
     ),
     Field(
         'USER_VERIFICATION_FLAG_FIELD',
@@ -147,6 +162,28 @@ LOGIN_SETTINGS_FIELDS = [
     Field('LOGIN_RETRIEVE_TOKEN'),
 ]
 RESET_PASSWORD_SETTINGS_FIELDS = [
+    Field(
+        'SEND_RESET_PASSWORD_LINK_SERIALIZER_CLASS',
+        default='rest_registration.api.serializers.DefaultSendResetPasswordLinkSerializer',  # noqa: E501,
+        import_string=True,
+        help=dedent("""\
+            The serializer used by :ref:`send-reset-password-link-view`
+            endpoint. You can use your custom serializer
+            to customise validation logic and perform additonal checks.
+            Please remember that it should implement ``get_user_or_none``
+            method which is used to obtain the user matching the criteria.
+            """)
+    ),
+    Field(
+        'SEND_RESET_PASSWORD_LINK_SERIALIZER_USE_EMAIL',
+        default=False,
+        help=dedent("""\
+            Used specifically by ``DefaultSendResetPasswordLinkSerializer``.
+
+            If ``True``, use e-mail field instead of login fields to find
+            the user who should receive the reset password link.
+            """)
+    ),
     Field('RESET_PASSWORD_VERIFICATION_ENABLED', default=True),
     Field(
         'RESET_PASSWORD_VERIFICATION_PERIOD',
@@ -163,6 +200,18 @@ RESET_PASSWORD_SETTINGS_FIELDS = [
     ),
 ]
 REGISTER_EMAIL_SETTINGS_FIELDS = [
+    Field(
+        'REGISTER_EMAIL_SERIALIZER_CLASS',
+        default='rest_registration.api.serializers.DefaultRegisterEmailSerializer',  # noqa: E501
+        import_string=True,
+        help=dedent("""\
+            The serializer used by :ref:`register-email-view` endpoint.
+            It is used to validate the input data and obtain new e-mail.
+            You can use your custom serializer
+            to customise validation logic. Please remember that it should
+            implement ``get_email`` method.
+            """),
+    ),
     Field('REGISTER_EMAIL_VERIFICATION_ENABLED', default=True),
     Field(
         'REGISTER_EMAIL_VERIFICATION_PERIOD',

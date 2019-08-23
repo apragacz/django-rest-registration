@@ -10,7 +10,9 @@ source "${SCRIPT_DIR}/utils.sh"
 
 main() {
     cd "${BASE_DIR}"
-    pylint --rcfile=setup.cfg "${MODULE_NAME}" "${TEST_MODULE_NAME}" -E "$@"
+    pylint --rcfile=setup.cfg "${MODULE_NAME}" "$@"
+    # Duplicate code is acceptable for tests.
+    pylint --rcfile=setup.cfg --disable=duplicate-code "${TEST_MODULE_NAME}" "$@"
 }
 
 main "$@"

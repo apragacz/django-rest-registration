@@ -77,10 +77,10 @@ def convert_html_to_text(value, preserve_urls=False):
     ...     </html>''', preserve_urls=True)
     "I'm here!\nClick me (https://example.com)\n"
     """
-    s = MLStripper(preserve_urls=preserve_urls)
-    s.feed(value)
-    s.close()
-    return s.get_data()
+    stripper = MLStripper(preserve_urls=preserve_urls)
+    stripper.feed(value)
+    stripper.close()
+    return stripper.get_data()
 
 
 def _has_html_tags(value):
@@ -95,6 +95,7 @@ class MLStripper(HTMLParser):
     def __init__(self, preserve_urls=False):
         super(MLStripper, self).__init__()
         self.reset()
+        self._errors = []
         self._paragraphs = [[]]
         self._tag_info_stack = deque([TagInfo(None, {})])
         self._preserve_urls = preserve_urls
@@ -130,14 +131,20 @@ class MLStripper(HTMLParser):
         if num is not None:
             self.handle_charref(num)
 
-    def handle_charref(self, num):
-        self._append_segment(chr(int(num)))
+    def handle_charref(self, name):
+        self._append_segment(chr(int(name)))
+
+    def error(self, message):
+        self._errors.append(message)
 
     def get_data(self):
         paragraph_texts = []
         for segments in self._paragraphs:
             paragraph_texts.append(' '.join(segments))
         return '\n'.join(paragraph_texts)
+
+    def get_errors(self):
+        return self._errors
 
     def _is_in_body(self):
         if len(self._tag_info_stack) < 3:

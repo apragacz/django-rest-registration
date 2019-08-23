@@ -23,6 +23,11 @@ def get_object_or_404(queryset, *filter_args, **filter_kwargs):
         raise Http404
 
 
+def get_user_login_fields():
+    user_class = get_user_model()
+    return get_user_setting('LOGIN_FIELDS') or [user_class.USERNAME_FIELD]
+
+
 def get_user_setting(name):
     setting_name = 'USER_{name}'.format(name=name)
     user_class = get_user_model()
@@ -37,10 +42,7 @@ def get_user_setting(name):
 
 def authenticate_by_login_and_password_or_none(login, password):
     user = None
-    user_class = get_user_model()
-    login_fields = (registration_settings.USER_LOGIN_FIELDS or
-                    getattr(user_class, 'LOGIN_FIELDS', None) or
-                    [user_class.USERNAME_FIELD])
+    login_fields = get_user_login_fields()
 
     for field_name in login_fields:
         kwargs = {
@@ -54,10 +56,18 @@ def authenticate_by_login_and_password_or_none(login, password):
     return user
 
 
-def get_user_by_id(user_id, default=_RAISE_EXCEPTION, require_verified=True):
+def get_user_verification_id(user):
+    verification_id_field = get_user_setting('VERIFICATION_ID_FIELD')
+    return getattr(user, verification_id_field)
+
+
+def get_user_by_verification_id(
+        user_verification_id, default=_RAISE_EXCEPTION, require_verified=True):
+    verification_id_field = get_user_setting('VERIFICATION_ID_FIELD')
     return get_user_by_lookup_dict({
-        'pk': user_id,
-    }, require_verified=require_verified)
+        verification_id_field: user_verification_id},
+        default=default,
+        require_verified=require_verified)
 
 
 def get_user_by_lookup_dict(
@@ -74,7 +84,6 @@ def get_user_by_lookup_dict(
     except Http404:
         if default is _RAISE_EXCEPTION:
             raise UserNotFound()
-        else:
-            return default
+        return default
     else:
         return user

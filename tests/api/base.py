@@ -89,8 +89,8 @@ class APIViewTestCase(BaseViewTestCase):
             url_parser = self._parse_verification_url
         try:
             url_path, verification_data = url_parser(url, expected_fields)
-        except ValueError as e:
-            self.fail(str(e))
+        except ValueError as exc:
+            self.fail(str(exc))
         if expected_path is not None:
             self.assertEqual(url_path, expected_path)
         if expected_fields is not None:
@@ -103,7 +103,7 @@ class APIViewTestCase(BaseViewTestCase):
         query = parse_qs(parsed_url.query, strict_parsing=True)
 
         for key, values in query.items():
-            if len(values) == 0:
+            if not values:
                 raise ValueError("no values for '{key}".format(key=key))
             if len(values) > 1:
                 raise ValueError("multiple values for '{key}'".format(key=key))

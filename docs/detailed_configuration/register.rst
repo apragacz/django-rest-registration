@@ -94,6 +94,59 @@ DefaultRegisterUserSerializer
 
 .. autoclass:: rest_registration.api.serializers.DefaultRegisterUserSerializer
 
+Signals
+-------
+
+.. _register-signals:
+
+There are many cases where only a small bit of additional logic needs to 
+be injected into the registration process, and writing a custom workflow 
+to support this represents an unnecessary amount of work. 
+A more lightweight customization option is provided through two custom signals 
+which the built-in registration workflows send, and custom workflows 
+are encouraged to send, at specific points during the registration process; 
+functions listening for these signals can then add whatever logic is needed.
+
+For general documentation on signals and the Django dispatcher, 
+consult `Django's signals documentation
+<http://docs.djangoproject.com/en/stable/topics/signals/>`_. This documentation assumes 
+that you are familiar with how signals work and the process of writing and 
+connecting functions which will listen for signals.
+
+
+.. data:: user_activated
+
+   Sent when a user account is activated (not applicable to all
+   workflows). Provides the following arguments:
+
+   `sender`
+        None - No class is sending this signal
+   `user`
+        A user-model instance representing the activated account.
+
+   `request`
+       The `Request <https://www.django-rest-framework.org/api-guide/requests/#requests>`_ in which the account was activated.
+
+   This signal is automatically sent for you by the base
+   :meth:`~django_rest_registration.api.views.register`, so unless
+   you've overridden it you should not need to explicitly send it.
+
+
+.. data:: user_registered
+
+   Sent when a new user account is registered. Provides the following
+   arguments:
+
+   `sender`
+        None - No class is sending this signal
+
+   `user`
+        A user-model instance representing the new account.
+
+   `request`
+       The `Request <https://www.django-rest-framework.org/api-guide/requests/#requests>`_ in which the account was registered.
+
+
 List of settings
 ----------------
 

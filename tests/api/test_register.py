@@ -1,4 +1,3 @@
-import math
 import time
 from unittest import mock
 from unittest.mock import patch
@@ -68,6 +67,27 @@ class RegisterSerializerTestCase(TestCase):
         )
 
 
+@override_settings(REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION)
+class RegisterSignerTestCase(TestCase):
+
+    def test_signer_with_different_secret_keys(self):
+        user = self.create_test_user(is_active=False)
+        data_to_sign = {'user_id': user.pk}
+        secrets = [
+            '#0ka!t#6%28imjz+2t%l(()yu)tg93-1w%$du0*po)*@l+@+4h',
+            'feb7tjud7m=91$^mrk8dq&nz(0^!6+1xk)%gum#oe%(n)8jic7',
+        ]
+        signatures = []
+        for secret in secrets:
+            with override_settings(
+                    SECRET_KEY=secret):
+                signer = RegisterSigner(data_to_sign)
+                data = signer.get_signed_data()
+                signatures.append(data[signer.SIGNATURE_FIELD])
+
+        assert signatures[0] != signatures[1]
+
+
 def build_custom_verification_url(signer):
     base_url = signer.get_base_url()
     signed_data = signer.get_signed_data()
@@ -116,11 +136,9 @@ class RegisterViewTestCase(APIViewTestCase):
     def test_register_ok(self):
         data = self._get_register_user_data(password='testpassword')
         request = self.create_post_request(data)
-        time_before = math.floor(time.time())
-        with self.assert_one_mail_sent() as sent_emails:
+        with self.assert_one_mail_sent() as sent_emails, self.timer() as timer:
             response = self.view_func(request)
-        time_after = math.ceil(time.time())
-        self.assert_valid_response(response, status.HTTP_201_CREATED)
+            self.assert_valid_response(response, status.HTTP_201_CREATED)
         user_id = response.data['id']
         # Check database state.
         user = self.user_class.objects.get(id=user_id)
@@ -141,8 +159,47 @@ class RegisterViewTestCase(APIViewTestCase):
         url_user_id = int(verification_data['user_id'])
         self.assertEqual(url_user_id, user_id)
         url_sig_timestamp = int(verification_data['timestamp'])
-        self.assertGreaterEqual(url_sig_timestamp, time_before)
-        self.assertLessEqual(url_sig_timestamp, time_after)
+        self.assertGreaterEqual(url_sig_timestamp, timer.start_time)
+        self.assertLessEqual(url_sig_timestamp, timer.end_time)
+        signer = RegisterSigner(verification_data)
+        signer.verify()
+
+    @override_settings(
+        REST_REGISTRATION=shallow_merge_dicts(
+            REST_REGISTRATION_WITH_VERIFICATION, {
+                'USER_VERIFICATION_ID_FIELD': 'username',
+            },
+        ),
+    )
+    def test_register_with_username_as_verification_id_ok(self):
+        # Using username is not recommended if it can change for a given user.
+        data = self._get_register_user_data(password='testpassword')
+        request = self.create_post_request(data)
+        with self.assert_one_mail_sent() as sent_emails, self.timer() as timer:
+            response = self.view_func(request)
+            self.assert_valid_response(response, status.HTTP_201_CREATED)
+        user_id = response.data['id']
+        # Check database state.
+        user = self.user_class.objects.get(id=user_id)
+        self.assertEqual(user.username, data['username'])
+        self.assertTrue(user.check_password(data['password']))
+        self.assertFalse(user.is_active)
+        # Check verification e-mail.
+        sent_email = sent_emails[0]
+        self.assertEqual(sent_email.from_email, VERIFICATION_FROM_EMAIL)
+        self.assertListEqual(sent_email.to, [data['email']])
+        url = self.assert_one_url_line_in_text(sent_email.body)
+
+        verification_data = self.assert_valid_verification_url(
+            url,
+            expected_path=REGISTER_VERIFICATION_URL,
+            expected_fields={'signature', 'user_id', 'timestamp'},
+        )
+        user_verification_id = verification_data['user_id']
+        self.assertEqual(user_verification_id, user.username)
+        url_sig_timestamp = int(verification_data['timestamp'])
+        self.assertGreaterEqual(url_sig_timestamp, timer.start_time)
+        self.assertLessEqual(url_sig_timestamp, timer.end_time)
         signer = RegisterSigner(verification_data)
         signer.verify()
 
@@ -156,11 +213,9 @@ class RegisterViewTestCase(APIViewTestCase):
     def test_register_with_custom_verification_url_ok(self):
         data = self._get_register_user_data(password='testpassword')
         request = self.create_post_request(data)
-        time_before = math.floor(time.time())
-        with self.assert_one_mail_sent() as sent_emails:
+        with self.assert_one_mail_sent() as sent_emails, self.timer() as timer:
             response = self.view_func(request)
-        time_after = math.ceil(time.time())
-        self.assert_valid_response(response, status.HTTP_201_CREATED)
+            self.assert_valid_response(response, status.HTTP_201_CREATED)
         user_id = response.data['id']
         # Check database state.
         user = self.user_class.objects.get(id=user_id)
@@ -182,8 +237,8 @@ class RegisterViewTestCase(APIViewTestCase):
         url_user_id = int(verification_data['user_id'])
         self.assertEqual(url_user_id, user_id)
         url_sig_timestamp = int(verification_data['timestamp'])
-        self.assertGreaterEqual(url_sig_timestamp, time_before)
-        self.assertLessEqual(url_sig_timestamp, time_after)
+        self.assertGreaterEqual(url_sig_timestamp, timer.start_time)
+        self.assertLessEqual(url_sig_timestamp, timer.end_time)
         signer = RegisterSigner(verification_data)
         signer.verify()
 
@@ -193,11 +248,9 @@ class RegisterViewTestCase(APIViewTestCase):
     def test_register_with_html_email_ok(self):
         data = self._get_register_user_data(password='testpassword')
         request = self.create_post_request(data)
-        time_before = math.floor(time.time())
-        with self.assert_one_mail_sent() as sent_emails:
+        with self.assert_one_mail_sent() as sent_emails, self.timer() as timer:
             response = self.view_func(request)
-        time_after = math.ceil(time.time())
-        self.assert_valid_response(response, status.HTTP_201_CREATED)
+            self.assert_valid_response(response, status.HTTP_201_CREATED)
         user_id = response.data['id']
         # Check database state.
         user = self.user_class.objects.get(id=user_id)
@@ -218,8 +271,8 @@ class RegisterViewTestCase(APIViewTestCase):
         url_user_id = int(verification_data['user_id'])
         self.assertEqual(url_user_id, user_id)
         url_sig_timestamp = int(verification_data['timestamp'])
-        self.assertGreaterEqual(url_sig_timestamp, time_before)
-        self.assertLessEqual(url_sig_timestamp, time_after)
+        self.assertGreaterEqual(url_sig_timestamp, timer.start_time)
+        self.assertLessEqual(url_sig_timestamp, timer.end_time)
         signer = RegisterSigner(verification_data)
         signer.verify()
 
@@ -234,11 +287,9 @@ class RegisterViewTestCase(APIViewTestCase):
         data = self._get_register_user_data(password='testpassword')
         data.pop('password_confirm')
         request = self.create_post_request(data)
-        time_before = math.floor(time.time())
-        with self.assert_one_mail_sent() as sent_emails:
+        with self.assert_one_mail_sent() as sent_emails, self.timer() as timer:
             response = self.view_func(request)
             self.assert_valid_response(response, status.HTTP_201_CREATED)
-        time_after = math.ceil(time.time())
         user_id = response.data['id']
         # Check database state.
         user = self.user_class.objects.get(id=user_id)
@@ -259,8 +310,8 @@ class RegisterViewTestCase(APIViewTestCase):
         url_user_id = int(verification_data['user_id'])
         self.assertEqual(url_user_id, user_id)
         url_sig_timestamp = int(verification_data['timestamp'])
-        self.assertGreaterEqual(url_sig_timestamp, time_before)
-        self.assertLessEqual(url_sig_timestamp, time_after)
+        self.assertGreaterEqual(url_sig_timestamp, timer.start_time)
+        self.assertLessEqual(url_sig_timestamp, timer.end_time)
         signer = RegisterSigner(verification_data)
         signer.verify()
 
@@ -360,8 +411,10 @@ class VerifyRegistrationViewTestCase(APIViewTestCase):
         self.assertFalse(user.is_active)
         return user
 
-    def prepare_request(self, user, session=False):
-        signer = RegisterSigner({'user_id': user.pk})
+    def prepare_request(self, user, session=False, data_to_sign=None):
+        if data_to_sign is None:
+            data_to_sign = {'user_id': user.pk}
+        signer = RegisterSigner(data_to_sign)
         data = signer.get_signed_data()
         request = self.create_post_request(data)
         if session:
@@ -376,6 +429,22 @@ class VerifyRegistrationViewTestCase(APIViewTestCase):
     @override_settings(REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION)
     def test_verify_ok(self):
         user, request = self.prepare_user_and_request()
+        response = self.view_func(request)
+        self.assert_valid_response(response, status.HTTP_200_OK)
+        user.refresh_from_db()
+        self.assertTrue(user.is_active)
+
+    @override_settings(
+        REST_REGISTRATION=shallow_merge_dicts(
+            REST_REGISTRATION_WITH_VERIFICATION, {
+                'USER_VERIFICATION_ID_FIELD': 'username',
+            },
+        ),
+    )
+    def test_verify_with_username_as_verification_id_ok(self):
+        user = self.prepare_user()
+        request = self.prepare_request(
+            user, data_to_sign={'user_id': user.username})
         response = self.view_func(request)
         self.assert_valid_response(response, status.HTTP_200_OK)
         user.refresh_from_db()
