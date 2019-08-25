@@ -1,8 +1,9 @@
 from django.test.utils import modify_settings, override_settings
 from rest_framework import status
 from rest_framework.authtoken.models import Token
-from rest_framework.test import force_authenticate
+from rest_framework.test import APIRequestFactory, force_authenticate
 
+from ..helpers import override_rest_framework_settings_dict
 from .base import APIViewTestCase
 
 
@@ -53,6 +54,22 @@ class LoginViewTestCase(BaseLoginTestCase):
         response = self.view_func(request)
         self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
 
+    @override_rest_framework_settings_dict({
+        'DEFAULT_AUTHENTICATION_CLASSES': [
+            'rest_registration.api.authentication.SessionCSRFAuthentication',
+        ],
+    })
+    def test_csrf(self):
+        factory = APIRequestFactory(enforce_csrf_checks=True)
+        request = factory.post("/login", {
+            'login': self.user.username,
+            'password': self.password,
+        })
+        self.add_session_to_request(request)
+        response = self.view_func(request)
+        self.assert_invalid_response(
+            response, status.HTTP_403_FORBIDDEN)
+
 
 class LogoutViewTestCase(BaseLoginTestCase):
     VIEW_NAME = 'logout'
@@ -77,13 +94,11 @@ class LogoutViewTestCase(BaseLoginTestCase):
             'remove': 'django.contrib.sessions.middleware.SessionMiddleware',
         }
     )
-    @override_settings(
-        REST_FRAMEWORK={
-            'DEFAULT_AUTHENTICATION_CLASSES': (
-                'rest_framework.authentication.TokenAuthentication',
-            ),
-        },
-    )
+    @override_rest_framework_settings_dict({
+        'DEFAULT_AUTHENTICATION_CLASSES': (
+            'rest_framework.authentication.TokenAuthentication',
+        ),
+    })
     def test_revoke_token_success_without_session(self):
         self._test_revoke_token_success(add_session=False)
 
@@ -112,13 +127,11 @@ class LogoutViewTestCase(BaseLoginTestCase):
             'remove': 'django.contrib.sessions.middleware.SessionMiddleware',
         }
     )
-    @override_settings(
-        REST_FRAMEWORK={
-            'DEFAULT_AUTHENTICATION_CLASSES': (
-                'rest_framework.authentication.TokenAuthentication',
-            ),
-        },
-    )
+    @override_rest_framework_settings_dict({
+        'DEFAULT_AUTHENTICATION_CLASSES': (
+            'rest_framework.authentication.TokenAuthentication',
+        ),
+    })
     def test_revoke_nonexistent_token_failure_without_session(self):
         self._test_revoke_nonexistent_token_failure(add_session=False)
 
