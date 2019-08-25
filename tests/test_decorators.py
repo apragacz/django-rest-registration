@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from types import ModuleType
 
 from django.test import TestCase
 from rest_framework import renderers
@@ -74,7 +75,11 @@ class SerializerClassGetterTestCase(TestCase):
 
     def test_views_serializer_getter_returns_correct_value(self):
         view_list = [
-            v for k, v in vars(views).items() if not k.startswith('_')]
+            v for k, v in vars(views).items()
+            if not k.startswith('_') and not isinstance(v, ModuleType)]
         for view in view_list:
-            serializer = view.cls.get_serializer()
+            view_obj = view.cls(**view.initkwargs)
+            fake_request = object()
+            view_obj.setup(fake_request)
+            serializer = view_obj.get_serializer()
             self.assertIsInstance(serializer, Serializer)

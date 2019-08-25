@@ -9,28 +9,28 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.settings import api_settings
 
-from rest_registration.decorators import (
-    api_view_serializer_class,
-    api_view_serializer_class_getter
-)
+from rest_registration.api.views.base import APIRegistrationView
+from rest_registration.decorators import api_view_serializer_class
 from rest_registration.exceptions import BadRequest
 from rest_registration.settings import registration_settings
 from rest_registration.utils.responses import get_ok_response
 
 
-@api_view_serializer_class_getter(
-    lambda: registration_settings.LOGIN_SERIALIZER_CLASS)
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def login(request):
+class LoginView(APIRegistrationView):
     '''
     Logs in the user via given login and password.
     '''
-    serializer_class = registration_settings.LOGIN_SERIALIZER_CLASS
-    serializer = serializer_class(
-        data=request.data,
-        context={'request': request},
-    )
+    permission_classes = [AllowAny]
+
+    def get_serializer_class(self):
+        return registration_settings.LOGIN_SERIALIZER_CLASS
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        return _login(request, serializer)
+
+
+def _login(request, serializer):
     serializer.is_valid(raise_exception=True)
     user = serializer.get_authenticated_user()
 
@@ -40,6 +40,9 @@ def login(request):
     extra_data = perform_login(request, user)
 
     return get_ok_response('Login successful', extra_data=extra_data)
+
+
+login = LoginView.as_view()
 
 
 class LogoutSerializer(serializers.Serializer):  # noqa: E501 pylint: disable=abstract-method
