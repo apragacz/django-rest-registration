@@ -1,5 +1,7 @@
 from django.http import Http404
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
@@ -49,6 +51,11 @@ def register_email(request):
     serializer.is_valid(raise_exception=True)
 
     email = serializer.get_email()
+
+    user_model = get_user_model()
+    qs = user_model.objects.filter(email=email)
+    if(qs.count() > 0):
+        return Response("This email is already registered.")
 
     template_config = (
         registration_settings.REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES)
