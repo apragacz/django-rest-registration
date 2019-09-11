@@ -1,3 +1,10 @@
+{% if email_already_used %}
+You or someone else requested change to this e-mail for which there is an existing account.
+You need to either remove this account assigned to this e-mail or change the e-mail of it.
+
+If this wasn't you, please just ignore this email.
+{% else %}
 You can verify the email {{ email }} by clicking on this link:
 
 {{ verification_url | safe }}
+{% endif %}

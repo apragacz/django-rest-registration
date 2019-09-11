@@ -13,8 +13,11 @@ from rest_registration.verification import get_current_timestamp
 
 class TestCase(DjangoTestCase):
 
-    def setUp(self):
-        self.user_class = get_user_model()
+    @property
+    def user_class(self):
+        # Ensure that the user class is always fresh
+        # for instance, in case of settings override.
+        return get_user_model()
 
     def create_test_user(self, **kwargs):
         password = kwargs.pop('password', None)
@@ -55,14 +58,21 @@ class TestCase(DjangoTestCase):
             self.fail(self._formatMessage(msg, std_msg))
 
     @contextlib.contextmanager
-    def _assert_mails_sent(self, expected_num):
-        before = len(mail.outbox)
+    def capture_sent_emails(self):
         sent_emails = EmailMessageContainer()
-        yield sent_emails
-        sent_emails.set(mail.outbox[before:])
-        after = len(mail.outbox)
-        num_of_sent_emails = after - before
+        try:
+            before = len(mail.outbox)
+            yield sent_emails
+            sent_emails.set(mail.outbox[before:])
+        finally:
+            if not sent_emails.is_set():
+                sent_emails.set([])
 
+    @contextlib.contextmanager
+    def _assert_mails_sent(self, expected_num):
+        with self.capture_sent_emails() as sent_emails:
+            yield sent_emails
+        num_of_sent_emails = len(sent_emails)
         msg_format = "Expected {expected_num} emails to be sent, but found {num_of_sent_emails}"  # noqa: E501
         msg = msg_format.format(
             expected_num=expected_num,
@@ -111,15 +121,18 @@ class TestCase(DjangoTestCase):
         self.assertEqual(num_of_urls, expected_num, msg=msg)
         return urls
 
+    def assert_no_url_in_text(self, text):
+        self._assert_urls_in_text(text, 0, r'https?://.*')
+
     def assert_one_url_line_in_text(self, text):
         url_lines = self._assert_urls_in_text(
             text, 1, r'^(?P<url>https?://.*)$')
         return url_lines[0]
 
     def assert_one_url_in_brackets_in_text(self, text):
-        url_lines = self._assert_urls_in_text(
+        urls = self._assert_urls_in_text(
             text, 1, r'\((?P<url>https?://.*)\)')
-        return url_lines[0]
+        return urls[0]
 
 
 class BaseViewTestCase(TestCase):
@@ -148,7 +161,7 @@ class EmailMessageContainer(Sequence):
     def __init__(self):
         super().__init__()
         self._mails = []
-        self._set = False
+        self._is_set = False
 
     def __len__(self):
         return len(self._mails)
@@ -157,9 +170,12 @@ class EmailMessageContainer(Sequence):
         return self._mails[i]
 
     def set(self, mails):
-        assert not self._set
+        assert not self._is_set
         self._mails = list(mails)
-        self._set = True
+        self._is_set = True
+
+    def is_set(self):
+        return self._is_set
 
 
 class Timer:

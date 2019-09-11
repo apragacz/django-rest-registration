@@ -47,6 +47,7 @@ coverage.xml
 TEST-*.xml
 *,cover
 /coverage_html_report/
+test_db.sqlite3
 
 # Translations
 *.mo

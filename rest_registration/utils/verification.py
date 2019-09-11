@@ -30,7 +30,9 @@ def build_default_template_context(
         'user': user,
         'email': user_address,
     }
-    params_signer = data.get('params_signer')
+    data = data.copy()
+    params_signer = data.pop('params_signer', None)
     if params_signer:
         context['verification_url'] = params_signer.get_url()
+    context.update(data)
     return context

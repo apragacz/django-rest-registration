@@ -2,12 +2,22 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Please verify new e-mail</title>
+    <title>{% if email_already_used %}Your e-mail is already in use{% else %}Please verify new e-mail{% endif %}</title>
   </head>
   <body>
+    {% if email_already_used %}
+    <p>
+      You or someone else requested change to this e-mail for which there is an existing account.
+      You need to either remove this account assigned to this e-mail or change the e-mail of it.
+    </p>
+    <p>
+      If this wasn't you, please just ignore this email.
+    </p>
+    {% else %}
     <p>
       You can verify the email {{ email }} by clicking
       <a href="{{ verification_url }}">here</a>.
     </p>
+    {% endif %}
   </body>
 </html>

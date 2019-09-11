@@ -19,6 +19,7 @@ from rest_registration.utils.users import (
     get_user_by_verification_id,
     get_user_email_field_name,
     get_user_verification_id,
+    is_user_email_field_unique,
     user_with_email_exists
 )
 from rest_registration.utils.verification import verify_signer_or_bad_request
@@ -54,9 +55,7 @@ def register_email(request):
     serializer.is_valid(raise_exception=True)
 
     email = serializer.get_email()
-
-    if user_with_email_exists(email):
-        raise BadRequest("This email is already registered.")
+    email_already_used = is_user_email_field_unique() and user_with_email_exists(email)  # noqa: E501
 
     template_config_data = registration_settings.REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES  # noqa: E501
     if registration_settings.REGISTER_EMAIL_VERIFICATION_ENABLED:
@@ -66,11 +65,15 @@ def register_email(request):
         }, request=request)
         notification_data = {
             'params_signer': signer,
+            'email_already_used': email_already_used,
         }
         send_verification_notification(
             NotificationType.REGISTER_EMAIL_VERIFICATION, user,
             notification_data, template_config_data, custom_user_address=email)
     else:
+        if email_already_used:
+            raise BadRequest("This email is already registered.")
+
         email_field_name = get_user_email_field_name()
         old_email = getattr(user, email_field_name)
         setattr(user, email_field_name, email)
@@ -120,17 +123,21 @@ def process_verify_email_data(input_data, serializer_context=None):
     signer = RegisterEmailSigner(data)
     verify_signer_or_bad_request(signer)
     request = serializer_context.get('request')
+    new_email = data['email']
+
+    if is_user_email_field_unique() and user_with_email_exists(new_email):
+        raise BadRequest("This email is already registered.")
 
     email_field_name = get_user_email_field_name()
     user = get_user_by_verification_id(data['user_id'])
     old_email = getattr(user, email_field_name)
-    setattr(user, email_field_name, data['email'])
+    setattr(user, email_field_name, new_email)
     user.save()
 
     signals.user_changed_email.send(
         sender=None,
         user=user,
-        new_email=data['email'],
+        new_email=new_email,
         old_email=old_email,
         request=request,
     )

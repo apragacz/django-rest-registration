@@ -1,1 +1,1 @@
-Please verify new e-mail
+{% if email_already_used %}Your e-mail is already in use{% else %}Please verify new e-mail{% endif %}
