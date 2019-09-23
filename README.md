@@ -80,7 +80,7 @@ Below is sample, minimal config you can provide in your django settings which wi
 ```python
 REST_REGISTRATION = {
     'REGISTER_VERIFICATION_ENABLED': False,
-    'RESET_PASSWORD_VERIFICATION_URL': False,
+    'RESET_PASSWORD_VERIFICATION_ENABLED': False,
     'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
 }
 ```
@@ -101,6 +101,10 @@ The frontend urls are not provided by the library but should be provided
 by the user of the library, because Django REST Registration is frontend-agnostic.
 The frontend urls will receive parameters as GET query and should pass
 them to corresponding REST API views via HTTP POST request.
+
+In case when any verification is enabled (which is the default!),
+your Django application needs to be
+[properly configured so it can send e-mails](https://docs.djangoproject.com/en/dev/topics/email/).
 
 You can read more about basic configuration
 [here](https://django-rest-registration.readthedocs.io/en/latest/quickstart.html).

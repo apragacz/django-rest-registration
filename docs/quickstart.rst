@@ -103,7 +103,8 @@ e-mail. This also applies to the other verification urls above.
 You also need also to replace ``'no-reply@example.com'`` with the
 e-mail address which will be used as the sender of the verification e-mails.
 
-In case when any verification is enabled, your Django application needs to be
+In case when any verification is enabled, (which is the default!)
+your Django application needs to be
 `properly configured so it can send e-mails <https://docs.djangoproject.com/en/dev/topics/email/>`__.
 
 The frontend urls are not provided by the library but should be provided
