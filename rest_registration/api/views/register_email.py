@@ -9,7 +9,10 @@ from rest_registration.decorators import (
     api_view_serializer_class_getter
 )
 from rest_registration.exceptions import BadRequest
-from rest_registration.notifications import send_verification_notification
+from rest_registration.notifications.email import (
+    send_verification_notification
+)
+from rest_registration.notifications.enums import NotificationType
 from rest_registration.settings import registration_settings
 from rest_registration.utils.responses import get_ok_response
 from rest_registration.utils.users import (
@@ -55,15 +58,18 @@ def register_email(request):
     if user_with_email_exists(email):
         raise BadRequest("This email is already registered.")
 
-    template_config = (
-        registration_settings.REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES)
+    template_config_data = registration_settings.REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES  # noqa: E501
     if registration_settings.REGISTER_EMAIL_VERIFICATION_ENABLED:
         signer = RegisterEmailSigner({
             'user_id': get_user_verification_id(user),
             'email': email,
         }, request=request)
+        notification_data = {
+            'params_signer': signer,
+        }
         send_verification_notification(
-            user, signer, template_config, email=email)
+            NotificationType.REGISTER_EMAIL_VERIFICATION, user,
+            notification_data, template_config_data, custom_user_address=email)
     else:
         email_field_name = get_user_email_field_name()
         old_email = getattr(user, email_field_name)

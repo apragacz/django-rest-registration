@@ -247,7 +247,41 @@ GLOBAL_VERIFICATION_SETTINGS_FIELDS = [
             It is be solely up to the implementer of custom builder function
             to encode the signed values properly in the URL.
             """),
+    ),
+    Field(
+        'VERIFICATION_TEMPLATE_CONTEXT_BUILDER',
+        default='rest_registration.utils.verification.build_default_template_context',  # noqa: E501
+        import_string=True,
+        help=dedent("""\
+            The builder function receives these parameters as
+            positional arguments:
 
+            *   ``user`` - the user which is to be notified.
+            *   ``user_address`` - the user address, which can be the
+                user e-mail, phone number, etc.
+            *   ``data`` - dictionary; in most cases it contains only
+                one entry, which is the ``param_signer``
+                under ``'param_signer'`` key. The implementer of the
+                custom builder function should be aware that the contents
+                of the dictionary are dynamic and write defensive code
+                to account that.
+
+            and these parameters as keyword arguments:
+
+            *   ``notification_type`` - value of
+                ``rest_registration.notifications.enums.NotificationType``
+                enum.
+            *   ``notification_method`` - value of
+                ``rest_registration.notifications.enums.NotificationMethod``
+                enum. Currently there is only one choice which is
+                ``NotificationMethod.EMAIL``.
+
+            It is possible that in the future, additional keyword arguments
+            may be added. Therefore the implementer
+            of the custom builder function should take account of that,
+            for instance by adding ``**kwargs`` in the signature
+            of the function.
+            """),
     ),
 ]
 

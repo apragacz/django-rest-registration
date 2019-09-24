@@ -21,3 +21,16 @@ def build_default_verification_url(signer):
     if signer.request:
         url = signer.request.build_absolute_uri(url)
     return url
+
+
+def build_default_template_context(
+        user, user_address, data,
+        notification_type=None, notification_method=None):
+    context = {
+        'user': user,
+        'email': user_address,
+    }
+    params_signer = data.get('params_signer')
+    if params_signer:
+        context['verification_url'] = params_signer.get_url()
+    return context

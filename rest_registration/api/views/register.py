@@ -11,7 +11,10 @@ from rest_registration.decorators import (
     api_view_serializer_class_getter
 )
 from rest_registration.exceptions import BadRequest
-from rest_registration.notifications import send_verification_notification
+from rest_registration.notifications.email import (
+    send_verification_notification
+)
+from rest_registration.notifications.enums import NotificationType
 from rest_registration.settings import registration_settings
 from rest_registration.utils.responses import get_ok_response
 from rest_registration.utils.users import (
@@ -92,9 +95,13 @@ def register(request):
         signer = RegisterSigner({
             'user_id': get_user_verification_id(user),
         }, request=request)
-        template_config = (
-            registration_settings.REGISTER_VERIFICATION_EMAIL_TEMPLATES)
-        send_verification_notification(user, signer, template_config)
+        template_config_data = registration_settings.REGISTER_VERIFICATION_EMAIL_TEMPLATES  # noqa: E501
+        notification_data = {
+            'params_signer': signer,
+        }
+        send_verification_notification(
+            NotificationType.REGISTER_VERIFICATION, user, notification_data,
+            template_config_data)
 
     return Response(user_data, status=status.HTTP_201_CREATED)
 
