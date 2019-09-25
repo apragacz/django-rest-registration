@@ -26,7 +26,7 @@ parse_args() {
 
 build_docs() {
     cd "${BASE_DIR}"
-    python setup.py build_sphinx
+    sphinx-build "${DOCS_SRC_DIR}" "${DOCS_BUILD_DIR}"
 }
 
 autobuild_docs_with_watch() {
