@@ -43,7 +43,7 @@ class RegisterSerializerTestCase(TestCase):
     def test_ok(self):
         serializer_class = registration_settings.REGISTER_SERIALIZER_CLASS
         serializer = serializer_class(data={})
-        field_names = {f for f in serializer.get_fields()}
+        field_names = set(serializer.get_fields())
         self.assertEqual(
             field_names,
             {'id', 'username', 'first_name', 'last_name', 'email',
@@ -60,7 +60,7 @@ class RegisterSerializerTestCase(TestCase):
     def test_no_password_ok(self):
         serializer_class = registration_settings.REGISTER_SERIALIZER_CLASS
         serializer = serializer_class(data={})
-        field_names = {f for f in serializer.get_fields()}
+        field_names = set(serializer.get_fields())
         self.assertEqual(
             field_names,
             {'id', 'username', 'first_name', 'last_name', 'email', 'password'},
