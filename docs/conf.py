@@ -31,17 +31,13 @@ django.setup()
 # -- Project information -----------------------------------------------------
 
 
-def read_contents(local_filepath):
-    with open(os.path.join(ROOT_DIR, local_filepath)) as f:
-        return f.read()
-
-
 def get_version(package):
     '''
     Return package version as listed in `__version__` in `init.py`.
     '''
-    init_py = read_contents(os.path.join(package, '__init__.py'))
-    return re.search("__version__ = ['\"]([^'\"]+)['\"]", init_py).group(1)
+    with open(os.path.join(ROOT_DIR, package, '__init__.py'), 'rt') as f:
+        init_py = f.read()
+        return re.search("__version__ = ['\"]([^'\"]+)['\"]", init_py).group(1)
 
 
 project = 'Django REST Registration'
