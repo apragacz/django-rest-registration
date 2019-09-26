@@ -26,7 +26,7 @@ parse_args() {
 
 build_docs() {
     cd "${BASE_DIR}"
-    sphinx-build "${DOCS_SRC_DIR}" "${DOCS_BUILD_DIR}"
+    sphinx-build "${DOCS_SRC_DIR}" "${DOCS_BUILD_DIR}/html"
 }
 
 autobuild_docs_with_watch() {
