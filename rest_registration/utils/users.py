@@ -70,6 +70,15 @@ def get_user_by_verification_id(
         require_verified=require_verified)
 
 
+def user_with_email_exists(email):
+    user_class = get_user_model()
+    email_field = get_user_setting('EMAIL_FIELD')
+    if not email_field:
+        return True
+    queryset = user_class.objects.filter(**{email_field: email})
+    return queryset.exists()
+
+
 def get_user_by_lookup_dict(
         lookup_dict, default=_RAISE_EXCEPTION, require_verified=True):
     verification_enabled = registration_settings.REGISTER_VERIFICATION_ENABLED

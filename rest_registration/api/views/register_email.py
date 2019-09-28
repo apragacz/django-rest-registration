@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from django.http import Http404
 from rest_framework import serializers
 from rest_framework.decorators import api_view, permission_classes
@@ -16,7 +15,8 @@ from rest_registration.utils.responses import get_ok_response
 from rest_registration.utils.users import (
     get_user_by_verification_id,
     get_user_setting,
-    get_user_verification_id
+    get_user_verification_id,
+    user_with_email_exists
 )
 from rest_registration.utils.verification import verify_signer_or_bad_request
 from rest_registration.verification import URLParamsSigner
@@ -52,10 +52,7 @@ def register_email(request):
 
     email = serializer.get_email()
 
-    user_model = get_user_model()
-    email_field = get_user_setting('EMAIL_FIELD')
-    qs = user_model.objects.filter(**{email_field: email})
-    if qs.exists():
+    if user_with_email_exists(email):
         raise BadRequest("This email is already registered.")
 
     template_config = (
