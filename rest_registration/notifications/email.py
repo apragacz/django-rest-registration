@@ -7,7 +7,7 @@ from django.template.loader import get_template, render_to_string
 
 from rest_registration.settings import registration_settings
 from rest_registration.utils.common import identity
-from rest_registration.utils.users import get_user_setting
+from rest_registration.utils.users import get_user_email_field_name
 
 EmailTemplateConfig = namedtuple('EmailTemplateConfig', (
     'subject_template_name',
@@ -27,8 +27,8 @@ def send_verification_notification(
 def create_verification_notification(
         user, params_signer, template_config_data, email=None):
     if email is None:
-        email_field = get_user_setting('EMAIL_FIELD')
-        email = getattr(user, email_field)
+        email_field_name = get_user_email_field_name()
+        email = getattr(user, email_field_name)
 
     from_email = registration_settings.VERIFICATION_FROM_EMAIL
     reply_to_email = (registration_settings.VERIFICATION_REPLY_TO_EMAIL or

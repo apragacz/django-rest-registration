@@ -8,6 +8,7 @@ from rest_registration.utils.users import (
     authenticate_by_login_and_password_or_none,
     get_user_by_login_or_none,
     get_user_by_lookup_dict,
+    get_user_email_field_name,
     get_user_setting
 )
 
@@ -79,9 +80,9 @@ class DefaultSendResetPasswordLinkSerializer(serializers.Serializer):  # noqa: E
         return get_user_by_login_or_none(login)
 
     def _get_user_by_email_or_none(self, email):
-        email_field = get_user_setting('EMAIL_FIELD')
+        email_field_name = get_user_email_field_name()
         return get_user_by_lookup_dict(
-            {email_field: email}, default=None, require_verified=False)
+            {email_field_name: email}, default=None, require_verified=False)
 
 
 class DefaultUserProfileSerializer(serializers.ModelSerializer):

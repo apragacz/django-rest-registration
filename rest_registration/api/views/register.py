@@ -16,6 +16,7 @@ from rest_registration.settings import registration_settings
 from rest_registration.utils.responses import get_ok_response
 from rest_registration.utils.users import (
     get_user_by_verification_id,
+    get_user_email_field_name,
     get_user_setting,
     get_user_verification_id
 )
@@ -72,9 +73,9 @@ def register(request):
     if registration_settings.REGISTER_VERIFICATION_ENABLED:
         verification_flag_field = get_user_setting('VERIFICATION_FLAG_FIELD')
         kwargs[verification_flag_field] = False
-        email_field = get_user_setting('EMAIL_FIELD')
-        if (email_field not in serializer.validated_data
-                or not serializer.validated_data[email_field]):
+        email_field_name = get_user_email_field_name()
+        if (email_field_name not in serializer.validated_data
+                or not serializer.validated_data[email_field_name]):
             raise BadRequest("User without email cannot be verified")
 
     user = serializer.save(**kwargs)

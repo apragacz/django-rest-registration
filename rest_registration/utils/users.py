@@ -59,11 +59,15 @@ def get_user_by_verification_id(
 
 def user_with_email_exists(email):
     user_class = get_user_model()
-    email_field = get_user_setting('EMAIL_FIELD')
-    if not email_field:
+    email_field_name = get_user_email_field_name()
+    if not email_field_name:
         return True
-    queryset = user_class.objects.filter(**{email_field: email})
+    queryset = user_class.objects.filter(**{email_field_name: email})
     return queryset.exists()
+
+
+def get_user_email_field_name():
+    return get_user_setting('EMAIL_FIELD')
 
 
 def get_user_by_lookup_dict(

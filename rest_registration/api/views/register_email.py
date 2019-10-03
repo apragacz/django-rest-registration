@@ -14,7 +14,7 @@ from rest_registration.settings import registration_settings
 from rest_registration.utils.responses import get_ok_response
 from rest_registration.utils.users import (
     get_user_by_verification_id,
-    get_user_setting,
+    get_user_email_field_name,
     get_user_verification_id,
     user_with_email_exists
 )
@@ -65,9 +65,9 @@ def register_email(request):
         send_verification_notification(
             user, signer, template_config, email=email)
     else:
-        email_field = get_user_setting('EMAIL_FIELD')
-        old_email = getattr(user, email_field)
-        setattr(user, email_field, email)
+        email_field_name = get_user_email_field_name()
+        old_email = getattr(user, email_field_name)
+        setattr(user, email_field_name, email)
         user.save()
         signals.user_changed_email.send(
             sender=None,
@@ -115,10 +115,10 @@ def process_verify_email_data(input_data, serializer_context=None):
     verify_signer_or_bad_request(signer)
     request = serializer_context.get('request')
 
-    email_field = get_user_setting('EMAIL_FIELD')
+    email_field_name = get_user_email_field_name()
     user = get_user_by_verification_id(data['user_id'])
-    old_email = getattr(user, email_field)
-    setattr(user, email_field, data['email'])
+    old_email = getattr(user, email_field_name)
+    setattr(user, email_field_name, data['email'])
     user.save()
 
     signals.user_changed_email.send(
