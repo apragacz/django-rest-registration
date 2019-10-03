@@ -66,6 +66,12 @@ def user_with_email_exists(email):
     return queryset.exists()
 
 
+def is_user_email_field_unique():
+    email_field_name = get_user_email_field_name()
+    email_field = get_user_field_obj(email_field_name)
+    return is_model_field_unique(email_field)
+
+
 def get_user_email_field_name():
     return get_user_setting('EMAIL_FIELD')
 
@@ -89,6 +95,11 @@ def get_user_by_lookup_dict(
         return user
 
 
+def get_user_field_obj(name):
+    user_class = get_user_model()
+    return user_class._meta.get_field(name)  # pylint: disable=protected-access
+
+
 def get_user_setting(name):
     setting_name = 'USER_{name}'.format(name=name)
     user_class = get_user_model()
@@ -99,6 +110,10 @@ def get_user_setting(name):
         value = getattr(registration_settings, setting_name)
 
     return value
+
+
+def is_model_field_unique(field):
+    return field.unique or field.primary_key
 
 
 def get_object_or_404(queryset, *filter_args, **filter_kwargs):
