@@ -10,41 +10,23 @@ from rest_registration.settings import registration_settings
 _RAISE_EXCEPTION = object()
 
 
-def get_object_or_404(queryset, *filter_args, **filter_kwargs):
-    """
-    Same as Django's standard shortcut, but make sure to also raise 404
-    if the filter_kwargs don't match the required types.
+def get_user_by_login_or_none(login, require_verified=False):
+    user = None
+    for login_field_name in get_user_login_field_names():
+        user = get_user_by_lookup_dict(
+            {login_field_name: login},
+            default=None, require_verified=require_verified)
+        if user:
+            break
 
-    This function was copied from rest_framework.generics because of issue #36.
-    """
-    try:
-        return _get_object_or_404(queryset, *filter_args, **filter_kwargs)
-    except (TypeError, ValueError, ValidationError):
-        raise Http404
-
-
-def get_user_login_fields():
-    user_class = get_user_model()
-    return get_user_setting('LOGIN_FIELDS') or [user_class.USERNAME_FIELD]
-
-
-def get_user_setting(name):
-    setting_name = 'USER_{name}'.format(name=name)
-    user_class = get_user_model()
-    placeholder = object()
-    value = getattr(user_class, name, placeholder)
-
-    if value is placeholder:
-        value = getattr(registration_settings, setting_name)
-
-    return value
+    return user
 
 
 def authenticate_by_login_and_password_or_none(login, password):
     user = None
-    login_fields = get_user_login_fields()
+    login_field_names = get_user_login_field_names()
 
-    for field_name in login_fields:
+    for field_name in login_field_names:
         kwargs = {
             field_name: login,
             'password': password,
@@ -54,6 +36,11 @@ def authenticate_by_login_and_password_or_none(login, password):
             break
 
     return user
+
+
+def get_user_login_field_names():
+    user_class = get_user_model()
+    return get_user_setting('LOGIN_FIELDS') or [user_class.USERNAME_FIELD]
 
 
 def get_user_verification_id(user):
@@ -96,3 +83,28 @@ def get_user_by_lookup_dict(
         return default
     else:
         return user
+
+
+def get_user_setting(name):
+    setting_name = 'USER_{name}'.format(name=name)
+    user_class = get_user_model()
+    placeholder = object()
+    value = getattr(user_class, name, placeholder)
+
+    if value is placeholder:
+        value = getattr(registration_settings, setting_name)
+
+    return value
+
+
+def get_object_or_404(queryset, *filter_args, **filter_kwargs):
+    """
+    Same as Django's standard shortcut, but make sure to also raise 404
+    if the filter_kwargs don't match the required types.
+
+    This function was copied from rest_framework.generics because of issue #36.
+    """
+    try:
+        return _get_object_or_404(queryset, *filter_args, **filter_kwargs)
+    except (TypeError, ValueError, ValidationError):
+        raise Http404

@@ -6,8 +6,8 @@ from rest_framework.exceptions import ValidationError
 from rest_registration.settings import registration_settings
 from rest_registration.utils.users import (
     authenticate_by_login_and_password_or_none,
+    get_user_by_login_or_none,
     get_user_by_lookup_dict,
-    get_user_login_fields,
     get_user_setting
 )
 
@@ -76,14 +76,7 @@ class DefaultSendResetPasswordLinkSerializer(serializers.Serializer):  # noqa: E
         return self._get_user_by_login_or_none(login)
 
     def _get_user_by_login_or_none(self, login):
-        user = None
-        for login_field in get_user_login_fields():
-            user = get_user_by_lookup_dict(
-                {login_field: login}, default=None, require_verified=False)
-            if user:
-                break
-
-        return user
+        return get_user_by_login_or_none(login)
 
     def _get_user_by_email_or_none(self, email):
         email_field = get_user_setting('EMAIL_FIELD')
