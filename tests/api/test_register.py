@@ -5,6 +5,8 @@ from urllib.parse import quote_plus as urlquote
 from urllib.parse import unquote_plus as urlunquote
 from urllib.parse import urlparse
 
+import pytest
+from django.core.mail.backends.base import BaseEmailBackend
 from django.test.utils import override_settings
 from rest_framework import status
 
@@ -387,6 +389,20 @@ class RegisterViewTestCase(APIViewTestCase):
             response = self.view_func(request)
             self.assert_response_is_bad_request(response)
 
+    @override_settings(
+        EMAIL_BACKEND='tests.api.test_register.FailureEmailBackend',
+    )
+    def test_when_notification_failure_then_user_not_created(self):
+        data = self._get_register_user_data(password='testpassword')
+        request = self.create_post_request(data)
+        user_ids_before = {u.pk for u in self.user_class.objects.all()}
+        with self.capture_sent_emails() as sent_emails, \
+                pytest.raises(ConnectionRefusedError):
+            self.view_func(request)
+        self.assert_len_equals(sent_emails, 0)
+        user_ids_after = {u.pk for u in self.user_class.objects.all()}
+        self.assertSetEqual(user_ids_after, user_ids_before)
+
     def _get_register_user_data(
             self, password, password_confirm=None, **options):
         username = 'testusername'
@@ -541,3 +557,11 @@ class VerifyRegistrationViewTestCase(APIViewTestCase):
         self.assert_invalid_response(response, status.HTTP_404_NOT_FOUND)
         user.refresh_from_db()
         self.assertFalse(user.is_active)
+
+
+class FailureEmailBackend(BaseEmailBackend):
+
+    def send_messages(self, email_messages):
+        if not email_messages:
+            return
+        raise ConnectionRefusedError()

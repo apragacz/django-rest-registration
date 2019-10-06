@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.http import Http404
 from rest_framework import serializers, status
 from rest_framework.decorators import api_view, permission_classes
@@ -81,7 +82,19 @@ def register(request):
                 or not serializer.validated_data[email_field_name]):
             raise BadRequest("User without email cannot be verified")
 
-    user = serializer.save(**kwargs)
+    with transaction.atomic():
+        user = serializer.save(**kwargs)
+        if registration_settings.REGISTER_VERIFICATION_ENABLED:
+            signer = RegisterSigner({
+                'user_id': get_user_verification_id(user),
+            }, request=request)
+            template_config_data = registration_settings.REGISTER_VERIFICATION_EMAIL_TEMPLATES  # noqa: E501
+            notification_data = {
+                'params_signer': signer,
+            }
+            send_verification_notification(
+                NotificationType.REGISTER_VERIFICATION, user,
+                notification_data, template_config_data)
 
     signals.user_registered.send(sender=None, user=user, request=request)
     output_serializer_class = registration_settings.REGISTER_OUTPUT_SERIALIZER_CLASS  # noqa: E501
@@ -90,19 +103,6 @@ def register(request):
         context={'request': request},
     )
     user_data = output_serializer.data
-
-    if registration_settings.REGISTER_VERIFICATION_ENABLED:
-        signer = RegisterSigner({
-            'user_id': get_user_verification_id(user),
-        }, request=request)
-        template_config_data = registration_settings.REGISTER_VERIFICATION_EMAIL_TEMPLATES  # noqa: E501
-        notification_data = {
-            'params_signer': signer,
-        }
-        send_verification_notification(
-            NotificationType.REGISTER_VERIFICATION, user, notification_data,
-            template_config_data)
-
     return Response(user_data, status=status.HTTP_201_CREATED)
 
 
