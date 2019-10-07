@@ -3,4 +3,5 @@ include LICENSE
 include requirements.txt
 include requirements/requirements-base.txt
 recursive-include rest_registration/templates *.txt *.html
+recursive-include rest_registration/locale *.mo *.po
 prune examples
