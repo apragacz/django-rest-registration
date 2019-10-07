@@ -10,6 +10,13 @@ from rest_registration.settings import registration_settings
 from rest_registration.utils.common import identity
 from rest_registration.utils.users import get_user_email_field_name
 
+try:
+    from django.utils.translation import ugettext_lazy as _
+except ImportError:
+    def _(text): 
+    	return text
+
+
 EmailTemplateConfig = namedtuple('EmailTemplateConfig', (
     'subject_template_name',
     'text_body_template_name',
@@ -151,7 +158,7 @@ def parse_template_config(template_config_data):
     try:
         subject_template_name = template_config_data['subject']
     except KeyError:
-        raise ImproperlyConfigured("No 'subject' key found")
+        raise ImproperlyConfigured(_("No 'subject' key found"))
     body_template_name = template_config_data.get('body')
     text_body_template_name = template_config_data.get('text_body')
     html_body_template_name = template_config_data.get('html_body')

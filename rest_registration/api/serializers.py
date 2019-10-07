@@ -12,6 +12,11 @@ from rest_registration.utils.users import (
     get_user_setting
 )
 
+try:
+    from django.utils.translation import ugettext_lazy as _
+except ImportError:
+    def _(text): 
+    	return text
 
 class MetaObj:  # pylint: disable=too-few-public-methods
     pass
@@ -154,7 +159,7 @@ class DefaultRegisterUserSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         if self.has_password_confirm:
             if attrs['password'] != attrs['password_confirm']:
-                raise ValidationError('Passwords don\'t match')
+                raise ValidationError(_('Passwords don\'t match'))
         return attrs
 
     def create(self, validated_data):

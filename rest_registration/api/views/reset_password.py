@@ -23,6 +23,12 @@ from rest_registration.utils.users import (
 from rest_registration.utils.verification import verify_signer_or_bad_request
 from rest_registration.verification import URLParamsSigner
 
+try:
+    from django.utils.translation import ugettext_lazy as _
+except ImportError:
+    def _(text): 
+    	return text
+
 
 class ResetPasswordSigner(URLParamsSigner):
     SALT_BASE = 'reset-password'
@@ -101,7 +107,7 @@ def reset_password(request):
     '''
     process_reset_password_data(
         request.data, serializer_context={'request': request})
-    return get_ok_response('Reset password successful')
+    return get_ok_response(_('Reset password successful'))
 
 
 def process_reset_password_data(input_data, serializer_context=None):

@@ -6,6 +6,12 @@ from rest_registration.decorators import api_view_serializer_class
 from rest_registration.settings import registration_settings
 from rest_registration.utils.responses import get_ok_response
 
+try:
+    from django.utils.translation import ugettext_lazy as _
+except ImportError:
+    def _(text): 
+    	return text
+
 
 class ChangePasswordSerializer(serializers.Serializer):  # noqa: E501 pylint: disable=abstract-method
     old_password = serializers.CharField()
@@ -18,7 +24,7 @@ class ChangePasswordSerializer(serializers.Serializer):  # noqa: E501 pylint: di
     def validate_old_password(self, old_password):
         user = self.context['request'].user
         if not user.check_password(old_password):
-            raise serializers.ValidationError('Old password is not correct')
+            raise serializers.ValidationError(_('Old password is not correct'))
         return old_password
 
     def validate_password(self, password):
@@ -35,7 +41,7 @@ class ChangePasswordSerializer(serializers.Serializer):  # noqa: E501 pylint: di
     def validate(self, attrs):
         if self.has_password_confirm:
             if attrs['password'] != attrs['password_confirm']:
-                raise serializers.ValidationError('Passwords don\'t match')
+                raise serializers.ValidationError(_('Passwords don\'t match'))
         return attrs
 
 
@@ -55,4 +61,4 @@ def change_password(request):
     user = request.user
     user.set_password(serializer.validated_data['password'])
     user.save()
-    return get_ok_response('Password changed successfully')
+    return get_ok_response(_('Password changed successfully'))
