@@ -27,6 +27,12 @@ from rest_registration.utils.users import (
 from rest_registration.utils.verification import verify_signer_or_bad_request
 from rest_registration.verification import URLParamsSigner
 
+try:
+    from django.utils.translation import ugettext_lazy as _
+except ImportError:
+    def _(text): 
+    	return text
+
 
 class RegisterSigner(URLParamsSigner):
     SALT_BASE = 'register'
@@ -80,7 +86,7 @@ def register(request):
         email_field_name = get_user_email_field_name()
         if (email_field_name not in serializer.validated_data
                 or not serializer.validated_data[email_field_name]):
-            raise BadRequest("User without email cannot be verified")
+            raise BadRequest(_("User without email cannot be verified"))
 
     with transaction.atomic():
         user = serializer.save(**kwargs)
@@ -125,7 +131,7 @@ def verify_registration(request):
     extra_data = None
     if registration_settings.REGISTER_VERIFICATION_AUTO_LOGIN:
         extra_data = perform_login(request, user)
-    return get_ok_response('User verified successfully', extra_data=extra_data)
+    return get_ok_response(_('User verified successfully'), extra_data=extra_data)
 
 
 def process_verify_registration_data(input_data, serializer_context=None):

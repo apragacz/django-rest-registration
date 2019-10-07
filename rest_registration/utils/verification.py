@@ -4,14 +4,20 @@ from django.core.signing import BadSignature, SignatureExpired
 
 from rest_registration.exceptions import BadRequest
 
+try:
+    from django.utils.translation import ugettext_lazy as _
+except ImportError:
+    def _(text): 
+    	return text
+
 
 def verify_signer_or_bad_request(signer):
     try:
         signer.verify()
     except SignatureExpired:
-        raise BadRequest('Signature expired')
+        raise BadRequest(_('Signature expired'))
     except BadSignature:
-        raise BadRequest('Invalid signature')
+        raise BadRequest(_('Invalid signature'))
 
 
 def build_default_verification_url(signer):

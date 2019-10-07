@@ -17,6 +17,11 @@ from rest_registration.exceptions import BadRequest
 from rest_registration.settings import registration_settings
 from rest_registration.utils.responses import get_ok_response
 
+try:
+    from django.utils.translation import ugettext_lazy as _
+except ImportError:
+    def _(text): 
+    	return text
 
 @api_view_serializer_class_getter(
     lambda: registration_settings.LOGIN_SERIALIZER_CLASS)
@@ -35,11 +40,11 @@ def login(request):
     user = serializer.get_authenticated_user()
 
     if not user:
-        raise BadRequest('Login or password invalid.')
+        raise BadRequest(_('Login or password invalid.'))
 
     extra_data = perform_login(request, user)
 
-    return get_ok_response('Login successful', extra_data=extra_data)
+    return get_ok_response(_('Login successful'), extra_data=extra_data)
 
 
 class LogoutSerializer(serializers.Serializer):  # noqa: E501 pylint: disable=abstract-method
@@ -68,9 +73,9 @@ def logout(request):
         try:
             user.auth_token.delete()
         except Token.DoesNotExist:
-            raise BadRequest('Cannot remove non-existent token')
+            raise BadRequest(_('Cannot remove non-existent token'))
 
-    return get_ok_response('Logout successful')
+    return get_ok_response(_('Logout successful'))
 
 
 def should_authenticate_session():

@@ -25,6 +25,11 @@ from rest_registration.utils.users import (
 from rest_registration.utils.verification import verify_signer_or_bad_request
 from rest_registration.verification import URLParamsSigner
 
+try:
+    from django.utils.translation import ugettext_lazy as _
+except ImportError:
+    def _(text): 
+    	return text
 
 class RegisterEmailSigner(URLParamsSigner):
     SALT_BASE = 'register-email'
@@ -72,7 +77,7 @@ def register_email(request):
             notification_data, template_config_data, custom_user_address=email)
     else:
         if email_already_used:
-            raise BadRequest("This email is already registered.")
+            raise BadRequest(_("This email is already registered."))
 
         email_field_name = get_user_email_field_name()
         old_email = getattr(user, email_field_name)
@@ -86,7 +91,7 @@ def register_email(request):
             request=request,
         )
 
-    return get_ok_response('Register email link email sent')
+    return get_ok_response(_('Register email link email sent'))
 
 
 class VerifyEmailSerializer(serializers.Serializer):  # noqa: E501 pylint: disable=abstract-method
@@ -105,7 +110,7 @@ def verify_email(request):
     '''
     process_verify_email_data(
         request.data, serializer_context={'request': request})
-    return get_ok_response('Email verified successfully')
+    return get_ok_response(_('Email verified successfully'))
 
 
 def process_verify_email_data(input_data, serializer_context=None):
@@ -126,7 +131,7 @@ def process_verify_email_data(input_data, serializer_context=None):
     new_email = data['email']
 
     if is_user_email_field_unique() and user_with_email_exists(new_email):
-        raise BadRequest("This email is already registered.")
+        raise BadRequest(_("This email is already registered."))
 
     email_field_name = get_user_email_field_name()
     user = get_user_by_verification_id(data['user_id'])
