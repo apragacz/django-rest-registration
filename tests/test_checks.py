@@ -39,6 +39,18 @@ class ChecksTestCase(TestCase):
         self.assert_error_codes_match(errors, [])
 
     @override_settings(
+        TEMPLATES=(),
+        REST_REGISTRATION={
+            'REGISTER_VERIFICATION_ENABLED': False,
+            'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
+            'RESET_PASSWORD_VERIFICATION_ENABLED': False,
+        },
+    )
+    def test_checks_no_templates_minimal_setup(self):
+        errors = simulate_checks()
+        self.assert_error_codes_match(errors, [])
+
+    @override_settings(
         REST_REGISTRATION={
             'REGISTER_VERIFICATION_URL': '/verify-account/',
             'REGISTER_EMAIL_VERIFICATION_URL': '/verify-email/',
@@ -49,6 +61,23 @@ class ChecksTestCase(TestCase):
     def test_checks_preferred_setup(self):
         errors = simulate_checks()
         self.assert_error_codes_match(errors, [])
+
+    @override_settings(
+        TEMPLATES=(),
+        REST_REGISTRATION={
+            'REGISTER_VERIFICATION_URL': '/verify-account/',
+            'REGISTER_EMAIL_VERIFICATION_URL': '/verify-email/',
+            'RESET_PASSWORD_VERIFICATION_URL': '/reset-password/',
+            'VERIFICATION_FROM_EMAIL': 'jon.doe@example.com',
+        },
+    )
+    def test_checks_no_templates_preferred_setup(self):
+        errors = simulate_checks()
+        self.assert_error_codes_match(errors, [
+            ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
+            ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
+            ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
+        ])
 
     @override_settings(
         REST_REGISTRATION={

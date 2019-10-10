@@ -57,7 +57,6 @@ def register_email(request):
     email = serializer.get_email()
     email_already_used = is_user_email_field_unique() and user_with_email_exists(email)  # noqa: E501
 
-    template_config_data = registration_settings.REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES  # noqa: E501
     if registration_settings.REGISTER_EMAIL_VERIFICATION_ENABLED:
         signer = RegisterEmailSigner({
             'user_id': get_user_verification_id(user),
@@ -67,6 +66,7 @@ def register_email(request):
             'params_signer': signer,
             'email_already_used': email_already_used,
         }
+        template_config_data = registration_settings.REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES  # noqa: E501
         send_verification_notification(
             NotificationType.REGISTER_EMAIL_VERIFICATION, user,
             notification_data, template_config_data, custom_user_address=email)

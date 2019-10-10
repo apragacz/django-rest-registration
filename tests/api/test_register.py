@@ -342,6 +342,22 @@ class RegisterViewTestCase(APIViewTestCase):
         self.assertTrue(user.check_password(data['password']))
         self.assertTrue(user.is_active)
 
+    @override_settings(
+        TEMPLATES=(),
+        REST_REGISTRATION=REST_REGISTRATION_WITHOUT_VERIFICATION,
+    )
+    def test_no_templates_without_verification_ok(self):
+        data = self._get_register_user_data(password='testpassword')
+        request = self.create_post_request(data)
+        with self.assert_no_mail_sent():
+            response = self.view_func(request)
+            self.assert_valid_response(response, status.HTTP_201_CREATED)
+        user_id = response.data['id']
+        user = self.user_class.objects.get(id=user_id)
+        self.assertEqual(user.username, data['username'])
+        self.assertTrue(user.check_password(data['password']))
+        self.assertTrue(user.is_active)
+
     def test_register_missing_email(self):
         data = self._get_register_user_data(password='testpassword')
         del data['email']

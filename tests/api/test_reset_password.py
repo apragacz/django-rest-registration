@@ -201,6 +201,24 @@ class SendResetPasswordLinkViewTestCase(BaseResetPasswordViewTestCase):
             response = self.view_func(request)
             self.assert_response_is_not_found(response)
 
+    @override_settings(
+        TEMPLATES=(),
+        REST_REGISTRATION=shallow_merge_dicts(
+            REST_REGISTRATION_WITH_RESET_PASSWORD, {
+                'RESET_PASSWORD_VERIFICATION_ENABLED': False,
+            }
+        ),
+    )
+    def test_no_templates_reset_password_disabled(self):
+        user = self.create_test_user(username='testusername')
+        request = self.create_post_request({
+            'login': user.username,
+        })
+        with self.capture_sent_emails() as sent_emails:
+            response = self.view_func(request)
+        self.assert_len_equals(sent_emails, 0)
+        self.assert_response_is_not_found(response)
+
     def test_send_link_invalid_login(self):
         user = self.create_test_user(username='testusername')
         request = self.create_post_request({

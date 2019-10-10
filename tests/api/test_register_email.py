@@ -253,6 +253,22 @@ class RegisterEmailViewTestCase(BaseRegisterEmailViewTestCase):
         self.user.refresh_from_db()
         self.assertEqual(self.user.email, self.new_email)
 
+    @override_settings(
+        TEMPLATES=(),
+        REST_REGISTRATION={
+            'REGISTER_EMAIL_VERIFICATION_ENABLED': False
+        }
+    )
+    def test_no_templates_without_verification_ok(self):
+        self.setup_user()
+        with self.capture_sent_emails() as sent_emails:
+            response = self._test_authenticated({
+                'email': self.new_email,
+            })
+        self.assert_response_is_ok(response)
+        self.assert_len_equals(sent_emails, 0)
+        self.assert_user_email_changed()
+
 
 class VerifyEmailViewTestCase(BaseRegisterEmailViewTestCase):
     VIEW_NAME = 'verify-email'

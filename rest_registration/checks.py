@@ -140,8 +140,11 @@ def register_verification_one_time_auto_login_check():
     ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
 )
 def valid_register_verification_email_template_config_check():
-    return _is_email_template_config_valid(
-        registration_settings.REGISTER_VERIFICATION_EMAIL_TEMPLATES)
+    return implies(
+        registration_settings.REGISTER_VERIFICATION_ENABLED,
+        _is_email_template_config_valid(
+            registration_settings.REGISTER_VERIFICATION_EMAIL_TEMPLATES),
+    )
 
 
 @register()
@@ -150,8 +153,11 @@ def valid_register_verification_email_template_config_check():
     ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
 )
 def valid_reset_password_verification_email_template_config_check():
-    return _is_email_template_config_valid(
-        registration_settings.RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES)
+    return implies(
+        registration_settings.RESET_PASSWORD_VERIFICATION_ENABLED,
+        _is_email_template_config_valid(
+            registration_settings.RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES),
+    )
 
 
 @register()
@@ -160,8 +166,11 @@ def valid_reset_password_verification_email_template_config_check():
     ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
 )
 def valid_register_email_verification_email_template_config_check():
-    return _is_email_template_config_valid(
-        registration_settings.REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES)
+    return implies(
+        registration_settings.REGISTER_EMAIL_VERIFICATION_ENABLED,
+        _is_email_template_config_valid(
+            registration_settings.REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES),
+    )
 
 
 def _is_email_template_config_valid(template_config_data):
