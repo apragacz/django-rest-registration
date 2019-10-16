@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-07 09:55-0400\n"
-"PO-Revision-Date: 2019-10-07 10:15-0400\n"
+"POT-Creation-Date: 2019-10-16 12:39-0400\n"
+"PO-Revision-Date: 2019-10-16 12:43-0400\n"
+"Last-Translator: \n"
+"Language-Team: \n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"Last-Translator: \n"
-"Language-Team: \n"
 "X-Generator: Poedit 2.0.6\n"
 
 #: rest_registration/api/serializers.py:162
@@ -72,9 +72,17 @@ msgstr "Vérification du courriel réussi"
 msgid "Reset password successful"
 msgstr "Réinitialisation du mot de passe réussi"
 
+#: rest_registration/exceptions.py:10
+msgid "Bad Request"
+msgstr "Mauvaise requête"
+
+#: rest_registration/exceptions.py:15
+msgid "User not found"
+msgstr "Usager non trouvé"
+
 #: rest_registration/notifications/email.py:161
 msgid "No 'subject' key found"
-msgstr ""
+msgstr "Aucune clé 'sujet' trouvé"
 
 #: rest_registration/utils/verification.py:18
 msgid "Signature expired"
@@ -84,36 +92,17 @@ msgstr "Signature expirée"
 msgid "Invalid signature"
 msgstr "Signature invalide"
 
-#: tests/api/base.py:112
-#, python-brace-format
-msgid "no values for '{key}"
-msgstr ""
+#~ msgid "email address"
+#~ msgstr "adresse courriel"
 
-#: tests/api/base.py:114
-#, python-brace-format
-msgid "multiple values for '{key}'"
-msgstr ""
+#~ msgid "groups"
+#~ msgstr "groupes"
 
-#: tests/testapps/custom_users/models.py:8
-msgid "email address"
-msgstr "adresse courriel"
+#~ msgid "The groups this user belongs to. A user will get all permissions granted to each of their groups."
+#~ msgstr "Les groupes auxquels cet utilisateur appartient. Un utilisateur obtiendra toutes les autorisations accordées à chacun de ses groupes."
 
-#: tests/testapps/custom_users/models.py:14
-msgid "groups"
-msgstr "groupes"
+#~ msgid "user permissions"
+#~ msgstr "permissions de l'usager"
 
-#: tests/testapps/custom_users/models.py:17
-msgid ""
-"The groups this user belongs to. A user will get all permissions granted to "
-"each of their groups."
-msgstr ""
-"Les groupes auxquels cet utilisateur appartient. Un utilisateur obtiendra "
-"toutes les autorisations accordées à chacun de ses groupes."
-
-#: tests/testapps/custom_users/models.py:25
-msgid "user permissions"
-msgstr "permissions de l'usager"
-
-#: tests/testapps/custom_users/models.py:27
-msgid "Specific permissions for this user."
-msgstr "Permissions spécifiques pour cet usager."
+#~ msgid "Specific permissions for this user."
+#~ msgstr "Permissions spécifiques pour cet usager."
