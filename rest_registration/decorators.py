@@ -42,7 +42,7 @@ def simple_check(error_message, error_code, obj=None, warning=False):
 
         @functools.wraps(predicate)
         def check_fun(app_configs, **kwargs):
-            from rest_registration.apps import RestRegistrationConfig
+            from rest_registration.apps import RestRegistrationConfig  # noqa: E501 pylint: disable=import-outside-toplevel, cyclic-import
 
             messages = []
             if not predicate():
