@@ -108,7 +108,8 @@ class APIViewTestCase(BaseViewTestCase):
             if not values:
                 raise ValueError(_("no values for '{key}".format(key=key)))
             if len(values) > 1:
-                raise ValueError(_("multiple values for '{key}'".format(key=key)))
+                raise ValueError(_("multiple values for '{key}'"
+                                   "".format(key=key)))
 
         verification_data = {key: values[0] for key, values in query.items()}
         return parsed_url.path, verification_data
