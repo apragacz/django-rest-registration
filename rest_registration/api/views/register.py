@@ -127,7 +127,8 @@ def verify_registration(request):
     extra_data = None
     if registration_settings.REGISTER_VERIFICATION_AUTO_LOGIN:
         extra_data = perform_login(request, user)
-    return get_ok_response(_("User verified successfully"), extra_data=extra_data)
+    return get_ok_response(_("User verified successfully"),
+                           extra_data=extra_data)
 
 
 def process_verify_registration_data(input_data, serializer_context=None):
