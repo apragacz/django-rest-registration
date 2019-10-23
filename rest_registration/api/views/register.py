@@ -1,5 +1,7 @@
 from django.db import transaction
 from django.http import Http404
+from django.utils.translation import gettext_lazy as _
+
 from rest_framework import serializers, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
@@ -26,12 +28,6 @@ from rest_registration.utils.users import (
 )
 from rest_registration.utils.verification import verify_signer_or_bad_request
 from rest_registration.verification import URLParamsSigner
-
-try:
-    from django.utils.translation import ugettext_lazy as _
-except ImportError:
-    def _(text): 
-    	return text
 
 
 class RegisterSigner(URLParamsSigner):
@@ -131,7 +127,7 @@ def verify_registration(request):
     extra_data = None
     if registration_settings.REGISTER_VERIFICATION_AUTO_LOGIN:
         extra_data = perform_login(request, user)
-    return get_ok_response(_('User verified successfully'), extra_data=extra_data)
+    return get_ok_response(_("User verified successfully"), extra_data=extra_data)
 
 
 def process_verify_registration_data(input_data, serializer_context=None):

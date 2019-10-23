@@ -1,16 +1,12 @@
 from django.contrib.auth.password_validation import validate_password
+from django.utils.translation import gettext_lazy as _
+
 from rest_framework import permissions, serializers
 from rest_framework.decorators import api_view, permission_classes
 
 from rest_registration.decorators import api_view_serializer_class
 from rest_registration.settings import registration_settings
 from rest_registration.utils.responses import get_ok_response
-
-try:
-    from django.utils.translation import ugettext_lazy as _
-except ImportError:
-    def _(text): 
-    	return text
 
 
 class ChangePasswordSerializer(serializers.Serializer):  # noqa: E501 pylint: disable=abstract-method
@@ -24,7 +20,7 @@ class ChangePasswordSerializer(serializers.Serializer):  # noqa: E501 pylint: di
     def validate_old_password(self, old_password):
         user = self.context['request'].user
         if not user.check_password(old_password):
-            raise serializers.ValidationError(_('Old password is not correct'))
+            raise serializers.ValidationError(_("Old password is not correct"))
         return old_password
 
     def validate_password(self, password):
@@ -41,7 +37,7 @@ class ChangePasswordSerializer(serializers.Serializer):  # noqa: E501 pylint: di
     def validate(self, attrs):
         if self.has_password_confirm:
             if attrs['password'] != attrs['password_confirm']:
-                raise serializers.ValidationError(_('Passwords don\'t match'))
+                raise serializers.ValidationError(_("Passwords don't match"))
         return attrs
 
 
@@ -61,4 +57,4 @@ def change_password(request):
     user = request.user
     user.set_password(serializer.validated_data['password'])
     user.save()
-    return get_ok_response(_('Password changed successfully'))
+    return get_ok_response(_("Password changed successfully"))
