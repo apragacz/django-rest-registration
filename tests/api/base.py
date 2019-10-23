@@ -1,14 +1,11 @@
 from urllib.parse import parse_qs, urlparse
 
 from django.contrib.sessions.middleware import SessionMiddleware
+from django.utils.translation import gettext_lazy as _
 from django.urls import resolve
+
 from rest_framework import status
 from rest_framework.test import APIRequestFactory
-try:
-    from django.utils.translation import ugettext_lazy as _
-except ImportError:
-    def _(text):
-        return text
 
 from tests.utils import BaseViewTestCase
 

@@ -1,6 +1,8 @@
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 from django.http import Http404
+
 from rest_framework import serializers
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
@@ -22,12 +24,6 @@ from rest_registration.utils.users import (
 )
 from rest_registration.utils.verification import verify_signer_or_bad_request
 from rest_registration.verification import URLParamsSigner
-
-try:
-    from django.utils.translation import ugettext_lazy as _
-except ImportError:
-    def _(text): 
-    	return text
 
 
 class ResetPasswordSigner(URLParamsSigner):
@@ -107,7 +103,7 @@ def reset_password(request):
     '''
     process_reset_password_data(
         request.data, serializer_context={'request': request})
-    return get_ok_response(_('Reset password successful'))
+    return get_ok_response(_("Reset password successful"))
 
 
 def process_reset_password_data(input_data, serializer_context=None):

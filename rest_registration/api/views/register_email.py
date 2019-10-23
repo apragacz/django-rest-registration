@@ -1,4 +1,6 @@
 from django.http import Http404
+from django.utils.translation import gettext_lazy as _
+
 from rest_framework import serializers
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -25,11 +27,6 @@ from rest_registration.utils.users import (
 from rest_registration.utils.verification import verify_signer_or_bad_request
 from rest_registration.verification import URLParamsSigner
 
-try:
-    from django.utils.translation import ugettext_lazy as _
-except ImportError:
-    def _(text): 
-    	return text
 
 class RegisterEmailSigner(URLParamsSigner):
     SALT_BASE = 'register-email'
@@ -91,7 +88,7 @@ def register_email(request):
             request=request,
         )
 
-    return get_ok_response(_('Register email link email sent'))
+    return get_ok_response(_("Register email link email sent"))
 
 
 class VerifyEmailSerializer(serializers.Serializer):  # noqa: E501 pylint: disable=abstract-method
@@ -110,7 +107,7 @@ def verify_email(request):
     '''
     process_verify_email_data(
         request.data, serializer_context={'request': request})
-    return get_ok_response(_('Email verified successfully'))
+    return get_ok_response(_("Email verified successfully"))
 
 
 def process_verify_email_data(input_data, serializer_context=None):
