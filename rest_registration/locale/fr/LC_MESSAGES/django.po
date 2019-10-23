@@ -1,15 +1,15 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# FIRST AUTHOR <rax396@gmail.com>, 2019.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-16 12:39-0400\n"
-"PO-Revision-Date: 2019-10-16 12:43-0400\n"
-"Last-Translator: \n"
+"POT-Creation-Date: 2019-10-23 12:52-0400\n"
+"PO-Revision-Date: 2019-10-23 13:01-0400\n"
+"Last-Translator: Richard Savard\n"
 "Language-Team: \n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -18,91 +18,74 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Poedit 2.0.6\n"
 
-#: rest_registration/api/serializers.py:162
-#: rest_registration/api/views/change_password.py:44
+#: api/serializers.py:159 api/views/change_password.py:40
 msgid "Passwords don't match"
 msgstr "Les mots de passe ne correspondent pas"
 
-#: rest_registration/api/views/change_password.py:27
+#: api/views/change_password.py:23
 msgid "Old password is not correct"
 msgstr "L'ancien mot de passe n'est pas valide"
 
-#: rest_registration/api/views/change_password.py:64
+#: api/views/change_password.py:60
 msgid "Password changed successfully"
 msgstr "Changement du mot de passe réussie"
 
-#: rest_registration/api/views/login.py:43
+#: api/views/login.py:40
 msgid "Login or password invalid."
 msgstr "Identifiant ou mot de passe non valide."
 
-#: rest_registration/api/views/login.py:47
+#: api/views/login.py:44
 msgid "Login successful"
 msgstr "Connexion réussie"
 
-#: rest_registration/api/views/login.py:76
+#: api/views/login.py:73
 msgid "Cannot remove non-existent token"
 msgstr "Ne peut supprimer un jeton non existant"
 
-#: rest_registration/api/views/login.py:78
+#: api/views/login.py:75
 msgid "Logout successful"
 msgstr "Déconnexion réussie"
 
-#: rest_registration/api/views/register.py:89
+#: api/views/register.py:85
 msgid "User without email cannot be verified"
 msgstr "Un usager sans mot de passe ne peut être vérifié"
 
-#: rest_registration/api/views/register.py:134
+#: api/views/register.py:130
 msgid "User verified successfully"
 msgstr "Vérification de l'usager réussi"
 
-#: rest_registration/api/views/register_email.py:80
-#: rest_registration/api/views/register_email.py:134
+#: api/views/register_email.py:77 api/views/register_email.py:131
 msgid "This email is already registered."
 msgstr "Ce courriel est déjà enregistré."
 
-#: rest_registration/api/views/register_email.py:94
+#: api/views/register_email.py:91
 msgid "Register email link email sent"
 msgstr "Courriel du lien d'inscription envoyé"
 
-#: rest_registration/api/views/register_email.py:113
+#: api/views/register_email.py:110
 msgid "Email verified successfully"
 msgstr "Vérification du courriel réussi"
 
-#: rest_registration/api/views/reset_password.py:110
+#: api/views/reset_password.py:106
 msgid "Reset password successful"
 msgstr "Réinitialisation du mot de passe réussi"
 
-#: rest_registration/exceptions.py:10
+#: exceptions.py:7
 msgid "Bad Request"
 msgstr "Mauvaise requête"
 
-#: rest_registration/exceptions.py:15
+#: exceptions.py:12
 msgid "User not found"
 msgstr "Usager non trouvé"
 
-#: rest_registration/notifications/email.py:161
+#: notifications/email.py:156
 msgid "No 'subject' key found"
 msgstr "Aucune clé 'sujet' trouvé"
 
-#: rest_registration/utils/verification.py:18
+#: utils/verification.py:13
 msgid "Signature expired"
 msgstr "Signature expirée"
 
-#: rest_registration/utils/verification.py:20
+#: utils/verification.py:15
 msgid "Invalid signature"
 msgstr "Signature invalide"
-
-#~ msgid "email address"
-#~ msgstr "adresse courriel"
-
-#~ msgid "groups"
-#~ msgstr "groupes"
-
-#~ msgid "The groups this user belongs to. A user will get all permissions granted to each of their groups."
-#~ msgstr "Les groupes auxquels cet utilisateur appartient. Un utilisateur obtiendra toutes les autorisations accordées à chacun de ses groupes."
-
-#~ msgid "user permissions"
-#~ msgstr "permissions de l'usager"
-
-#~ msgid "Specific permissions for this user."
-#~ msgstr "Permissions spécifiques pour cet usager."
