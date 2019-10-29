@@ -9,8 +9,15 @@ assignees: ''
 
 ### Checklist
 
-* [ ] I searched existing issues before opening this one
-* [ ] I reproduced the bug with the newest version
+*   [ ] I read
+    [Contribution Guidelines](https://github.com/apragacz/django-rest-registration/blob/master/CONTRIBUTING.md#issues)
+*   [ ] I searched existing issues before opening this one
+*   [ ] This is not a major security issue
+*   [ ] I reproduced the bug with the newest version
+
+#### Optional checklist
+
+*   [ ] I attached a PR with a test case reproducing the problem
 
 ### Describe the bug
 (Provide here clear and concise description of what the bug is)
@@ -29,9 +36,13 @@ Steps to reproduce the behavior:
 
 ### Diagnostic info
 
-(Please provide below contents of your Django settings.py file (after removing all sensitive information like secrets), or at least provide specific settings mentioned below)
+My `settings.py`:
 
 ```python
+# (Please paste here contents of your Django settings.py file
+# (after removing all sensitive information like secrets and domains),
+# or at least provide specific settings mentioned below):
+
 REST_REGISTRATION = {
 ...
 }
@@ -46,4 +57,4 @@ INSTALLED_APPS = (
 ```
 
 ### Additional context
-Add any other context about the problem here.
+(Add any other context about the problem here)
