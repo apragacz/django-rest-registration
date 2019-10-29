@@ -9,8 +9,7 @@ assignees: ''
 
 ### Checklist
 
-*   [ ] I read
-    [Contribution Guidelines](https://github.com/apragacz/django-rest-registration/blob/master/CONTRIBUTING.md#issues)
+*   [ ] I read [Contribution Guidelines](https://github.com/apragacz/django-rest-registration/blob/master/CONTRIBUTING.md#issues)
 *   [ ] I searched existing issues before opening this one
 *   [ ] This is not a major security issue
 *   [ ] I reproduced the bug with the newest version
