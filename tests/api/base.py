@@ -1,9 +1,7 @@
 from urllib.parse import parse_qs, urlparse
 
 from django.contrib.sessions.middleware import SessionMiddleware
-from django.utils.translation import gettext_lazy as _
 from django.urls import resolve
-
 from rest_framework import status
 from rest_framework.test import APIRequestFactory
 
@@ -43,10 +41,10 @@ class APIViewTestCase(BaseViewTestCase):
             expected_status_code=None):
         status_code = response.status_code
         msg_format = "Response returned with code {status_code}, body {response.data}"  # noqa: E501
-        msg = _(msg_format.format(
+        msg = msg_format.format(
             status_code=status_code,
             response=response,
-        ))
+        )
         if expected_status_code is not None:
             self.assertEqual(status_code, expected_status_code, msg=msg)
         elif expected_valid_response:
@@ -106,10 +104,9 @@ class APIViewTestCase(BaseViewTestCase):
 
         for key, values in query.items():
             if not values:
-                raise ValueError(_("no values for '{key}".format(key=key)))
+                raise ValueError("no values for '{key}".format(key=key))
             if len(values) > 1:
-                raise ValueError(_("multiple values for '{key}'"
-                                   "".format(key=key)))
+                raise ValueError("multiple values for '{key}'".format(key=key))
 
         verification_data = {key: values[0] for key, values in query.items()}
         return parsed_url.path, verification_data
