@@ -4,13 +4,12 @@ from django.core.exceptions import ImproperlyConfigured
 from django.core.mail.message import EmailMultiAlternatives
 from django.template.exceptions import TemplateDoesNotExist
 from django.template.loader import get_template, render_to_string
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as _
 
 from rest_registration.notifications.enums import NotificationMethod
 from rest_registration.settings import registration_settings
 from rest_registration.utils.common import identity
 from rest_registration.utils.users import get_user_email_field_name
-
 
 EmailTemplateConfig = namedtuple('EmailTemplateConfig', (
     'subject_template_name',

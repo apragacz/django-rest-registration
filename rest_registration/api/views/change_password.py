@@ -1,6 +1,5 @@
 from django.contrib.auth.password_validation import validate_password
-from django.utils.translation import gettext_lazy as _
-
+from django.utils.translation import gettext as _
 from rest_framework import permissions, serializers
 from rest_framework.decorators import api_view, permission_classes
 
