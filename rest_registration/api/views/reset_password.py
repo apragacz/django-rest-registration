@@ -1,8 +1,7 @@
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
 from django.http import Http404
-
+from django.utils.translation import gettext as _
 from rest_framework import serializers
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
