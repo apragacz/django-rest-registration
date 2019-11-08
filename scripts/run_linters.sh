@@ -14,6 +14,9 @@ main() {
     log "Running flake8"
     flake8
 
+    log "Running mypy"
+    mypy "${MODULE_NAME}"
+
     log "Running pylint"
     ./scripts/run_pylint.sh
 
