@@ -18,7 +18,7 @@ matrix:
   - python: "3.6"
     env: TOXENV=packagecheck
   - python: "3.6"
-    env: TOXENV=docs
+    env: TOXENV=docscheck
 
   - python: "3.7"
     env: TOXENV=py37-django22
