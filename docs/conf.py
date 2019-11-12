@@ -6,8 +6,8 @@
 # full list see the documentation:
 # http://www.sphinx-doc.org/en/master/config
 import datetime
+import importlib
 import os.path
-import re
 import sys
 
 import django  # noqa: E402
@@ -19,33 +19,22 @@ ROOT_DIR = os.path.dirname(DOCS_DIR)
 
 sys.path.append(ROOT_DIR)
 
-from rest_registration.settings_fields import (  # isort:skip
-    SETTINGS_FIELDS,
-    SETTINGS_FIELDS_GROUPS_MAP,
-)  # noqa: E402
-
+rest_registration = importlib.import_module('rest_registration')
+settings_fields = importlib.import_module('rest_registration.settings_fields')
 settings.configure()
 django.setup()
 
 
 # -- Project information -----------------------------------------------------
 
-
-def get_version(package):
-    '''
-    Return package version as listed in `__version__` in `init.py`.
-    '''
-    with open(os.path.join(ROOT_DIR, package, '__init__.py'), 'rt') as f:
-        init_py = f.read()
-        return re.search("__version__ = ['\"]([^'\"]+)['\"]", init_py).group(1)
-
-
 project = 'Django REST Registration'
 docs_title = '{project} documentation'.format(project=project)
 author = 'Andrzej Pragacz'
-now = datetime.datetime.now()
-copyright = '{now.year}, {author}'.format(author=author, now=now)
-version = get_version('rest_registration')
+datetime_now = datetime.datetime.now()
+current_year = datetime_now
+copyright = '{current_year}, {author}'.format(  # noqa: E501 pylint: disable=redefined-builtin
+    author=author, current_year=current_year)
+version = rest_registration.__version__
 release = version
 
 
@@ -217,12 +206,12 @@ epub_exclude_files = ['search.html']
 jinja_base = DOCS_DIR
 jinja_contexts = {
     'detailed_configuration__all_settings': {
-        'settings_fields': SETTINGS_FIELDS,
+        'settings_fields': settings_fields.SETTINGS_FIELDS,
         'generate_setting_refs': True,
     }
 }
-
-for group_name, settings_fields in SETTINGS_FIELDS_GROUPS_MAP.items():
+settings_fields_groups_map = settings_fields.SETTINGS_FIELDS_GROUPS_MAP
+for group_name, settings_fields in settings_fields_groups_map.items():
     ctx_key = 'detailed_configuration__{group_name}'.format(
         group_name=group_name)
     jinja_contexts[ctx_key] = {
