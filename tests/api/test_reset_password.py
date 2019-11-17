@@ -6,7 +6,7 @@ from django.test.utils import override_settings
 from rest_framework import status
 
 from rest_registration.api.views.reset_password import ResetPasswordSigner
-from tests.utils import TestCase, shallow_merge_dicts
+from tests.helpers import TestCase, shallow_merge_dicts
 
 from .base import APIViewTestCase
 

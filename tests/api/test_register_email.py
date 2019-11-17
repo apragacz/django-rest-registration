@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.test import force_authenticate
 
 from rest_registration.api.views.register_email import RegisterEmailSigner
-from tests.utils import TestCase, shallow_merge_dicts
+from tests.helpers import TestCase, shallow_merge_dicts
 
 from .base import APIViewTestCase
 

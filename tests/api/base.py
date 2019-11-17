@@ -5,7 +5,7 @@ from django.urls import resolve
 from rest_framework import status
 from rest_framework.test import APIRequestFactory
 
-from tests.utils import BaseViewTestCase
+from tests.helpers import BaseViewTestCase
 
 
 class APIViewTestCase(BaseViewTestCase):

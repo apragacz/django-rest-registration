@@ -12,7 +12,7 @@ from rest_framework import status
 
 from rest_registration.api.views.register import RegisterSigner
 from rest_registration.settings import registration_settings
-from tests.utils import TestCase, shallow_merge_dicts
+from tests.helpers import TestCase, shallow_merge_dicts
 
 from .base import APIViewTestCase
 
