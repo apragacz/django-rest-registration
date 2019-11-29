@@ -1,4 +1,9 @@
-from django.contrib.auth.models import AbstractUser, Group, Permission
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    AbstractUser,
+    Group,
+    Permission
+)
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -27,4 +32,13 @@ class UserWithUniqueEmail(AbstractUser):
         help_text=_("Specific permissions for this user."),
         related_name="+",
         related_query_name="user",
+    )
+
+
+class SimpleEmailBasedUser(AbstractBaseUser):
+    USERNAME_FIELD = 'email'
+    email = models.EmailField(
+        verbose_name=_("email address"),
+        unique=True,
+        blank=True,
     )
