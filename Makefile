@@ -34,11 +34,18 @@ SPHINXAUTOBUILD := sphinx-autobuild
 SPHINXAUTOBUILD_OPTS := --watch ${PACKAGE_DIR} --ignore ${DOCS_REFERENCE_DIR}
 
 .PHONY: all
-all: install_all_requirements check build check_package  ## install requirements, check code, build, check package
+all: check build check_package  ## check code, build, check package
+
+.PHONY: setup_dev
+setup_dev: install_all_requirements install_dev
 
 .PHONY: install_all_requirements
 install_all_requirements:  ## install all pip requirements
 	${PYTHON} -m pip install -r requirements/requirements-all.txt
+
+.PHONY: install_dev
+install_dev:  ## install package as editable
+	${PYTHON} -m pip install -e .
 
 .PHONY: check
 check: check_code  ## alias for check_code
@@ -48,7 +55,7 @@ check_code: lint test  ## lint + test
 
 .PHONY: test
 test:  ## run tests
-	PYTHONPATH="." ${PYTEST} ${PYTEST_OPTS} ${ARGS}
+	${PYTEST} ${PYTEST_OPTS} ${ARGS}
 
 .PHONY: lint
 lint: flake8 mypy pylint  ## run lint
@@ -64,8 +71,8 @@ mypy:  ## run mypy
 .PHONY: pylint
 pylint:  ## run pylint
 # run pylint for production code and test code separately
-	${PYLINT} ${PYLINT_OPTS} ${PACKAGE_DIR} ./*.py ${ARGS}
-	${PYLINT} ${PYLINT_OPTS} --disable=duplicate-code ${TESTS_DIR} ${DOCS_DIR} ${ARGS}
+	${PYLINT} ${PYLINT_OPTS} ${PACKAGE_DIR} ${DOCS_DIR} ./*.py ${ARGS}
+	${PYLINT} ${PYLINT_OPTS} --disable=duplicate-code --disable=redefined-outer-name ${TESTS_DIR} ${ARGS}
 
 .PHONY: upload_package
 upload_package: build_package check_package  ## upload the package to PyPI

@@ -11,7 +11,6 @@ from django.test.utils import override_settings
 from rest_framework import status
 
 from rest_registration.api.views.register import RegisterSigner
-from rest_registration.settings import registration_settings
 from tests.helpers import TestCase, shallow_merge_dicts
 
 from .base import APIViewTestCase
@@ -37,36 +36,6 @@ REST_REGISTRATION_WITH_HTML_EMAIL_VERIFICATION = {
     },
     'VERIFICATION_FROM_EMAIL': VERIFICATION_FROM_EMAIL,
 }
-
-
-@override_settings(REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION)
-class RegisterSerializerTestCase(TestCase):
-
-    def test_ok(self):
-        serializer_class = registration_settings.REGISTER_SERIALIZER_CLASS
-        serializer = serializer_class(data={})
-        field_names = set(serializer.get_fields())
-        self.assertEqual(
-            field_names,
-            {'id', 'username', 'first_name', 'last_name', 'email',
-             'password', 'password_confirm'},
-        )
-
-    @override_settings(
-        REST_REGISTRATION=shallow_merge_dicts(
-            REST_REGISTRATION_WITH_VERIFICATION, {
-                'REGISTER_SERIALIZER_PASSWORD_CONFIRM': False,
-            },
-        ),
-    )
-    def test_no_password_ok(self):
-        serializer_class = registration_settings.REGISTER_SERIALIZER_CLASS
-        serializer = serializer_class(data={})
-        field_names = set(serializer.get_fields())
-        self.assertEqual(
-            field_names,
-            {'id', 'username', 'first_name', 'last_name', 'email', 'password'},
-        )
 
 
 @override_settings(REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION)
