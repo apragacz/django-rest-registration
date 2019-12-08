@@ -220,7 +220,8 @@ def override_rest_registration_settings(new_settings: dict = None):
     if new_settings is None:
         new_settings = {}
     with override_settings(
-        REST_REGISTRATION={**settings.REST_REGISTRATION, **new_settings},
+        REST_REGISTRATION=shallow_merge_dicts(
+            settings.REST_REGISTRATION, new_settings),
     ):
         yield settings
 

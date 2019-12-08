@@ -41,7 +41,7 @@ setup_dev: install_all_requirements install_dev
 
 .PHONY: install_all_requirements
 install_all_requirements:  ## install all pip requirements
-	${PYTHON} -m pip install -r requirements/requirements-all.txt
+	${PYTHON} -m pip install -r requirements/requirements-all.txt ${ARGS}
 
 .PHONY: install_dev
 install_dev:  ## install package as editable
