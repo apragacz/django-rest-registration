@@ -11,7 +11,8 @@ from django.test.utils import override_settings
 from rest_framework import status
 
 from rest_registration.api.views.register import RegisterSigner
-from tests.helpers import TestCase, shallow_merge_dicts
+from tests.helpers.common import shallow_merge_dicts
+from tests.helpers.testcases import TestCase
 
 from .base import APIViewTestCase
 

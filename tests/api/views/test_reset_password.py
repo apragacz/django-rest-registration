@@ -2,16 +2,29 @@ import time
 from unittest import skip
 from unittest.mock import patch
 
+import pytest
 from django.test.utils import override_settings
 from rest_framework import status
 
 from rest_registration.api.views.reset_password import ResetPasswordSigner
-from tests.helpers import TestCase, shallow_merge_dicts
+from tests.helpers.api_views import (
+    APIViewRequestFactory,
+    assert_response_is_ok
+)
+from tests.helpers.common import shallow_merge_dicts
+from tests.helpers.constants import (
+    RESET_PASSWORD_VERIFICATION_URL,
+    VERIFICATION_FROM_EMAIL
+)
+from tests.helpers.email import assert_one_email_sent, capture_sent_emails
+from tests.helpers.testcases import TestCase
+from tests.helpers.text import assert_one_url_line_in_text
+from tests.helpers.timer import capture_time
+from tests.helpers.verification import assert_valid_verification_url
+from tests.helpers.views import ViewProvider
 
 from .base import APIViewTestCase
 
-RESET_PASSWORD_VERIFICATION_URL = '/reset-password/'
-VERIFICATION_FROM_EMAIL = 'no-reply@example.com'
 REST_REGISTRATION_WITH_RESET_PASSWORD = {
     'RESET_PASSWORD_VERIFICATION_URL': RESET_PASSWORD_VERIFICATION_URL,
     'VERIFICATION_FROM_EMAIL': VERIFICATION_FROM_EMAIL,
@@ -447,3 +460,58 @@ class ResetPasswordViewTestCase(BaseResetPasswordViewTestCase):
         self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
         user.refresh_from_db()
         self.assertTrue(user.check_password(old_password))
+
+
+@pytest.fixture()
+def api_view_provider():
+    return ViewProvider('send-reset-password-link')
+
+
+@pytest.fixture()
+def api_factory(api_view_provider):
+    return APIViewRequestFactory(api_view_provider)
+
+
+def test_send_link_via_login_duplicated_email_ok(
+        settings_with_reset_password_verification,
+        api_view_provider, api_factory,
+        user, user2_with_user_email):
+    request = api_factory.create_post_request({
+        'login': user.username,
+    })
+    with capture_sent_emails() as sent_emails, capture_time() as timer:
+        response = api_view_provider.view_func(request)
+    assert_response_is_ok(response)
+    assert_one_email_sent(sent_emails)
+
+    sent_email = sent_emails[0]
+    assert_valid_send_link_email(sent_email, user, timer)
+
+
+def assert_valid_send_link_email(sent_email, user, timer):
+    verification_data = _assert_valid_reset_password_verification_email(
+        sent_email, user)
+    _assert_valid_reset_password_verification_data(
+        verification_data, user, timer)
+
+
+def _assert_valid_reset_password_verification_email(sent_email, user):
+    assert sent_email.from_email == VERIFICATION_FROM_EMAIL
+    assert sent_email.to == [user.email]
+    url = assert_one_url_line_in_text(sent_email.body)
+    verification_data = assert_valid_verification_url(
+        url,
+        expected_path=RESET_PASSWORD_VERIFICATION_URL,
+        expected_fields={'signature', 'user_id', 'timestamp'},
+    )
+    return verification_data
+
+
+def _assert_valid_reset_password_verification_data(
+        verification_data, user, timer):
+    assert int(verification_data['user_id']) == user.id
+    url_sig_timestamp = int(verification_data['timestamp'])
+    assert url_sig_timestamp >= timer.start_time
+    assert url_sig_timestamp <= timer.end_time
+    signer = ResetPasswordSigner(verification_data)
+    signer.verify()

@@ -1,7 +1,7 @@
 from django.test import Client
 from django.test.utils import override_settings
 
-from tests.helpers import BaseViewTestCase
+from tests.helpers.testcases import BaseViewTestCase
 
 
 @override_settings(
