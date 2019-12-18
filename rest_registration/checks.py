@@ -40,7 +40,7 @@ class WarningCode:  # pylint: disable=too-few-public-methods
     'django.contrib.auth is not in INSTALLED_APPS',
     ErrorCode.NO_AUTH_INSTALLED,
 )
-def auth_installed_check():
+def auth_installed_check() -> bool:
     return _is_auth_installed()
 
 
@@ -49,7 +49,7 @@ def auth_installed_check():
     'RESET_PASSWORD_VERIFICATION_URL is not set',
     ErrorCode.NO_RESET_PASSWORD_VER_URL,
 )
-def reset_password_verification_url_check():
+def reset_password_verification_url_check() -> bool:
     return implies(
         registration_settings.RESET_PASSWORD_VERIFICATION_ENABLED,
         registration_settings.RESET_PASSWORD_VERIFICATION_URL,
@@ -62,7 +62,7 @@ def reset_password_verification_url_check():
     ' but REGISTER_VERIFICATION_URL is not set',
     ErrorCode.NO_REGISTER_VER_URL,
 )
-def register_verification_url_check():
+def register_verification_url_check() -> bool:
     return implies(
         registration_settings.REGISTER_VERIFICATION_ENABLED,
         registration_settings.REGISTER_VERIFICATION_URL,
@@ -75,7 +75,7 @@ def register_verification_url_check():
     ' but REGISTER_EMAIL_VERIFICATION_URL is not set',
     ErrorCode.NO_REGISTER_EMAIL_VER_URL,
 )
-def register_email_verification_url_check():
+def register_email_verification_url_check() -> bool:
     return implies(
         registration_settings.REGISTER_EMAIL_VERIFICATION_ENABLED,
         registration_settings.REGISTER_EMAIL_VERIFICATION_URL,
@@ -87,7 +87,7 @@ def register_email_verification_url_check():
     'VERIFICATION_FROM_EMAIL is not set',
     ErrorCode.NO_VER_FROM_EMAIL,
 )
-def verification_from_check():
+def verification_from_check() -> bool:
     return implies(
         any([
             registration_settings.REGISTER_VERIFICATION_ENABLED,
@@ -104,7 +104,7 @@ def verification_from_check():
     ' TokenAuthentication is not in DEFAULT_AUTHENTICATION_CLASSES',
     ErrorCode.NO_TOKEN_AUTH_CONFIG,
 )
-def token_auth_config_check():
+def token_auth_config_check() -> bool:
     return implies(
         registration_settings.LOGIN_RETRIEVE_TOKEN,
         any(
@@ -120,7 +120,7 @@ def token_auth_config_check():
     ' rest_framework.authtoken is not in INSTALLED_APPS',
     ErrorCode.NO_TOKEN_AUTH_INSTALLED,
 )
-def token_auth_installed_check():
+def token_auth_installed_check() -> bool:
     return implies(
         registration_settings.LOGIN_RETRIEVE_TOKEN,
         'rest_framework.authtoken' in settings.INSTALLED_APPS,
@@ -134,7 +134,7 @@ def token_auth_installed_check():
     ' This can allow multiple logins using the verification url.',
     WarningCode.REGISTER_VERIFICATION_MULTIPLE_AUTO_LOGIN,
 )
-def register_verification_one_time_auto_login_check():
+def register_verification_one_time_auto_login_check() -> bool:
     return implies(
         all([
             registration_settings.REGISTER_VERIFICATION_ENABLED,
@@ -149,7 +149,7 @@ def register_verification_one_time_auto_login_check():
     'REGISTER_VERIFICATION_EMAIL_TEMPLATES is invalid',
     ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
 )
-def valid_register_verification_email_template_config_check():
+def valid_register_verification_email_template_config_check() -> bool:
     return implies(
         registration_settings.REGISTER_VERIFICATION_ENABLED,
         _is_email_template_config_valid(
@@ -162,7 +162,7 @@ def valid_register_verification_email_template_config_check():
     'RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES is invalid',
     ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
 )
-def valid_reset_password_verification_email_template_config_check():
+def valid_reset_password_verification_email_template_config_check() -> bool:
     return implies(
         registration_settings.RESET_PASSWORD_VERIFICATION_ENABLED,
         _is_email_template_config_valid(
@@ -175,7 +175,7 @@ def valid_reset_password_verification_email_template_config_check():
     'REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES is invalid',
     ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
 )
-def valid_register_email_verification_email_template_config_check():
+def valid_register_email_verification_email_template_config_check() -> bool:
     return implies(
         registration_settings.REGISTER_EMAIL_VERIFICATION_ENABLED,
         _is_email_template_config_valid(
@@ -183,7 +183,7 @@ def valid_register_email_verification_email_template_config_check():
     )
 
 
-def _is_email_template_config_valid(template_config_data):
+def _is_email_template_config_valid(template_config_data) -> bool:
     try:
         parse_template_config(template_config_data)
     except ImproperlyConfigured:
@@ -211,7 +211,7 @@ __DRF_INCOMPATIBLE_DJANGO_AUTH_BACKENDS__ = [
     + '\n'.join(__DRF_INCOMPATIBLE_DJANGO_AUTH_BACKENDS__),
     ErrorCode.DRF_INCOMPATIBLE_DJANGO_AUTH_BACKEND,
 )
-def drf_compatible_django_auth_backend_check():
+def drf_compatible_django_auth_backend_check() -> bool:
     return all(
         incompat_cls_name not in settings.AUTHENTICATION_BACKENDS
         for incompat_cls_name in __DRF_INCOMPATIBLE_DJANGO_AUTH_BACKENDS__
