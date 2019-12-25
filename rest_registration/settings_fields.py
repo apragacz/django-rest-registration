@@ -184,6 +184,14 @@ RESET_PASSWORD_SETTINGS_FIELDS = [
             the user who should receive the reset password link.
             """)
     ),
+    Field(
+        'RESET_PASSWORD_FAIL_WHEN_USER_NOT_FOUND',
+        default=True,
+        help=dedent("""\
+            If ``True``, then reveal that the user does not exist
+            while reset password link is being sent by signaling an error.
+            """)
+    ),
     Field('RESET_PASSWORD_VERIFICATION_ENABLED', default=True),
     Field(
         'RESET_PASSWORD_VERIFICATION_PERIOD',

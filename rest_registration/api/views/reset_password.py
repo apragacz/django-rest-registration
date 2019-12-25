@@ -68,9 +68,15 @@ def send_reset_password_link(request):
         context={'request': request},
     )
     serializer.is_valid(raise_exception=True)
+    if registration_settings.RESET_PASSWORD_FAIL_WHEN_USER_NOT_FOUND:
+        success_message = _("Reset link sent")
+    else:
+        success_message = _("Reset link sent if the user exists in database")
     user = serializer.get_user_or_none()
     if not user:
-        raise UserNotFound()
+        if registration_settings.RESET_PASSWORD_FAIL_WHEN_USER_NOT_FOUND:
+            raise UserNotFound()
+        return get_ok_response(success_message)
     signer = ResetPasswordSigner({
         'user_id': get_user_verification_id(user),
     }, request=request)
@@ -83,7 +89,7 @@ def send_reset_password_link(request):
         NotificationType.RESET_PASSWORD_VERIFICATION, user, notification_data,
         template_config_data)
 
-    return get_ok_response('Reset link sent')
+    return get_ok_response(success_message)
 
 
 class ResetPasswordSerializer(serializers.Serializer):  # noqa: E501 pylint: disable=abstract-method

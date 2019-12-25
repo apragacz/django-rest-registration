@@ -59,6 +59,14 @@ def settings_with_register_no_confirm():
 
 
 @pytest.fixture()
+def settings_with_reset_password_fail_when_user_not_found_disabled():
+    with override_rest_registration_settings({
+        'RESET_PASSWORD_FAIL_WHEN_USER_NOT_FOUND': False,
+    }):
+        yield settings
+
+
+@pytest.fixture()
 def settings_with_simple_email_based_user():
     with override_auth_model_settings('custom_users.SimpleEmailBasedUser'):
         yield settings

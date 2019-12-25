@@ -13,7 +13,11 @@ from tests.helpers.constants import (
     RESET_PASSWORD_VERIFICATION_URL,
     VERIFICATION_FROM_EMAIL
 )
-from tests.helpers.email import assert_one_email_sent, capture_sent_emails
+from tests.helpers.email import (
+    assert_no_email_sent,
+    assert_one_email_sent,
+    capture_sent_emails
+)
 from tests.helpers.settings import override_rest_registration_settings
 from tests.helpers.text import assert_one_url_line_in_text
 from tests.helpers.timer import capture_time
@@ -222,7 +226,7 @@ def api_factory(api_view_provider):
     return APIViewRequestFactory(api_view_provider)
 
 
-def test_send_link_via_login_duplicated_email_ok(
+def test_when_duplicated_email_then_send_link_via_login_successful(
         settings_with_reset_password_verification,
         api_view_provider, api_factory,
         user, user2_with_user_email):
@@ -236,6 +240,37 @@ def test_send_link_via_login_duplicated_email_ok(
 
     sent_email = sent_emails[0]
     assert_valid_send_link_email(sent_email, user, timer)
+
+
+def test_when_no_user_reveal_then_send_link_successful(
+        settings_with_reset_password_verification,
+        settings_with_reset_password_fail_when_user_not_found_disabled,
+        api_view_provider, api_factory,
+        user):
+    request = api_factory.create_post_request({
+        'login': user.username,
+    })
+    with capture_sent_emails() as sent_emails, capture_time() as timer:
+        response = api_view_provider.view_func(request)
+    assert_response_is_ok(response)
+    assert_one_email_sent(sent_emails)
+
+    sent_email = sent_emails[0]
+    assert_valid_send_link_email(sent_email, user, timer)
+
+
+@pytest.mark.django_db
+def test_when_no_user_reveal_and_user_not_found_then_send_link_successful(
+        settings_with_reset_password_verification,
+        settings_with_reset_password_fail_when_user_not_found_disabled,
+        api_view_provider, api_factory):
+    request = api_factory.create_post_request({
+        'login': 'ninja',
+    })
+    with capture_sent_emails() as sent_emails:
+        response = api_view_provider.view_func(request)
+    assert_response_is_ok(response)
+    assert_no_email_sent(sent_emails)
 
 
 def assert_valid_send_link_email(sent_email, user, timer):
