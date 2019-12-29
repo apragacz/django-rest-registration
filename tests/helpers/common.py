@@ -1,6 +1,5 @@
 
 from django.contrib.auth import get_user_model
-from django_dynamic_fixture import G
 
 
 def shallow_merge_dicts(dictionary, *other_dicts):
@@ -12,9 +11,22 @@ def shallow_merge_dicts(dictionary, *other_dicts):
 
 
 def create_test_user(**kwargs):
-    user_model = get_user_model()
     password = kwargs.pop('password', None)
-    user = G(user_model, **kwargs)
+
+    user_model = get_user_model()
+    fields = user_model._meta.get_fields()  # pylint: disable=protected-access
+    user_kwargs = {}
+
+    for field in fields:
+        name = field.name
+        if name in USER_DEFAULT_FIELD_VALUES:
+            user_kwargs[name] = USER_DEFAULT_FIELD_VALUES[name]
+        else:
+            assert field.null or field.default is not None
+
+    user_kwargs.update(**kwargs)
+
+    user = user_model.objects.create(**user_kwargs)
     if password is not None:
         user.set_password(password)
         user.save()
@@ -34,3 +46,12 @@ def format_assert_message(msg, standard_msg="assertion failed"):
     if msg is None:
         return standard_msg
     return "{standard_msg} : {msg}".format(standard_msg=standard_msg, msg=msg)
+
+
+USER_DEFAULT_FIELD_VALUES = {
+    'username': "john_doe",
+    'first_name': "John",
+    'last_name': "Doe",
+    'full_name': "John Doe",
+    'email': "john.doe@example.com",
+}

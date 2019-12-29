@@ -1,3 +1,2 @@
 coreapi
-django-dynamic-fixture
 pytest
