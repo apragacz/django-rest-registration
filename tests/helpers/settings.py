@@ -32,32 +32,22 @@ class OverrideSettingsDecorator(TestContextDecorator):
     def __init__(self, settings_processor: Callable[[dict], dict]):
         super().__init__()
         self._settings_processor = settings_processor
-        # Parent decorator will be created lazily.
+        # Parent decorator will be created on-demand.
         self._parent_decorator = None
 
     def enable(self):
-        self._reset_parent_decorator()
-        return self.parent_decorator.enable()
+        self._parent_decorator = self._build_parent_decorator()
+        return self._parent_decorator.enable()
 
     def disable(self):
         try:
-            return self.parent_decorator.disable()
+            return self._parent_decorator.disable()
         finally:
-            self._reset_parent_decorator()
+            self._parent_decorator = None
 
     def decorate_class(self, cls):
-        self._reset_parent_decorator()
-        try:
-            return self.parent_decorator.decorate_class(cls)
-        finally:
-            self._reset_parent_decorator()
+        return self._build_parent_decorator().decorate_class(cls)
 
-    def _reset_parent_decorator(self):
-        self._parent_decorator = None
-
-    @property
-    def parent_decorator(self) -> TestContextDecorator:
-        if self._parent_decorator is None:
-            updated_settings = self._settings_processor(settings)
-            self._parent_decorator = override_settings(**updated_settings)
-        return self._parent_decorator
+    def _build_parent_decorator(self) -> TestContextDecorator:
+        updated_settings = self._settings_processor(settings)
+        return override_settings(**updated_settings)
