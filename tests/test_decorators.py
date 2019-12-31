@@ -1,6 +1,6 @@
 from collections.abc import Callable
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from rest_framework import renderers
 from rest_framework import request as rest_request
 from rest_framework import serializers
@@ -30,16 +30,45 @@ class SerializerClassGetterTestCase(TestCase):
     def _serializer_getter(self):
         return ExampleSerializer
 
-    def test_ok(self):
+    def test_success(self):
         method = 'POST'
         input_view = (api_view([method]))(self._dummy_view)
         output_view = self.decorator(input_view)
         self.assertIsInstance(output_view, Callable)
-        wrapper_cls = output_view.cls
+        wrapper_cls = _get_view_class(output_view)
         self.assertEqual(wrapper_cls.get_serializer_class(), ExampleSerializer)
         self.assertEqual(type(wrapper_cls.get_serializer()), ExampleSerializer)
+
+    def test_default_schema_success(self):
+        method = 'POST'
+        input_view = (api_view([method]))(self._dummy_view)
+        output_view = self.decorator(input_view)
+        wrapper_cls = _get_view_class(output_view)
+
         schema = wrapper_cls().schema
-        # Ensure that get_link works properly.
+        operation = schema.get_operation('/api/dummy-view/', method)
+        operation_schema = operation['requestBody']['content']['application/json']['schema']  # noqa: E501
+        expected_operation_schema = {
+            'properties': {
+                'test_field': {'type': 'string'},
+            },
+            'required': ['test_field'],
+        }
+        self.assertEqual(operation_schema, expected_operation_schema)
+
+    @override_settings(
+        REST_FRAMEWORK={
+            'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',  # noqa: E501
+        },
+    )
+    def test_coreapi_autoschema_success(self):
+        method = 'POST'
+        input_view = (api_view([method]))(self._dummy_view)
+        output_view = self.decorator(input_view)
+        wrapper_cls = _get_view_class(output_view)
+
+        schema = wrapper_cls().schema
+        # Ensure that get_link works properly with coreapi AutoSchema
         self.assertIsNotNone(uritemplate)
         link = schema.get_link('/api/dummy-view/', method, None)
         self.assertEqual(len(link.fields), 1)
@@ -61,7 +90,7 @@ class SerializerClassGetterTestCase(TestCase):
         request = rest_request.Request(APIRequestFactory().get('blah'))
         input_view = (api_view([method]))(self._dummy_view)
         output_view = self.decorator(input_view)
-        wrapper_cls = output_view.cls
+        wrapper_cls = _get_view_class(output_view)
         test_view_instance = wrapper_cls()
 
         renderer = renderers.BrowsableAPIRenderer()
@@ -78,3 +107,7 @@ class SerializerClassGetterTestCase(TestCase):
         for view in view_list:
             serializer = view.cls.get_serializer()
             self.assertIsInstance(serializer, Serializer)
+
+
+def _get_view_class(view):
+    return view.cls
