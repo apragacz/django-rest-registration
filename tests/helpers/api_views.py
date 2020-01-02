@@ -1,9 +1,13 @@
 
+import rest_framework
 from django.contrib.sessions.middleware import SessionMiddleware
 from rest_framework import status
 from rest_framework.test import APIRequestFactory
 
 from .views import ViewProvider
+
+rest_framework_version_info = tuple(
+    int(s) for s in rest_framework.__version__.split('.'))
 
 
 class APIViewRequestFactory:
