@@ -4,6 +4,7 @@ from django.test import TestCase
 from django.test.utils import override_settings
 
 from rest_registration.apps import RestRegistrationConfig
+from rest_registration.auth_token_managers import AbstractAuthTokenManager
 from rest_registration.checks import ErrorCode, WarningCode
 from rest_registration.settings import DEFAULTS
 from tests.helpers.settings import override_rest_registration_settings
@@ -299,6 +300,48 @@ def test_when_one_non_unique_login_field_in_many_then_check_fails():
     assert_error_codes_match(errors, [
         ErrorCode.LOGIN_FIELDS_NOT_UNIQUE,
     ])
+
+
+@override_rest_registration_settings({
+    'AUTH_TOKEN_MANAGER_CLASS': 'tests.testapps.custom_authtokens.auth.FaultyAuthTokenManager',  # noqa: E501
+})
+def test_when_custom_authtokenmanager_wrt_specs_then_check_succeeds():
+    errors = simulate_checks()
+    assert_error_codes_match(errors, [])
+
+
+class InvalidAuthTokenManager:  # pylint: disable=too-few-public-methods
+    pass
+
+
+class NotImplementedAuthTokenManager(AbstractAuthTokenManager):  # noqa: E501 pylint: disable=too-few-public-methods,abstract-method
+    pass
+
+
+@override_rest_registration_settings({
+    'AUTH_TOKEN_MANAGER_CLASS': InvalidAuthTokenManager,
+})
+def test_when_authtokenmanager_is_not_correct_subclass_then_check_fails():
+    errors = simulate_checks()
+    assert_error_codes_match(errors, [
+        ErrorCode.INVALID_AUTH_TOKEN_MANAGER_CLASS,
+    ])
+
+
+@override_rest_registration_settings({
+    'AUTH_TOKEN_MANAGER_CLASS': NotImplementedAuthTokenManager,
+})
+def test_when_authtokenmanager_does_not_implement_methods_then_check_fails():
+    errors = simulate_checks()
+    assert_error_codes_match(errors, [
+        ErrorCode.INVALID_AUTH_TOKEN_MANAGER_CLASS,
+        ErrorCode.INVALID_AUTH_TOKEN_MANAGER_CLASS,
+    ])
+    expected_messages = {
+        "AUTH_TOKEN_MANAGER_CLASS is not implementing method get_authentication_class",  # noqa: E501
+        "AUTH_TOKEN_MANAGER_CLASS is not implementing method provide_token",
+    }
+    assert {e.msg for e in errors} == expected_messages
 
 
 def assert_error_codes_match(errors, expected_error_codes):

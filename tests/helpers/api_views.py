@@ -1,3 +1,4 @@
+from textwrap import dedent
 
 import rest_framework
 from django.contrib.sessions.middleware import SessionMiddleware
@@ -81,9 +82,19 @@ def _assert_response(
         response, expected_valid_response=True,
         expected_status_code=None):
     status_code = response.status_code
-    msg_format = "Response returned with code {status_code}, body {response.data}"  # noqa: E501
+    if expected_status_code is not None:
+        msg_format = dedent("""\
+            Response returned with HTTP code {status_code} but code {expected_status_code} was expected.
+
+            Response body was {response.data}.""")  # noqa: E501
+    else:
+        msg_format = dedent("""\
+            Response unexpectedly returned with HTTP code {status_code}
+
+            Response body was {response.data}.""")
     msg = msg_format.format(
         status_code=status_code,
+        expected_status_code=expected_status_code,
         response=response,
     )
     if expected_status_code is not None:

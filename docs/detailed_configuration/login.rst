@@ -32,6 +32,22 @@ DefaultLoginSerializer
    :members:
 
 
+Custom token generation
+-----------------------
+
+One can replace :ref:`auth-token-manager-class-setting`
+with his / her own class, which should inherit from / implement
+``rest_registration.auth_token_managers.AbstractAuthTokenManager``.
+The ``AbstractAuthTokenManager`` class has following methods:
+
+.. autoclass:: rest_registration.auth_token_managers.AbstractAuthTokenManager
+    :members:
+
+If you're using custom authentication class, you should set
+:ref:`login-retrieve-token-setting` explicitly to ``True`` as token
+retrieval can be automatically turned on only when
+``rest_framework.authentication.TokenAuthentication`` (or a subclass) is used.
+
 List of settings
 ----------------
 

@@ -5,10 +5,7 @@ from django.test.utils import override_settings
 from rest_framework import status
 
 from rest_registration.api.views.reset_password import ResetPasswordSigner
-from tests.helpers.api_views import (
-    APIViewRequestFactory,
-    assert_response_is_ok
-)
+from tests.helpers.api_views import assert_response_is_ok
 from tests.helpers.constants import (
     RESET_PASSWORD_VERIFICATION_URL,
     VERIFICATION_FROM_EMAIL
@@ -219,11 +216,6 @@ class SendResetPasswordLinkViewTestCase(APIViewTestCase):
 @pytest.fixture()
 def api_view_provider():
     return ViewProvider('send-reset-password-link')
-
-
-@pytest.fixture()
-def api_factory(api_view_provider):
-    return APIViewRequestFactory(api_view_provider)
 
 
 def test_when_duplicated_email_then_send_link_via_login_successful(

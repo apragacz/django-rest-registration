@@ -160,6 +160,18 @@ LOGIN_SETTINGS_FIELDS = [
     ),
     Field('LOGIN_AUTHENTICATE_SESSION'),
     Field('LOGIN_RETRIEVE_TOKEN'),
+    Field(
+        'AUTH_TOKEN_MANAGER_CLASS',
+        default='rest_registration.auth_token_managers.RestFrameworkAuthTokenManager',  # noqa: E501
+        import_string=True,
+        help=dedent("""\
+            The token manager class used by :ref:`login-view`
+            and :ref:`logout-view` which provides an interface for providing
+            and optionally revoking the token.
+            The class should inherit from
+            ``rest_registration.token_managers.AbstractTokenManager``.
+            """)
+    ),
 ]
 RESET_PASSWORD_SETTINGS_FIELDS = [
     Field(

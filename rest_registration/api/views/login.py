@@ -5,7 +5,6 @@ from rest_framework.authentication import (
     SessionAuthentication,
     TokenAuthentication
 )
-from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.settings import api_settings
@@ -66,10 +65,9 @@ def logout(request):
     if should_authenticate_session():
         auth.logout(request)
     if should_retrieve_token() and data['revoke_token']:
-        try:
-            user.auth_token.delete()
-        except Token.DoesNotExist:
-            raise BadRequest(_("Cannot remove non-existent token"))
+        auth_token_manager_cls = registration_settings.AUTH_TOKEN_MANAGER_CLASS
+        auth_token_manager = auth_token_manager_cls()  # noqa: E501 type: rest_registration.auth_token_managers.AbstractAuthTokenManager
+        auth_token_manager.revoke_token(user)
 
     return get_ok_response(_("Logout successful"))
 
@@ -99,7 +97,9 @@ def perform_login(request, user):
     extra_data = {}
 
     if should_retrieve_token():
-        token, _ = Token.objects.get_or_create(user=user)
-        extra_data['token'] = token.key
+        auth_token_manager_cls = registration_settings.AUTH_TOKEN_MANAGER_CLASS
+        auth_token_manager = auth_token_manager_cls()  # noqa: E501 type: rest_registration.auth_token_managers.AbstractAuthTokenManager
+        token = auth_token_manager.provide_token(user)
+        extra_data['token'] = token
 
     return extra_data
