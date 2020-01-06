@@ -99,10 +99,27 @@ def email_change():
 
 
 @pytest.fixture()
-def user(db, email_change):
+def password_change():
+    return ValueChange(
+        old_value='testpassword',
+        new_value='testpassword2',
+    )
+
+
+@pytest.fixture()
+def user(db, email_change, password_change):
     return create_test_user(
         username='testusername',
-        email=email_change.old_value)
+        email=email_change.old_value,
+        password=password_change.old_value,
+    )
+
+
+@pytest.fixture()
+def user_token_obj(user):
+    from rest_framework.authtoken.models import Token  # noqa: E501 pylint: disable=import-outside-toplevel
+
+    return Token.objects.create(user=user)
 
 
 @pytest.fixture()
