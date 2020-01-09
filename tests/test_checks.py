@@ -1,9 +1,10 @@
 from django.apps import apps
+from django.core.checks.registry import registry
 from django.test import TestCase
 from django.test.utils import override_settings
 
 from rest_registration.apps import RestRegistrationConfig
-from rest_registration.checks import __ALL_CHECKS__, ErrorCode, WarningCode
+from rest_registration.checks import ErrorCode, WarningCode
 from rest_registration.settings import DEFAULTS
 from tests.helpers.settings import override_rest_registration_settings
 
@@ -11,7 +12,12 @@ from tests.helpers.settings import override_rest_registration_settings
 def simulate_checks():
     app_configs = apps.app_configs
     errors = []
-    for check in __ALL_CHECKS__:
+    all_checks = registry.get_checks(False)
+    rest_registration_checks = [
+        check for check in all_checks
+        if check.__module__.startswith('rest_registration.')
+    ]
+    for check in rest_registration_checks:
         errors.extend(check(app_configs))
     return errors
 

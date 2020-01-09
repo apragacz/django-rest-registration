@@ -237,20 +237,3 @@ def _are_login_fields_unique() -> bool:
 
 def _is_auth_installed() -> bool:
     return 'django.contrib.auth' in settings.INSTALLED_APPS
-
-
-__ALL_CHECKS__ = [
-    auth_installed_check,
-    reset_password_verification_url_check,
-    register_verification_url_check,
-    register_email_verification_url_check,
-    verification_from_check,
-    token_auth_config_check,
-    token_auth_installed_check,
-    register_verification_one_time_auto_login_check,
-    valid_register_verification_email_template_config_check,
-    valid_reset_password_verification_email_template_config_check,
-    valid_register_email_verification_email_template_config_check,
-    drf_compatible_django_auth_backend_check,
-    login_fields_unique_check,
-]
