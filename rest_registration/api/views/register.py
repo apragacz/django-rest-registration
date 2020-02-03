@@ -13,49 +13,18 @@ from rest_registration.decorators import (
     api_view_serializer_class_getter
 )
 from rest_registration.exceptions import BadRequest
-from rest_registration.notifications.email import (
-    send_verification_notification
-)
-from rest_registration.notifications.enums import NotificationType
 from rest_registration.settings import registration_settings
+from rest_registration.signers.register import RegisterSigner
 from rest_registration.utils.responses import get_ok_response
 from rest_registration.utils.users import (
     get_user_by_verification_id,
     get_user_email_field_name,
-    get_user_setting,
-    get_user_verification_id
+    get_user_setting
 )
 from rest_registration.utils.verification import verify_signer_or_bad_request
-from rest_registration.verification import URLParamsSigner
-
-
-class RegisterSigner(URLParamsSigner):
-    SALT_BASE = 'register'
-    USE_TIMESTAMP = True
-
-    def get_base_url(self):
-        return registration_settings.REGISTER_VERIFICATION_URL
-
-    def get_valid_period(self):
-        return registration_settings.REGISTER_VERIFICATION_PERIOD
-
-    def _calculate_salt(self, data):
-        if registration_settings.REGISTER_VERIFICATION_ONE_TIME_USE:
-            user = get_user_by_verification_id(
-                data['user_id'], require_verified=False)
-            # Use current user verification flag as a part of the salt.
-            # If the verification flag gets changed, then assume that
-            # the change was caused by previous verification and the signature
-            # is not valid anymore because changed user verification flag
-            # implies changed salt used when verifying the input data.
-            verification_flag_field = get_user_setting(
-                'VERIFICATION_FLAG_FIELD')
-            verification_flag = getattr(user, verification_flag_field)
-            salt = '{self.SALT_BASE}:{verification_flag}'.format(
-                self=self, verification_flag=verification_flag)
-        else:
-            salt = self.SALT_BASE
-        return salt
+from rest_registration.utils.verification_notifications import (
+    send_register_verification_email_notification
+)
 
 
 @api_view_serializer_class_getter(
@@ -86,16 +55,7 @@ def register(request):
     with transaction.atomic():
         user = serializer.save(**kwargs)
         if registration_settings.REGISTER_VERIFICATION_ENABLED:
-            signer = RegisterSigner({
-                'user_id': get_user_verification_id(user),
-            }, request=request)
-            template_config_data = registration_settings.REGISTER_VERIFICATION_EMAIL_TEMPLATES  # noqa: E501
-            notification_data = {
-                'params_signer': signer,
-            }
-            send_verification_notification(
-                NotificationType.REGISTER_VERIFICATION, user,
-                notification_data, template_config_data)
+            send_register_verification_email_notification(request, user)
 
     signals.user_registered.send(sender=None, user=user, request=request)
     output_serializer_class = registration_settings.REGISTER_OUTPUT_SERIALIZER_CLASS  # noqa: E501
