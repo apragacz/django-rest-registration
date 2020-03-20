@@ -2,7 +2,7 @@ from django.http import Http404
 from django.utils.translation import gettext as _
 from rest_framework import serializers
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 
 from rest_registration import signals
 from rest_registration.decorators import (
@@ -99,7 +99,7 @@ class VerifyEmailSerializer(serializers.Serializer):  # noqa: E501 pylint: disab
 
 @api_view_serializer_class(VerifyEmailSerializer)
 @api_view(['POST'])
-@permission_classes([AllowAny])
+@permission_classes(registration_settings.DEFAULT_PERMISSION_CLASSES)
 def verify_email(request):
     '''
     Verify email via signature.

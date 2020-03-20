@@ -13,10 +13,10 @@ _Field = namedtuple('_Field', [
 class Field(_Field):
 
     def __new__(
-            cls, name, *,
-            default=None,
-            help=None,  # pylint: disable=redefined-builtin
-            import_string=False):
+        cls, name, *,
+        default=None,
+        help=None,  # pylint: disable=redefined-builtin
+        import_string=False):
         return super().__new__(
             cls, name=name, default=default,
             help=help, import_string=import_string)
@@ -313,6 +313,19 @@ MISC_SETTINGS_FIELDS = [
     ),
 ]
 
+PERMISSIONS_SETTINGS_FIELDS = [
+    Field(
+        'DEFAULT_PERMISSION_CLASSES',
+        default=['rest_framework.permissions.AllowAny',],
+        import_string=True,
+        help=dedent("""\
+            This parameter establishes the permissions of the views that must be accessible without logging in.
+            Basically replace AllowAny with the specified class.
+            Default: ``'rest_framework.permission.AllowAny'``
+            """)
+    ),
+]
+
 SETTINGS_FIELDS_GROUPS_MAP = OrderedDict([
     ('user', USER_SETTINGS_FIELDS),
     ('register', REGISTER_SETTINGS_FIELDS),
@@ -323,8 +336,8 @@ SETTINGS_FIELDS_GROUPS_MAP = OrderedDict([
     ('change_password', CHANGE_PASSWORD_SETTINGS_FIELDS),
     ('profile', PROFILE_SETTINGS_FIELDS),
     ('misc', MISC_SETTINGS_FIELDS),
+    ('permissons', PERMISSIONS_SETTINGS_FIELDS),
 ])
-
 
 SETTINGS_FIELDS_GROUPS = list(SETTINGS_FIELDS_GROUPS_MAP.values())
 
