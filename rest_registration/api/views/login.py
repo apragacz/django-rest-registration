@@ -7,7 +7,7 @@ from rest_framework.authentication import (
 )
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.settings import api_settings
 
 from rest_registration.decorators import (
@@ -22,7 +22,7 @@ from rest_registration.utils.responses import get_ok_response
 @api_view_serializer_class_getter(
     lambda: registration_settings.LOGIN_SERIALIZER_CLASS)
 @api_view(['POST'])
-@permission_classes([AllowAny])
+@permission_classes(registration_settings.DEFAULT_PERMISSION_CLASSES)
 def login(request):
     '''
     Logs in the user via given login and password.
