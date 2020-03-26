@@ -22,7 +22,7 @@ from rest_registration.utils.responses import get_ok_response
 @api_view_serializer_class_getter(
     lambda: registration_settings.LOGIN_SERIALIZER_CLASS)
 @api_view(['POST'])
-@permission_classes(registration_settings.DEFAULT_PERMISSION_CLASSES)
+@permission_classes(registration_settings.NOT_AUTHENTICATED_PERMISSION_CLASSES)
 def login(request):
     '''
     Logs in the user via given login and password.

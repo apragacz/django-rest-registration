@@ -315,7 +315,7 @@ MISC_SETTINGS_FIELDS = [
 
 PERMISSIONS_SETTINGS_FIELDS = [
     Field(
-        'DEFAULT_PERMISSION_CLASSES',
+        'NOT_AUTHENTICATED_PERMISSION_CLASSES',
         default=['rest_framework.permissions.AllowAny'],
         import_string=True,
         help=dedent("""\

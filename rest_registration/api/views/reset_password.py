@@ -54,7 +54,7 @@ class ResetPasswordSigner(URLParamsSigner):
 @api_view_serializer_class_getter(
     lambda: registration_settings.SEND_RESET_PASSWORD_LINK_SERIALIZER_CLASS)
 @api_view(['POST'])
-@permission_classes(registration_settings.DEFAULT_PERMISSION_CLASSES)
+@permission_classes(registration_settings.NOT_AUTHENTICATED_PERMISSION_CLASSES)
 def send_reset_password_link(request):
     '''
     Send email with reset password link.
@@ -100,7 +100,7 @@ class ResetPasswordSerializer(serializers.Serializer):  # noqa: E501 pylint: dis
 
 @api_view_serializer_class(ResetPasswordSerializer)
 @api_view(['POST'])
-@permission_classes(registration_settings.DEFAULT_PERMISSION_CLASSES)
+@permission_classes(registration_settings.NOT_AUTHENTICATED_PERMISSION_CLASSES)
 def reset_password(request):
     '''
     Reset password, given the signature and timestamp from the link.
