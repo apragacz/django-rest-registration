@@ -99,7 +99,7 @@ class VerifyEmailSerializer(serializers.Serializer):  # noqa: E501 pylint: disab
 
 @api_view_serializer_class(VerifyEmailSerializer)
 @api_view(['POST'])
-@permission_classes(registration_settings.DEFAULT_PERMISSION_CLASSES)
+@permission_classes(registration_settings.NOT_AUTHENTICATED_PERMISSION_CLASSES)
 def verify_email(request):
     '''
     Verify email via signature.

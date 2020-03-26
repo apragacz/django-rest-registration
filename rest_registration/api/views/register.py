@@ -29,7 +29,7 @@ from rest_registration.utils.verification_notifications import (
 @api_view_serializer_class_getter(
     lambda: registration_settings.REGISTER_SERIALIZER_CLASS)
 @api_view(['POST'])
-@permission_classes(registration_settings.DEFAULT_PERMISSION_CLASSES)
+@permission_classes(registration_settings.NOT_AUTHENTICATED_PERMISSION_CLASSES)
 def register(request):
     '''
     Register new user.
@@ -74,7 +74,7 @@ class VerifyRegistrationSerializer(serializers.Serializer):  # noqa: E501 pylint
 
 @api_view_serializer_class(VerifyRegistrationSerializer)
 @api_view(['POST'])
-@permission_classes(registration_settings.DEFAULT_PERMISSION_CLASSES)
+@permission_classes(registration_settings.NOT_AUTHENTICATED_PERMISSION_CLASSES)
 def verify_registration(request):
     """
     Verify registration via signature.
