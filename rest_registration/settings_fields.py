@@ -321,8 +321,7 @@ PERMISSIONS_SETTINGS_FIELDS = [
         help=dedent("""\
             This parameter establishes the permissions of the views that must
             be accessible without logging in.
-            Basically replace AllowAny with the specified class.
-            Default: ``'rest_framework.permission.AllowAny'``
+            Basically replace ``AllowAny`` with the specified class.
             """)
     ),
 ]
