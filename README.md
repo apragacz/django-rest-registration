@@ -1,8 +1,8 @@
 # Django REST Registration
 
 [![Build Status](https://travis-ci.org/apragacz/django-rest-registration.svg?branch=master)](https://travis-ci.org/apragacz/django-rest-registration)
-[![Codecov Coverage](https://img.shields.io/codecov/c/github/apragacz/django-rest-registration/master.svg)](https://codecov.io/github/apragacz/django-rest-registration?branch=master)
-[![PyPi Version](https://img.shields.io/pypi/v/django-rest-registration.svg)](https://pypi.python.org/pypi/django-rest-registration/)
+[![Codecov Coverage](https://codecov.io/gh/apragacz/django-rest-registration/branch/master/graphs/badge.svg?branch=master)](https://codecov.io/github/apragacz/django-rest-registration?branch=master)
+[![PyPi Version](https://badge.fury.io/py/django-rest-registration.svg)](https://pypi.python.org/pypi/django-rest-registration/)
 [![Documentation Status](https://readthedocs.org/projects/django-rest-registration/badge/?version=latest)](https://django-rest-registration.readthedocs.io/en/latest/?badge=latest)
 
 User registration REST API, based on Django REST Framework.
