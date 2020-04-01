@@ -4,6 +4,7 @@ import pytest
 from django.conf import settings
 from django.test.utils import override_settings
 
+from tests.helpers.api_views import APIViewRequestFactory
 from tests.helpers.common import create_test_user
 from tests.helpers.constants import (
     REGISTER_VERIFICATION_URL,
@@ -74,6 +75,12 @@ def settings_with_simple_email_based_user():
 
 
 @pytest.fixture()
+def settings_with_user_with_user_type():
+    with override_auth_model_settings('custom_users.UserWithUserType'):
+        yield settings
+
+
+@pytest.fixture()
 def settings_with_coreapi_autoschema():
     with override_settings(
         REST_FRAMEWORK={
@@ -110,3 +117,8 @@ def user2_with_user_new_email(db, email_change):
     return create_test_user(
         username='testusername2',
         email=email_change.new_value)
+
+
+@pytest.fixture()
+def api_factory(api_view_provider):
+    return APIViewRequestFactory(api_view_provider)

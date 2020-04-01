@@ -3,16 +3,24 @@ from urllib.parse import unquote_plus as urlunquote
 from urllib.parse import urlparse
 
 import pytest
+from django.contrib.auth import get_user_model
 from django.core.mail.backends.base import BaseEmailBackend
 from django.test.utils import override_settings
 from rest_framework import status
 
 from rest_registration.signers.register import RegisterSigner
+from tests.helpers.api_views import assert_response_status_is_created
 from tests.helpers.constants import (
     REGISTER_VERIFICATION_URL,
     VERIFICATION_FROM_EMAIL
 )
+from tests.helpers.email import assert_one_email_sent, capture_sent_emails
 from tests.helpers.settings import override_rest_registration_settings
+from tests.helpers.text import assert_one_url_line_in_text
+from tests.helpers.timer import capture_time
+from tests.helpers.verification import assert_valid_verification_url
+from tests.helpers.views import ViewProvider
+from tests.testapps.custom_users.models import UserType
 
 from ..base import APIViewTestCase
 
@@ -345,18 +353,81 @@ class RegisterViewTestCase(APIViewTestCase):
 
     def _get_register_user_data(
             self, password, password_confirm=None, **options):
-        username = 'testusername'
-        email = 'testusername@example.com'
-        if password_confirm is None:
-            password_confirm = password
-        data = {
-            'username': username,
-            'password': password,
-            'password_confirm': password_confirm,
-            'email': email,
-        }
-        data.update(options)
-        return data
+        return _get_register_user_data(
+            password, password_confirm=password_confirm, **options)
+
+
+@pytest.fixture()
+def api_view_provider():
+    return ViewProvider('register')
+
+
+@pytest.mark.skip('TODO: Issue #106 - unskip when this issue is fixed')
+@pytest.mark.django_db
+def test_when_user_with_foreign_key_then_register_succeeds(
+        settings_with_register_verification,
+        settings_with_user_with_user_type,
+        api_view_provider, api_factory):
+    data = _get_register_user_data(password='testpassword')
+    user_type = UserType.objects.create(name='custorme')
+    data['user_type'] = user_type.id
+    request = api_factory.create_post_request(data)
+    with capture_sent_emails() as sent_emails, capture_time() as timer:
+        response = api_view_provider.view_func(request)
+    assert_response_status_is_created(response)
+    user = _get_register_response_user(response)
+    assert_user_state_matches_data(user, data)
+
+    assert_one_email_sent(sent_emails)
+    sent_email = sent_emails[0]
+    assert_valid_register_verification_email(sent_email, user, timer)
+
+
+def assert_user_state_matches_data(user, data, verified=False):
+    assert user.username == data['username']
+    assert user.email == data['email']
+    assert user.check_password(data['password'])
+    assert user.is_active == verified
+
+
+def assert_valid_register_verification_email(sent_email, user, timer):
+    assert sent_email.from_email == VERIFICATION_FROM_EMAIL
+    assert sent_email.to == [user.email]
+    url = assert_one_url_line_in_text(sent_email.body)
+
+    verification_data = assert_valid_verification_url(
+        url,
+        expected_path=REGISTER_VERIFICATION_URL,
+        expected_fields={'signature', 'user_id', 'timestamp'},
+    )
+    url_user_id = int(verification_data['user_id'])
+    assert url_user_id == user.pk
+    url_sig_timestamp = int(verification_data['timestamp'])
+    assert timer.start_time <= url_sig_timestamp <= timer.end_time
+    signer = RegisterSigner(verification_data)
+    signer.verify()
+
+
+def _get_register_response_user(response):
+    user_id = response.data['id']
+    user_class = get_user_model()
+    user = user_class.objects.get(id=user_id)
+    return user
+
+
+def _get_register_user_data(password, password_confirm=None, **options):
+    username = 'testusername'
+    email = 'testusername@example.com'
+    if password_confirm is None:
+        password_confirm = password
+    data = {
+        'username': username,
+        'password': password,
+        'password_confirm': password_confirm,
+        'email': email,
+    }
+    data.update(options)
+    return data
 
 
 class FailureEmailBackend(BaseEmailBackend):

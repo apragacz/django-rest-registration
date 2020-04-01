@@ -56,6 +56,13 @@ def assert_response_is_ok(response):
     )
 
 
+def assert_response_status_is_created(response):
+    assert_valid_response(
+        response,
+        expected_status_code=status.HTTP_201_CREATED,
+    )
+
+
 def assert_response_is_bad_request(response):
     assert_invalid_response(
         response,

@@ -1,19 +1,15 @@
-from django.contrib.auth.models import (
-    AbstractBaseUser,
-    AbstractUser,
-    Group,
-    Permission
-)
+from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.models import AbstractUser as _AbstractUser
+from django.contrib.auth.models import Group, Permission
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
-class UserWithUniqueEmail(AbstractUser):
-    email = models.EmailField(
-        verbose_name=_("email address"),
-        unique=True,
-        blank=True,
-    )
+class AbstractUser(_AbstractUser):
+
+    class Meta:  # pylint: disable=too-few-public-methods
+        abstract = True
+
     groups = models.ManyToManyField(
         Group,
         verbose_name=_("groups"),
@@ -33,6 +29,22 @@ class UserWithUniqueEmail(AbstractUser):
         related_name="+",
         related_query_name="user",
     )
+
+
+class UserWithUniqueEmail(AbstractUser):
+    email = models.EmailField(
+        verbose_name=_("email address"),
+        unique=True,
+        blank=True,
+    )
+
+
+class UserType(models.Model):
+    name = models.CharField(max_length=255)
+
+
+class UserWithUserType(AbstractUser):
+    user_type = models.ForeignKey(UserType, on_delete=models.CASCADE)
 
 
 class SimpleEmailBasedUser(AbstractBaseUser):
