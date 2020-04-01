@@ -1,8 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.utils.translation import gettext as _
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 
 from rest_registration.settings import registration_settings
 from rest_registration.utils.users import (
@@ -141,11 +141,6 @@ class DefaultRegisterUserSerializer(serializers.ModelSerializer):
     def has_password_confirm(self):
         return registration_settings.REGISTER_SERIALIZER_PASSWORD_CONFIRM
 
-    def validate_password(self, password):
-        user = _build_initial_user(self.initial_data)
-        validate_password(password, user=user)
-        return password
-
     def get_fields(self):
         fields = super().get_fields()
         if self.has_password_confirm:
@@ -153,9 +148,18 @@ class DefaultRegisterUserSerializer(serializers.ModelSerializer):
         return fields
 
     def validate(self, attrs):
+        user = _build_initial_user(attrs)
+        password = attrs.get('password')
+        errors = {}
         if self.has_password_confirm:
             if attrs['password'] != attrs['password_confirm']:
-                raise ValidationError(_("Passwords don't match"))
+                errors['password_confirm'] = _("Passwords don't match")
+        try:
+            validate_password(password=password, user=user)
+        except DjangoValidationError as exc:
+            errors['password'] = list(exc.messages)
+        if errors:
+            raise serializers.ValidationError(errors)
         return attrs
 
     def create(self, validated_data):
