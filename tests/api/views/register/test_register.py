@@ -362,7 +362,6 @@ def api_view_provider():
     return ViewProvider('register')
 
 
-@pytest.mark.skip('TODO: Issue #106 - unskip when this issue is fixed')
 @pytest.mark.django_db
 def test_when_user_with_foreign_key_then_register_succeeds(
         settings_with_register_verification,
