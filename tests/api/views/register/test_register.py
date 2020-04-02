@@ -1,6 +1,3 @@
-import time
-from unittest import mock
-from unittest.mock import patch
 from urllib.parse import quote_plus as urlquote
 from urllib.parse import unquote_plus as urlunquote
 from urllib.parse import urlparse
@@ -10,54 +7,14 @@ from django.core.mail.backends.base import BaseEmailBackend
 from django.test.utils import override_settings
 from rest_framework import status
 
-from rest_registration.api.views.register import RegisterSigner
-from tests.helpers.common import shallow_merge_dicts
-from tests.helpers.testcases import TestCase
+from rest_registration.signers.register import RegisterSigner
+from tests.helpers.constants import (
+    REGISTER_VERIFICATION_URL,
+    VERIFICATION_FROM_EMAIL
+)
+from tests.helpers.settings import override_rest_registration_settings
 
-from .base import APIViewTestCase
-
-REGISTER_VERIFICATION_URL = '/verify-account/'
-VERIFICATION_FROM_EMAIL = 'no-reply@example.com'
-REST_REGISTRATION_WITH_VERIFICATION = {
-    'REGISTER_VERIFICATION_ENABLED': True,
-    'REGISTER_VERIFICATION_URL': REGISTER_VERIFICATION_URL,
-    'VERIFICATION_FROM_EMAIL': VERIFICATION_FROM_EMAIL,
-}
-
-REST_REGISTRATION_WITHOUT_VERIFICATION = {
-    'REGISTER_VERIFICATION_ENABLED': False,
-}
-
-REST_REGISTRATION_WITH_HTML_EMAIL_VERIFICATION = {
-    'REGISTER_VERIFICATION_ENABLED': True,
-    'REGISTER_VERIFICATION_URL': REGISTER_VERIFICATION_URL,
-    'REGISTER_VERIFICATION_EMAIL_TEMPLATES': {
-        'subject':  'rest_registration/register/subject.txt',
-        'html_body':  'rest_registration/register/body.html',
-    },
-    'VERIFICATION_FROM_EMAIL': VERIFICATION_FROM_EMAIL,
-}
-
-
-@override_settings(REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION)
-class RegisterSignerTestCase(TestCase):
-
-    def test_signer_with_different_secret_keys(self):
-        user = self.create_test_user(is_active=False)
-        data_to_sign = {'user_id': user.pk}
-        secrets = [
-            '#0ka!t#6%28imjz+2t%l(()yu)tg93-1w%$du0*po)*@l+@+4h',
-            'feb7tjud7m=91$^mrk8dq&nz(0^!6+1xk)%gum#oe%(n)8jic7',
-        ]
-        signatures = []
-        for secret in secrets:
-            with override_settings(
-                    SECRET_KEY=secret):
-                signer = RegisterSigner(data_to_sign)
-                data = signer.get_signed_data()
-                signatures.append(data[signer.SIGNATURE_FIELD])
-
-        assert signatures[0] != signatures[1]
+from ..base import APIViewTestCase
 
 
 def build_custom_verification_url(signer):
@@ -101,7 +58,11 @@ def parse_custom_verification_url(url, verification_field_names):
     return url_path, verification_data
 
 
-@override_settings(REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION)
+@override_rest_registration_settings({
+    'REGISTER_VERIFICATION_ENABLED': True,
+    'REGISTER_VERIFICATION_URL': REGISTER_VERIFICATION_URL,
+    'VERIFICATION_FROM_EMAIL': VERIFICATION_FROM_EMAIL,
+})
 class RegisterViewTestCase(APIViewTestCase):
     VIEW_NAME = 'register'
 
@@ -136,13 +97,9 @@ class RegisterViewTestCase(APIViewTestCase):
         signer = RegisterSigner(verification_data)
         signer.verify()
 
-    @override_settings(
-        REST_REGISTRATION=shallow_merge_dicts(
-            REST_REGISTRATION_WITH_VERIFICATION, {
-                'USER_VERIFICATION_ID_FIELD': 'username',
-            },
-        ),
-    )
+    @override_rest_registration_settings({
+        'USER_VERIFICATION_ID_FIELD': 'username',
+    })
     def test_register_with_username_as_verification_id_ok(self):
         # Using username is not recommended if it can change for a given user.
         data = self._get_register_user_data(password='testpassword')
@@ -175,13 +132,9 @@ class RegisterViewTestCase(APIViewTestCase):
         signer = RegisterSigner(verification_data)
         signer.verify()
 
-    @override_settings(
-        REST_REGISTRATION=shallow_merge_dicts(
-            REST_REGISTRATION_WITH_VERIFICATION, {
-                'VERIFICATION_URL_BUILDER': build_custom_verification_url,
-            },
-        ),
-    )
+    @override_rest_registration_settings({
+        'VERIFICATION_URL_BUILDER': build_custom_verification_url,
+    })
     def test_register_with_custom_verification_url_ok(self):
         data = self._get_register_user_data(password='testpassword')
         request = self.create_post_request(data)
@@ -214,9 +167,12 @@ class RegisterViewTestCase(APIViewTestCase):
         signer = RegisterSigner(verification_data)
         signer.verify()
 
-    @override_settings(
-        REST_REGISTRATION=REST_REGISTRATION_WITH_HTML_EMAIL_VERIFICATION,
-    )
+    @override_rest_registration_settings({
+        'REGISTER_VERIFICATION_EMAIL_TEMPLATES': {
+            'subject': 'rest_registration/register/subject.txt',
+            'html_body': 'rest_registration/register/body.html',
+        },
+    })
     def test_register_with_html_email_ok(self):
         data = self._get_register_user_data(password='testpassword')
         request = self.create_post_request(data)
@@ -248,13 +204,9 @@ class RegisterViewTestCase(APIViewTestCase):
         signer = RegisterSigner(verification_data)
         signer.verify()
 
-    @override_settings(
-        REST_REGISTRATION=shallow_merge_dicts(
-            REST_REGISTRATION_WITH_VERIFICATION, {
-                'REGISTER_SERIALIZER_PASSWORD_CONFIRM': False,
-            },
-        ),
-    )
+    @override_rest_registration_settings({
+        'REGISTER_SERIALIZER_PASSWORD_CONFIRM': False,
+    })
     def test_register_no_password_confirm_ok(self):
         data = self._get_register_user_data(password='testpassword')
         data.pop('password_confirm')
@@ -297,9 +249,9 @@ class RegisterViewTestCase(APIViewTestCase):
             response = self.view_func(request)
             self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
 
-    @override_settings(
-        REST_REGISTRATION=REST_REGISTRATION_WITHOUT_VERIFICATION,
-    )
+    @override_rest_registration_settings({
+        'REGISTER_VERIFICATION_ENABLED': False,
+    })
     def test_register_without_verification_ok(self):
         data = self._get_register_user_data(password='testpassword')
         request = self.create_post_request(data)
@@ -314,8 +266,10 @@ class RegisterViewTestCase(APIViewTestCase):
 
     @override_settings(
         TEMPLATES=(),
-        REST_REGISTRATION=REST_REGISTRATION_WITHOUT_VERIFICATION,
     )
+    @override_rest_registration_settings({
+        'REGISTER_VERIFICATION_ENABLED': False,
+    })
     def test_no_templates_without_verification_ok(self):
         data = self._get_register_user_data(password='testpassword')
         request = self.create_post_request(data)
@@ -376,7 +330,7 @@ class RegisterViewTestCase(APIViewTestCase):
             self.assert_response_is_bad_request(response)
 
     @override_settings(
-        EMAIL_BACKEND='tests.api.views.test_register.FailureEmailBackend',
+        EMAIL_BACKEND='tests.api.views.register.test_register.FailureEmailBackend',  # noqa E501
     )
     def test_when_notification_failure_then_user_not_created(self):
         data = self._get_register_user_data(password='testpassword')
@@ -403,146 +357,6 @@ class RegisterViewTestCase(APIViewTestCase):
         }
         data.update(options)
         return data
-
-
-class VerifyRegistrationViewTestCase(APIViewTestCase):
-    VIEW_NAME = 'verify-registration'
-
-    def prepare_user(self):
-        user = self.create_test_user(is_active=False)
-        self.assertFalse(user.is_active)
-        return user
-
-    def prepare_request(self, user, session=False, data_to_sign=None):
-        if data_to_sign is None:
-            data_to_sign = {'user_id': user.pk}
-        signer = RegisterSigner(data_to_sign)
-        data = signer.get_signed_data()
-        request = self.create_post_request(data)
-        if session:
-            self.add_session_to_request(request)
-        return request
-
-    def prepare_user_and_request(self, session=False):
-        user = self.prepare_user()
-        request = self.prepare_request(user, session=session)
-        return user, request
-
-    @override_settings(REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION)
-    def test_verify_ok(self):
-        user, request = self.prepare_user_and_request()
-        response = self.view_func(request)
-        self.assert_valid_response(response, status.HTTP_200_OK)
-        user.refresh_from_db()
-        self.assertTrue(user.is_active)
-
-    @override_settings(
-        REST_REGISTRATION=shallow_merge_dicts(
-            REST_REGISTRATION_WITH_VERIFICATION, {
-                'USER_VERIFICATION_ID_FIELD': 'username',
-            },
-        ),
-    )
-    def test_verify_with_username_as_verification_id_ok(self):
-        user = self.prepare_user()
-        request = self.prepare_request(
-            user, data_to_sign={'user_id': user.username})
-        response = self.view_func(request)
-        self.assert_valid_response(response, status.HTTP_200_OK)
-        user.refresh_from_db()
-        self.assertTrue(user.is_active)
-
-    @override_settings(REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION)
-    def test_verify_ok_idempotent(self):
-        user = self.prepare_user()
-        request1 = self.prepare_request(user)
-        request2 = self.prepare_request(user)
-
-        self.view_func(request1)
-
-        response = self.view_func(request2)
-        self.assert_valid_response(response, status.HTTP_200_OK)
-        user.refresh_from_db()
-        self.assertTrue(user.is_active)
-
-    @override_settings(
-        REST_REGISTRATION=shallow_merge_dicts(
-            REST_REGISTRATION_WITH_VERIFICATION, {
-                'REGISTER_VERIFICATION_ONE_TIME_USE': True,
-            },
-        ),
-    )
-    def test_verify_one_time_use(self):
-        user = self.prepare_user()
-        request1 = self.prepare_request(user)
-        request2 = self.prepare_request(user)
-
-        self.view_func(request1)
-
-        response = self.view_func(request2)
-        self.assert_valid_response(response, status.HTTP_400_BAD_REQUEST)
-        user.refresh_from_db()
-        self.assertTrue(user.is_active)
-
-    @override_settings(
-        REST_REGISTRATION=shallow_merge_dicts(
-            REST_REGISTRATION_WITH_VERIFICATION, {
-                'REGISTER_VERIFICATION_AUTO_LOGIN': True,
-            },
-        ),
-    )
-    def test_verify_ok_login(self):
-        with patch('django.contrib.auth.login') as login_mock:
-            user, request = self.prepare_user_and_request()
-            response = self.view_func(request)
-            login_mock.assert_called_once_with(mock.ANY, user)
-        self.assert_valid_response(response, status.HTTP_200_OK)
-        user.refresh_from_db()
-        self.assertTrue(user.is_active)
-
-    @override_settings(REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION)
-    def test_verify_tampered_timestamp(self):
-        user = self.create_test_user(is_active=False)
-        self.assertFalse(user.is_active)
-        signer = RegisterSigner({'user_id': user.pk})
-        data = signer.get_signed_data()
-        data['timestamp'] += 1
-        request = self.create_post_request(data)
-        response = self.view_func(request)
-        self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
-        user.refresh_from_db()
-        self.assertFalse(user.is_active)
-
-    @override_settings(REST_REGISTRATION=REST_REGISTRATION_WITH_VERIFICATION)
-    def test_verify_expired(self):
-        timestamp = int(time.time())
-        user = self.create_test_user(is_active=False)
-        self.assertFalse(user.is_active)
-        with patch('time.time',
-                   side_effect=lambda: timestamp):
-            signer = RegisterSigner({'user_id': user.pk})
-            data = signer.get_signed_data()
-            request = self.create_post_request(data)
-        with patch('time.time',
-                   side_effect=lambda: timestamp + 3600 * 24 * 8):
-            response = self.view_func(request)
-        self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
-        user.refresh_from_db()
-        self.assertFalse(user.is_active)
-
-    @override_settings(
-        REST_REGISTRATION={
-            'REGISTER_VERIFICATION_ENABLED': False,
-            'REGISTER_VERIFICATION_URL': REGISTER_VERIFICATION_URL,
-        }
-    )
-    def test_verify_disabled(self):
-        user, request = self.prepare_user_and_request()
-        response = self.view_func(request)
-
-        self.assert_invalid_response(response, status.HTTP_404_NOT_FOUND)
-        user.refresh_from_db()
-        self.assertFalse(user.is_active)
 
 
 class FailureEmailBackend(BaseEmailBackend):
