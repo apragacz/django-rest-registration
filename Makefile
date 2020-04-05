@@ -34,31 +34,19 @@ SPHINXAUTOBUILD := sphinx-autobuild
 SPHINXAUTOBUILD_OPTS := --watch ${PACKAGE_DIR} --ignore ${DOCS_REFERENCE_DIR}
 
 .PHONY: all
-all: check build check_package  ## check code, build, check package
-
-.PHONY: setup_dev
-setup_dev: install_all_requirements install_dev
-
-.PHONY: install_all_requirements
-install_all_requirements:  ## install all pip requirements
-	${PYTHON} -m pip install -r requirements/requirements-all.txt ${ARGS}
+all: check test build check_package  ## check code, test, build, check package
 
 .PHONY: install_dev
-install_dev:  ## install package as editable
+install_dev:  ## install all pip requirements and the package as editable
+	${PYTHON} -m pip install -r requirements/requirements-all.txt ${ARGS}
 	${PYTHON} -m pip install -e .
-
-.PHONY: check
-check: check_code  ## alias for check_code
-
-.PHONY: check_code
-check_code: lint test  ## lint + test
 
 .PHONY: test
 test:  ## run tests
 	${PYTEST} ${PYTEST_OPTS} ${ARGS}
 
-.PHONY: lint
-lint: flake8 mypy pylint  ## run lint
+.PHONY: check
+check: flake8 mypy pylint check_docs  ## run checks: flake8, mypy, pylint, check_docs
 
 .PHONY: flake8
 flake8:  ## run flake8
