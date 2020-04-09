@@ -48,14 +48,25 @@ to contribute your changes back to upstream repository.
 
 ### Development setup
 
+Django-REST-Registration uses [make][make] command to automate various tasks.
+The `make` command has it's flaws but as
+a [boring technology][boring-technology] is stable enough to serve its purpose.
+
+You can list the available targets with the following command:
+
+    make help
+
 Assuming you are in the cloned repository and have Python 3.4+ installed:
 
     python3 -m venv .venv
     source .venv/bin/activate
-    pip install -r requirements/requirements-all.txt
+
+Then, having your virtualenv set up, you can run:
+
+    make install_dev
 
 
-### Linting
+### Code checks
 
 Code changes should follow the [PEP 8][pep-8] style conventions (this includes
 the controversial rule of limiting all lines to a maximum of 79 characters!),
@@ -72,36 +83,50 @@ f(x)  # noqa: <errorcode>
 f(x)  # pylint: disable=<errorcode>
 ```
 
-There are several linting tools which Django-REST-Registration uses
+There are several code check tools which Django-REST-Registration uses
 to ensure code quality:
 
 *   [flake8][flake8] (with additional plugins)
 *   [isort][isort] (used as flake8 plugin)
 *   [pylint][pylint]
+*   [mypy][mypy]
 
 
 With your repository set up, you can activate virtualenv:
 
     source .venv/bin/activate
 
-And run the linters:
+And run the checks:
 
-    ./scripts/run_linters.sh
+    make check
 
 You can run linters separately:
 
-    flake8
-    ./scripts/run_pylint.sh
+    make flake8
+    make mypy
+    make pylint
+    make check_docs
 
+In addition there is package check as well, which builds the package
+and performs checks on it:
+
+    make check_package
 
 ### Testing
 
 With your repository set up, and virtualenv activated, you can run the tests:
 
-    ./scripts/run_tests.sh
+    make test
 
-`run_tests.sh` is just a wrapper around [py.test][pytest] so you can pass
-any argument / option you would pass to the py.test executable.
+`make test` is just a wrapper around [py.test][pytest] so you can pass
+any argument / option you would pass to the py.test executable with
+the `ARGS` variable. For instance:
+
+    make test ARGS="-v --cov --cov-report xml"
+
+Or you call pytest directly:
+
+    py.test -v --cov --cov-report xml
 
 
 ### Running against multiple environments
@@ -154,7 +179,11 @@ the pull requests.
 GitHub's documentation for working on pull requests
 is [available here][github-pull-requests].
 
-Always run the tests before submitting pull requests, and ideally run `tox`
+Always run the tests before submitting pull requests:
+
+    make check && make test
+
+and ideally run `tox`
 in order to check that your modifications are compatible on all
 supported versions of Python and Django.
 
@@ -180,7 +209,7 @@ With your repository set up, you can activate virtualenv:
 
 And then run
 
-    ./scripts/build_docs.sh
+    make build_docs
 
 Then, the compiled documentation can be found
 in your `docs/_build/html` subdirectory.
@@ -188,7 +217,7 @@ in your `docs/_build/html` subdirectory.
 You can also edit the documentation iteratively; by running the script
 in watch mode:
 
-    ./scripts/build_docs.sh --watch
+    make watch_docs
 
 This will run a webserver
 (by default on [127.0.0.1:8000](http://127.0.0.1:8000)) so you can watch
@@ -212,7 +241,10 @@ just in case).
 [flake8]: http://flake8.pycqa.org/
 [isort]: https://github.com/timothycrosley/isort
 [pylint]: https://www.pylint.org/
+[mypy]: http://mypy-lang.org/
 [pytest]: https://docs.pytest.org/
 [markdown]: https://daringfireball.net/projects/markdown/basics
 [rst]: http://docutils.sourceforge.net/docs/user/rst/quickref.html
 [sphinx]: http://www.sphinx-doc.org/
+[make]: https://www.gnu.org/software/make/manual/make.html
+[boring-technology]: http://boringtechnology.club/
