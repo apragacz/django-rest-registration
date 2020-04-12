@@ -2,14 +2,20 @@ import time
 from unittest import skip
 from unittest.mock import patch
 
+import pytest
 from rest_framework import status
 
 from rest_registration.api.views.reset_password import ResetPasswordSigner
+from tests.helpers.api_views import (
+    assert_response_is_bad_request,
+    assert_response_is_ok
+)
 from tests.helpers.constants import (
     RESET_PASSWORD_VERIFICATION_URL,
     VERIFICATION_FROM_EMAIL
 )
 from tests.helpers.settings import override_rest_registration_settings
+from tests.helpers.views import ViewProvider
 
 from ..base import APIViewTestCase
 
@@ -203,3 +209,69 @@ class ResetPasswordViewTestCase(APIViewTestCase):
         self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
         user.refresh_from_db()
         self.assertTrue(user.check_password(old_password))
+
+
+@pytest.fixture()
+def api_view_provider():
+    return ViewProvider('reset-password')
+
+
+@override_rest_registration_settings({
+    'RESET_PASSWORD_SERIALIZER_PASSWORD_CONFIRM': True
+})
+def test_when_confirm_enabled_and_password_confirm_field_then_reset_password_succeeds(  # noqa: E501
+        settings_with_reset_password_verification,
+        user, password_change,
+        api_view_provider, api_factory):
+    new_password = password_change.new_value
+    signer = ResetPasswordSigner({'user_id': user.pk})
+    data = signer.get_signed_data()
+    data['password'] = new_password
+    data['password_confirm'] = new_password
+    request = api_factory.create_post_request(data)
+    response = api_view_provider.view_func(request)
+
+    assert_response_is_ok(response)
+    user.refresh_from_db()
+    assert user.check_password(new_password)
+
+
+@override_rest_registration_settings({
+    'RESET_PASSWORD_SERIALIZER_PASSWORD_CONFIRM': True
+})
+def test_when_confirm_enabled_and_no_password_confirm_field_then_reset_password_fails(  # noqa: E501
+        settings_with_reset_password_verification,
+        user, password_change,
+        api_view_provider, api_factory):
+    old_password = password_change.old_value
+    new_password = password_change.new_value
+    signer = ResetPasswordSigner({'user_id': user.pk})
+    data = signer.get_signed_data()
+    data['password'] = new_password
+    request = api_factory.create_post_request(data)
+    response = api_view_provider.view_func(request)
+
+    assert_response_is_bad_request(response)
+    user.refresh_from_db()
+    assert user.check_password(old_password)
+
+
+@override_rest_registration_settings({
+    'RESET_PASSWORD_SERIALIZER_PASSWORD_CONFIRM': True
+})
+def test_when_confirm_enabled_and_invalid_password_confirm_field_then_reset_password_fails(  # noqa: E501
+        settings_with_reset_password_verification,
+        user, password_change,
+        api_view_provider, api_factory):
+    old_password = password_change.old_value
+    new_password = password_change.new_value
+    signer = ResetPasswordSigner({'user_id': user.pk})
+    data = signer.get_signed_data()
+    data['password'] = new_password
+    data['password_confirm'] = new_password + 'x'
+    request = api_factory.create_post_request(data)
+    response = api_view_provider.view_func(request)
+
+    assert_response_is_bad_request(response)
+    user.refresh_from_db()
+    assert user.check_password(old_password)

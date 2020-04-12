@@ -218,6 +218,20 @@ RESET_PASSWORD_SETTINGS_FIELDS = [
             'body': 'rest_registration/reset_password/body.txt',
         },
     ),
+    Field(
+        'RESET_PASSWORD_SERIALIZER_PASSWORD_CONFIRM',
+        default=False,
+        help=dedent("""\
+            Used by ``ResetPasswordSerializer``.
+            If ``True``, the serializer requires
+            additional field ``password_confirm`` which value should be
+            the same as the value of ``password`` field.
+
+            It may be useful to disable it (this is currently the default)
+            if you perform password confirmation
+            at the frontend level.
+            """),
+    ),
 ]
 REGISTER_EMAIL_SETTINGS_FIELDS = [
     Field(

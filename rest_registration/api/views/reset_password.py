@@ -5,6 +5,7 @@ from django.utils.translation import gettext as _
 from rest_framework import serializers
 from rest_framework.decorators import api_view, permission_classes
 
+from rest_registration.api.serializers import PasswordConfirmSerializerMixin
 from rest_registration.decorators import (
     api_view_serializer_class,
     api_view_serializer_class_getter
@@ -20,6 +21,7 @@ from rest_registration.utils.users import (
     get_user_by_verification_id,
     get_user_verification_id
 )
+from rest_registration.utils.validation import validate_user_password_confirm
 from rest_registration.utils.verification import verify_signer_or_bad_request
 from rest_registration.verification import URLParamsSigner
 
@@ -91,11 +93,21 @@ def send_reset_password_link(request):
     return get_ok_response(success_message)
 
 
-class ResetPasswordSerializer(serializers.Serializer):  # noqa: E501 pylint: disable=abstract-method
+class ResetPasswordSerializer(  # pylint: disable=abstract-method
+        PasswordConfirmSerializerMixin,
+        serializers.Serializer):
     user_id = serializers.CharField(required=True)
     timestamp = serializers.IntegerField(required=True)
     signature = serializers.CharField(required=True)
     password = serializers.CharField(required=True)
+
+    def has_password_confirm_field(self):
+        return registration_settings.RESET_PASSWORD_SERIALIZER_PASSWORD_CONFIRM
+
+    def validate(self, attrs):
+        if self.has_password_confirm_field():
+            validate_user_password_confirm(attrs)
+        return attrs
 
 
 @api_view_serializer_class(ResetPasswordSerializer)
@@ -123,6 +135,7 @@ def process_reset_password_data(input_data, serializer_context=None):
 
     data = serializer.validated_data.copy()
     password = data.pop('password')
+    data.pop('password_confirm', None)
     signer = ResetPasswordSigner(data)
     verify_signer_or_bad_request(signer)
 

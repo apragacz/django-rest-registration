@@ -7,10 +7,7 @@ from rest_registration.api.serializers import PasswordConfirmSerializerMixin
 from rest_registration.decorators import api_view_serializer_class
 from rest_registration.settings import registration_settings
 from rest_registration.utils.responses import get_ok_response
-from rest_registration.utils.validation import (
-    run_validators,
-    validate_user_password_confirm
-)
+from rest_registration.utils.validation import validate_user_password_confirm
 
 
 class ChangePasswordSerializer(  # pylint: disable=abstract-method
@@ -34,10 +31,8 @@ class ChangePasswordSerializer(  # pylint: disable=abstract-method
         return password
 
     def validate(self, attrs):
-        validators = []
         if self.has_password_confirm_field():
-            validators.append(validate_user_password_confirm)
-        run_validators(validators, attrs)
+            validate_user_password_confirm(attrs)
         return attrs
 
 
