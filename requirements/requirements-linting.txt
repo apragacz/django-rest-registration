@@ -6,6 +6,6 @@ flake8-print
 flake8-tuple
 isort
 pylint
-mypy>=0.740,<0.770
+mypy>=0.770,<0.780
 django-stubs
 djangorestframework-stubs

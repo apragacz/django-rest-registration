@@ -1,10 +1,11 @@
 language: python
 dist: xenial
-python: "3.6"
+python: "3.6.7"
 
 cache:
   directories:
     - "$HOME/.cache/pip"
+    - "$HOME/virtualenv/python3.6.7"
 
 stages:
   - check
