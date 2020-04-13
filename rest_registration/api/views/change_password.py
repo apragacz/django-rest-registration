@@ -3,17 +3,23 @@ from django.utils.translation import gettext as _
 from rest_framework import permissions, serializers
 from rest_framework.decorators import api_view, permission_classes
 
+from rest_registration.api.serializers import PasswordConfirmSerializerMixin
 from rest_registration.decorators import api_view_serializer_class
 from rest_registration.settings import registration_settings
 from rest_registration.utils.responses import get_ok_response
+from rest_registration.utils.validation import (
+    run_validators,
+    validate_user_password_confirm
+)
 
 
-class ChangePasswordSerializer(serializers.Serializer):  # noqa: E501 pylint: disable=abstract-method
+class ChangePasswordSerializer(  # pylint: disable=abstract-method
+        PasswordConfirmSerializerMixin,
+        serializers.Serializer):
     old_password = serializers.CharField()
     password = serializers.CharField()
 
-    @property
-    def has_password_confirm(self):
+    def has_password_confirm_field(self):
         return registration_settings.CHANGE_PASSWORD_SERIALIZER_PASSWORD_CONFIRM  # noqa: E501
 
     def validate_old_password(self, old_password):
@@ -27,16 +33,11 @@ class ChangePasswordSerializer(serializers.Serializer):  # noqa: E501 pylint: di
         validate_password(password, user=user)
         return password
 
-    def get_fields(self):
-        fields = super().get_fields()
-        if self.has_password_confirm:
-            fields['password_confirm'] = serializers.CharField()
-        return fields
-
     def validate(self, attrs):
-        if self.has_password_confirm:
-            if attrs['password'] != attrs['password_confirm']:
-                raise serializers.ValidationError(_("Passwords don't match"))
+        validators = []
+        if self.has_password_confirm_field():
+            validators.append(validate_user_password_confirm)
+        run_validators(validators, attrs)
         return attrs
 
 

@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING, Any, Dict
+
 from django.contrib import auth
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
@@ -8,6 +10,9 @@ from rest_registration.exceptions import UserNotFound
 from rest_registration.settings import registration_settings
 
 _RAISE_EXCEPTION = object()
+
+if TYPE_CHECKING:
+    from django.contrib.auth.base_user import AbstractBaseUser
 
 
 def get_user_by_login_or_none(login, require_verified=False):
@@ -110,6 +115,54 @@ def get_user_setting(name):
         value = getattr(registration_settings, setting_name)
 
     return value
+
+
+def build_initial_user(data: Dict[str, Any]) -> 'AbstractBaseUser':
+    user_field_names = get_user_field_names(allow_primary_key=False)
+    user_data = {}
+    for field_name in user_field_names:
+        if field_name in data:
+            user_data[field_name] = data[field_name]
+    user_class = get_user_model()
+    return user_class(**user_data)
+
+
+def get_user_field_names(
+        allow_primary_key: bool = True, non_editable: bool = False):
+
+    def not_in_seq(names):
+        return lambda name: name not in names
+
+    user_class = get_user_model()
+    fields = user_class._meta.get_fields()  # pylint: disable=protected-access
+    default_field_names = [f.name for f in fields
+                           if (getattr(f, 'serialize', False) or
+                               getattr(f, 'primary_key', False))]
+    pk_field_names = [f.name for f in fields
+                      if getattr(f, 'primary_key', False)]
+    hidden_field_names = set(get_user_setting('HIDDEN_FIELDS'))
+    hidden_field_names = hidden_field_names.union(['last_login', 'password'])
+    public_field_names = get_user_setting('PUBLIC_FIELDS')
+    editable_field_names = get_user_setting('EDITABLE_FIELDS')
+
+    field_names = (public_field_names if public_field_names is not None
+                   else default_field_names)
+    if editable_field_names is None:
+        editable_field_names = field_names
+
+    editable_field_names = set(filter(not_in_seq(pk_field_names),
+                                      editable_field_names))
+
+    field_names = filter(not_in_seq(hidden_field_names), field_names)
+    if not allow_primary_key:
+        field_names = filter(not_in_seq(pk_field_names), field_names)
+
+    if non_editable:
+        field_names = filter(not_in_seq(editable_field_names), field_names)
+
+    field_names = tuple(field_names)
+
+    return field_names
 
 
 def is_model_field_unique(field):

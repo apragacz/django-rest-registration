@@ -1,7 +1,4 @@
 from django.contrib.auth import get_user_model
-from django.contrib.auth.password_validation import validate_password
-from django.core.exceptions import ValidationError as DjangoValidationError
-from django.utils.translation import gettext as _
 from rest_framework import serializers
 
 from rest_registration.settings import registration_settings
@@ -10,12 +7,29 @@ from rest_registration.utils.users import (
     get_user_by_login_or_none,
     get_user_by_lookup_dict,
     get_user_email_field_name,
-    get_user_setting
+    get_user_field_names
+)
+from rest_registration.utils.validation import (
+    run_validators,
+    validate_user_password,
+    validate_user_password_confirm
 )
 
 
 class MetaObj:  # pylint: disable=too-few-public-methods
     pass
+
+
+class PasswordConfirmSerializerMixin(serializers.Serializer):
+
+    def has_password_confirm_field(self) -> bool:
+        raise NotImplementedError()
+
+    def get_fields(self):
+        fields = super().get_fields()
+        if self.has_password_confirm_field():
+            fields['password_confirm'] = serializers.CharField(write_only=True)
+        return fields
 
 
 class DefaultLoginSerializer(serializers.Serializer):  # noqa: E501 pylint: disable=abstract-method
@@ -100,8 +114,8 @@ class DefaultUserProfileSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         user_class = get_user_model()
-        field_names = _get_field_names(allow_primary_key=True)
-        read_only_field_names = _get_field_names(
+        field_names = get_user_field_names(allow_primary_key=True)
+        read_only_field_names = get_user_field_names(
             allow_primary_key=True,
             non_editable=True)
         meta_obj = MetaObj()
@@ -112,7 +126,9 @@ class DefaultUserProfileSerializer(serializers.ModelSerializer):
         super().__init__(*args, **kwargs)
 
 
-class DefaultRegisterUserSerializer(serializers.ModelSerializer):
+class DefaultRegisterUserSerializer(
+        PasswordConfirmSerializerMixin,
+        serializers.ModelSerializer):
     """
     Default serializer used for user registration. It will use these:
 
@@ -125,9 +141,9 @@ class DefaultRegisterUserSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         user_class = get_user_model()
-        field_names = _get_field_names(allow_primary_key=True)
+        field_names = get_user_field_names(allow_primary_key=True)
         field_names = field_names + ('password',)
-        read_only_field_names = _get_field_names(
+        read_only_field_names = get_user_field_names(
             allow_primary_key=True,
             non_editable=True)
         meta_obj = MetaObj()
@@ -137,80 +153,20 @@ class DefaultRegisterUserSerializer(serializers.ModelSerializer):
         self.Meta = meta_obj  # pylint: disable=invalid-name
         super().__init__(*args, **kwargs)
 
-    @property
-    def has_password_confirm(self):
+    def has_password_confirm_field(self):
         return registration_settings.REGISTER_SERIALIZER_PASSWORD_CONFIRM
 
-    def get_fields(self):
-        fields = super().get_fields()
-        if self.has_password_confirm:
-            fields['password_confirm'] = serializers.CharField(write_only=True)
-        return fields
-
     def validate(self, attrs):
-        user = _build_initial_user(attrs)
-        password = attrs.get('password')
-        errors = {}
-        if self.has_password_confirm:
-            if attrs['password'] != attrs['password_confirm']:
-                errors['password_confirm'] = _("Passwords don't match")
-        try:
-            validate_password(password=password, user=user)
-        except DjangoValidationError as exc:
-            errors['password'] = list(exc.messages)
-        if errors:
-            raise serializers.ValidationError(errors)
+        validators = [
+            validate_user_password,
+        ]
+        if self.has_password_confirm_field():
+            validators.append(validate_user_password_confirm)
+        run_validators(validators, attrs)
         return attrs
 
     def create(self, validated_data):
         data = validated_data.copy()
-        if self.has_password_confirm:
+        if self.has_password_confirm_field():
             del data['password_confirm']
         return self.Meta.model.objects.create_user(**data)
-
-
-def _build_initial_user(data):
-    user_field_names = _get_field_names(allow_primary_key=False)
-    user_data = {}
-    for field_name in user_field_names:
-        if field_name in data:
-            user_data[field_name] = data[field_name]
-    user_class = get_user_model()
-    return user_class(**user_data)
-
-
-def _get_field_names(allow_primary_key=True, non_editable=False):
-
-    def not_in_seq(names):
-        return lambda name: name not in names
-
-    user_class = get_user_model()
-    fields = user_class._meta.get_fields()  # pylint: disable=protected-access
-    default_field_names = [f.name for f in fields
-                           if (getattr(f, 'serialize', False) or
-                               getattr(f, 'primary_key', False))]
-    pk_field_names = [f.name for f in fields
-                      if getattr(f, 'primary_key', False)]
-    hidden_field_names = set(get_user_setting('HIDDEN_FIELDS'))
-    hidden_field_names = hidden_field_names.union(['last_login', 'password'])
-    public_field_names = get_user_setting('PUBLIC_FIELDS')
-    editable_field_names = get_user_setting('EDITABLE_FIELDS')
-
-    field_names = (public_field_names if public_field_names is not None
-                   else default_field_names)
-    if editable_field_names is None:
-        editable_field_names = field_names
-
-    editable_field_names = set(filter(not_in_seq(pk_field_names),
-                                      editable_field_names))
-
-    field_names = filter(not_in_seq(hidden_field_names), field_names)
-    if not allow_primary_key:
-        field_names = filter(not_in_seq(pk_field_names), field_names)
-
-    if non_editable:
-        field_names = filter(not_in_seq(editable_field_names), field_names)
-
-    field_names = tuple(field_names)
-
-    return field_names
