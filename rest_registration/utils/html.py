@@ -7,75 +7,6 @@ def convert_html_to_text_preserving_urls(value):
 
 
 def convert_html_to_text(value, preserve_urls=False):
-    r"""
-    >>> convert_html_to_text(
-    ...     '''
-    ...     <html><body>
-    ...         Look &amp; click
-    ...         <a href="https://example.com">here</a>
-    ...     </body></html>''', preserve_urls=True)
-    'Look & click here (https://example.com)'
-    >>> convert_html_to_text(
-    ...     '''
-    ...     <html><body>
-    ...         Look &amp; click
-    ...         <a href="https://example.com?timestamp=1234">here</a>
-    ...     </body></html>''', preserve_urls=True)
-    'Look & click here (https://example.com?timestamp=1234)'
-    >>> convert_html_to_text(
-    ...     '''
-    ...     <html><body>
-    ...         Look &#38; click here
-    ...     </body></html>''', preserve_urls=True)
-    'Look & click here'
-    >>> convert_html_to_text(
-    ...     '''
-    ...     <html><body>
-    ...         Look &amp; click on
-    ...         <a href="https://example.com">https://example.com</a>
-    ...     </body></html>''', preserve_urls=True)
-    'Look & click on https://example.com'
-    >>> convert_html_to_text(
-    ...     '''
-    ...     <html><body>
-    ...         I'm here, <br> click
-    ...         <a href="https://example.com">me</a>
-    ...     </body></html>''', preserve_urls=True)
-    "I'm here,\nclick me (https://example.com)"
-    >>> convert_html_to_text(
-    ...     '''
-    ...     <html><body>
-    ...         I'm here, <br/> click
-    ...         <a href="https://example.com">me</a>
-    ...     </body></html>''', preserve_urls=True)
-    "I'm here,\nclick me (https://example.com)"
-    >>> convert_html_to_text(
-    ...     '''
-    ...     <html><body>
-    ...         I'm here, <br/> click
-    ...         <a href="https://example.com">me</a>
-    ...     </body></html>''')
-    "I'm here,\nclick me"
-    >>> convert_html_to_text(
-    ...     '''
-    ...     <html><body>
-    ...         <p>I'm here!</p>
-    ...         <p>Click <a href="https://example.com">me</a></p>
-    ...     </body></html>''', preserve_urls=True)
-    "I'm here!\nClick me (https://example.com)\n"
-    >>> convert_html_to_text(
-    ...     '''
-    ...     <html>
-    ...         <head>
-    ...             <title>I'm here</title>
-    ...         </head>
-    ...         <body>
-    ...             <p>I'm here!</p>
-    ...             <p>Click <a href="https://example.com">me</a></p>
-    ...         </body>
-    ...     </html>''', preserve_urls=True)
-    "I'm here!\nClick me (https://example.com)\n"
-    """
     stripper = MLStripper(preserve_urls=preserve_urls)
     stripper.feed(value)
     stripper.close()
@@ -90,7 +21,6 @@ class MLStripper(HTMLParser):
     def __init__(self, preserve_urls=False):
         super().__init__(convert_charrefs=True)
         self.reset()
-        self._errors = []
         self._paragraphs = [[]]
         self._tag_info_stack = deque([TagInfo(None, {})])
         self._preserve_urls = preserve_urls
@@ -122,16 +52,14 @@ class MLStripper(HTMLParser):
             self._append_segment(data)
 
     def error(self, message):
-        self._errors.append(message)
+        raise ValueError("HTML parse error: {message}".format(
+            message=message))
 
     def get_data(self):
         paragraph_texts = []
         for segments in self._paragraphs:
             paragraph_texts.append(' '.join(segments))
         return '\n'.join(paragraph_texts)
-
-    def get_errors(self):
-        return self._errors
 
     def _is_in_body(self):
         if len(self._tag_info_stack) < 3:
