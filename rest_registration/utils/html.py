@@ -1,5 +1,4 @@
 from collections import deque, namedtuple
-from html.entities import name2codepoint
 from html.parser import HTMLParser
 
 
@@ -125,14 +124,6 @@ class MLStripper(HTMLParser):
             return
         if data:
             self._append_segment(data)
-
-    def handle_entityref(self, name):
-        num = name2codepoint.get(name)
-        if num is not None:
-            self.handle_charref(num)
-
-    def handle_charref(self, name):
-        self._append_segment(chr(int(name)))
 
     def error(self, message):
         self._errors.append(message)
