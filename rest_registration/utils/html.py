@@ -92,7 +92,7 @@ TagInfo = namedtuple('TagInfo', ('name', 'attrs'))
 class MLStripper(HTMLParser):
 
     def __init__(self, preserve_urls=False):
-        super(MLStripper, self).__init__()
+        super(MLStripper, self).__init__(convert_charrefs=True)
         self.reset()
         self._errors = []
         self._paragraphs = [[]]
