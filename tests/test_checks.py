@@ -310,11 +310,11 @@ def test_when_custom_authtokenmanager_wrt_specs_then_check_succeeds():
     assert_error_codes_match(errors, [])
 
 
-class InvalidAuthTokenManager:  # pylint: disable=too-few-public-methods
+class InvalidAuthTokenManager:
     pass
 
 
-class NotImplementedAuthTokenManager(AbstractAuthTokenManager):  # noqa: E501 pylint: disable=too-few-public-methods,abstract-method
+class NotImplementedAuthTokenManager(AbstractAuthTokenManager):  # noqa: E501 pylint: disable=abstract-method
     pass
 
 

@@ -16,7 +16,7 @@ from rest_registration.utils.validation import (
 )
 
 
-class MetaObj:  # pylint: disable=too-few-public-methods
+class MetaObj:
     pass
 
 

@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 
 class AbstractUser(_AbstractUser):
 
-    class Meta:  # pylint: disable=too-few-public-methods
+    class Meta:
         abstract = True
 
     groups = models.ManyToManyField(
