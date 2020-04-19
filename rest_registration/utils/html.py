@@ -82,10 +82,6 @@ def convert_html_to_text(value, preserve_urls=False):
     return stripper.get_data()
 
 
-def _has_html_tags(value):
-    return '<' in value and '>' in value
-
-
 TagInfo = namedtuple('TagInfo', ('name', 'attrs'))
 
 
