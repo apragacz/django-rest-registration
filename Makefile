@@ -60,7 +60,7 @@ mypy:  ## run mypy
 pylint:  ## run pylint
 # run pylint for production code and test code separately
 	${PYLINT} ${PYLINT_OPTS} ${PACKAGE_DIR} ${DOCS_DIR} ./*.py ${ARGS}
-	${PYLINT} ${PYLINT_OPTS} --disable=duplicate-code --disable=redefined-outer-name ${TESTS_DIR} ${ARGS}
+	${PYLINT} ${PYLINT_OPTS} --disable=duplicate-code --disable=redefined-outer-name --disable=too-many-arguments ${TESTS_DIR} ${ARGS}
 
 .PHONY: upload_package
 upload_package: build_package check_package  ## upload the package to PyPI

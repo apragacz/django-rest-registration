@@ -138,46 +138,6 @@ class ResetPasswordViewTestCase(APIViewTestCase):
         user.refresh_from_db()
         self.assertTrue(user.check_password(new_password))
 
-    def test_reset_short_password(self):
-        old_password = 'password1'
-        new_password = 'c'
-        user = self.create_test_user(password=old_password)
-        signer = ResetPasswordSigner({'user_id': user.pk})
-        data = signer.get_signed_data()
-        data['password'] = new_password
-        request = self.create_post_request(data)
-        response = self.view_func(request)
-        self.assert_response_is_bad_request(response)
-        user.refresh_from_db()
-        self.assertTrue(user.check_password(old_password))
-
-    def test_reset_numeric_password(self):
-        old_password = 'password1'
-        new_password = '563495763456'
-        user = self.create_test_user(password=old_password)
-        signer = ResetPasswordSigner({'user_id': user.pk})
-        data = signer.get_signed_data()
-        data['password'] = new_password
-        request = self.create_post_request(data)
-        response = self.view_func(request)
-        self.assert_response_is_bad_request(response)
-        user.refresh_from_db()
-        self.assertTrue(user.check_password(old_password))
-
-    def test_reset_password_same_as_username(self):
-        username = 'albert.einstein'
-        old_password = 'password1'
-        new_password = username
-        user = self.create_test_user(username=username, password=old_password)
-        signer = ResetPasswordSigner({'user_id': user.pk})
-        data = signer.get_signed_data()
-        data['password'] = new_password
-        request = self.create_post_request(data)
-        response = self.view_func(request)
-        self.assert_response_is_bad_request(response)
-        user.refresh_from_db()
-        self.assertTrue(user.check_password(old_password))
-
     def test_reset_tampered_timestamp(self):
         old_password = 'password1'
         new_password = 'eaWrivtig5'
@@ -216,19 +176,32 @@ def api_view_provider():
     return ViewProvider('reset-password')
 
 
+@pytest.fixture()
+def user_signed_data(user):
+    user_reset_password_signer = ResetPasswordSigner({'user_id': user.pk})
+    return user_reset_password_signer.get_signed_data()
+
+
+@pytest.fixture()
+def old_password(password_change):
+    return password_change.old_value
+
+
+@pytest.fixture()
+def new_password(password_change):
+    return password_change.new_value
+
+
 @override_rest_registration_settings({
-    'RESET_PASSWORD_SERIALIZER_PASSWORD_CONFIRM': True
+    'RESET_PASSWORD_SERIALIZER_PASSWORD_CONFIRM': True,
 })
-def test_when_confirm_enabled_and_password_confirm_field_then_reset_password_succeeds(  # noqa: E501
+def test_when_confirm_enabled_and_password_confirm_field_then_success(
         settings_with_reset_password_verification,
-        user, password_change,
+        user, user_signed_data, new_password,
         api_view_provider, api_factory):
-    new_password = password_change.new_value
-    signer = ResetPasswordSigner({'user_id': user.pk})
-    data = signer.get_signed_data()
-    data['password'] = new_password
-    data['password_confirm'] = new_password
-    request = api_factory.create_post_request(data)
+    user_signed_data['password'] = new_password
+    user_signed_data['password_confirm'] = new_password
+    request = api_factory.create_post_request(user_signed_data)
     response = api_view_provider.view_func(request)
 
     assert_response_is_ok(response)
@@ -237,18 +210,14 @@ def test_when_confirm_enabled_and_password_confirm_field_then_reset_password_suc
 
 
 @override_rest_registration_settings({
-    'RESET_PASSWORD_SERIALIZER_PASSWORD_CONFIRM': True
+    'RESET_PASSWORD_SERIALIZER_PASSWORD_CONFIRM': True,
 })
-def test_when_confirm_enabled_and_no_password_confirm_field_then_reset_password_fails(  # noqa: E501
+def test_when_confirm_enabled_and_no_password_confirm_field_then_failure(
         settings_with_reset_password_verification,
-        user, password_change,
+        user, user_signed_data, old_password, new_password,
         api_view_provider, api_factory):
-    old_password = password_change.old_value
-    new_password = password_change.new_value
-    signer = ResetPasswordSigner({'user_id': user.pk})
-    data = signer.get_signed_data()
-    data['password'] = new_password
-    request = api_factory.create_post_request(data)
+    user_signed_data['password'] = new_password
+    request = api_factory.create_post_request(user_signed_data)
     response = api_view_provider.view_func(request)
 
     assert_response_is_bad_request(response)
@@ -257,21 +226,66 @@ def test_when_confirm_enabled_and_no_password_confirm_field_then_reset_password_
 
 
 @override_rest_registration_settings({
-    'RESET_PASSWORD_SERIALIZER_PASSWORD_CONFIRM': True
+    'RESET_PASSWORD_SERIALIZER_PASSWORD_CONFIRM': True,
 })
-def test_when_confirm_enabled_and_invalid_password_confirm_field_then_reset_password_fails(  # noqa: E501
+def test_when_confirm_enabled_and_invalid_password_confirm_field_then_failure(
         settings_with_reset_password_verification,
-        user, password_change,
+        user, user_signed_data, old_password, new_password,
         api_view_provider, api_factory):
-    old_password = password_change.old_value
-    new_password = password_change.new_value
-    signer = ResetPasswordSigner({'user_id': user.pk})
-    data = signer.get_signed_data()
-    data['password'] = new_password
-    data['password_confirm'] = new_password + 'x'
-    request = api_factory.create_post_request(data)
+    user_signed_data['password'] = new_password
+    user_signed_data['password_confirm'] = new_password + 'x'
+    request = api_factory.create_post_request(user_signed_data)
     response = api_view_provider.view_func(request)
 
     assert_response_is_bad_request(response)
     user.refresh_from_db()
     assert user.check_password(old_password)
+
+
+@pytest.mark.parametrize("new_weak_password,expected_error_message", [
+    (
+        'c',
+        'This password is too short. It must contain at least 8 characters.'
+    ),
+    (
+        '563495763456',
+        'This password is entirely numeric.'
+    ),
+    (
+        'creative',
+        'This password is too common.'
+    ),
+])
+def test_when_weak_password_then_failure(
+        settings_with_reset_password_verification,
+        user, user_signed_data, old_password, new_weak_password,
+        expected_error_message,
+        api_view_provider, api_factory):
+    user_signed_data['password'] = new_weak_password
+    request = api_factory.create_post_request(user_signed_data)
+    response = api_view_provider.view_func(request)
+
+    _assert_response_is_bad_password(response, expected_error_message)
+    user.refresh_from_db()
+    assert user.check_password(old_password)
+
+
+def test_when_password_same_as_username_then_failure(
+        settings_with_reset_password_verification,
+        user, user_signed_data, old_password,
+        api_view_provider, api_factory):
+    user_signed_data['password'] = user.username
+    request = api_factory.create_post_request(user_signed_data)
+    response = api_view_provider.view_func(request)
+
+    assert_response_is_bad_request(response)
+    user.refresh_from_db()
+    assert user.check_password(old_password)
+
+
+def _assert_response_is_bad_password(request, expected_error_message):
+    assert_response_is_bad_request(request)
+    assert isinstance(request.data, (tuple, list))
+    assert len(request.data) == 1
+    error_message = request.data[0]
+    assert error_message == expected_error_message
