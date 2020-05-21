@@ -1,5 +1,3 @@
-from django.contrib.auth.password_validation import validate_password
-from django.core.exceptions import ValidationError
 from django.http import Http404
 from django.utils.translation import gettext as _
 from rest_framework import serializers
@@ -21,7 +19,11 @@ from rest_registration.utils.users import (
     get_user_by_verification_id,
     get_user_verification_id
 )
-from rest_registration.utils.validation import validate_user_password_confirm
+from rest_registration.utils.validation import (
+    run_validators,
+    validate_password_with_user_id,
+    validate_user_password_confirm
+)
 from rest_registration.utils.verification import verify_signer_or_bad_request
 from rest_registration.verification import URLParamsSigner
 
@@ -105,8 +107,12 @@ class ResetPasswordSerializer(  # pylint: disable=abstract-method
         return registration_settings.RESET_PASSWORD_SERIALIZER_PASSWORD_CONFIRM
 
     def validate(self, attrs):
+        validators = [
+            validate_password_with_user_id,
+        ]
         if self.has_password_confirm_field():
-            validate_user_password_confirm(attrs)
+            validators.append(validate_user_password_confirm)
+        run_validators(validators, attrs)
         return attrs
 
 
@@ -140,9 +146,5 @@ def process_reset_password_data(input_data, serializer_context=None):
     verify_signer_or_bad_request(signer)
 
     user = get_user_by_verification_id(data['user_id'], require_verified=False)
-    try:
-        validate_password(password, user=user)
-    except ValidationError as exc:
-        raise serializers.ValidationError(exc.messages[0])
     user.set_password(password)
     user.save()

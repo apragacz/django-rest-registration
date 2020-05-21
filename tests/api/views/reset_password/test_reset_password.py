@@ -244,7 +244,7 @@ def test_when_confirm_enabled_and_invalid_password_confirm_field_then_failure(
 
 @pytest.mark.parametrize("new_weak_password,expected_error_message", [
     (
-        'c',
+        'ftayx',
         'This password is too short. It must contain at least 8 characters.'
     ),
     (
@@ -285,7 +285,9 @@ def test_when_password_same_as_username_then_failure(
 
 def _assert_response_is_bad_password(request, expected_error_message):
     assert_response_is_bad_request(request)
-    assert isinstance(request.data, (tuple, list))
-    assert len(request.data) == 1
-    error_message = request.data[0]
+    assert isinstance(request.data, dict)
+    assert 'password' in request.data
+    password_errors = request.data['password']
+    assert len(password_errors) == 1
+    error_message = password_errors[0]
     assert error_message == expected_error_message
