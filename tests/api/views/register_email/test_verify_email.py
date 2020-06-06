@@ -120,7 +120,7 @@ class VerifyEmailViewTestCase(APIViewTestCase):
         data = signer.get_signed_data()
         request = self.create_post_request(data)
         response = self.view_func(request)
-        self.assert_response_is_not_found(response)
+        self.assert_response_is_bad_request(response)
         self.user.refresh_from_db()
         self.assertEqual(self.user.email, old_email)
 

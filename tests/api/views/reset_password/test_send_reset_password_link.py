@@ -72,7 +72,7 @@ class SendResetPasswordLinkViewTestCase(APIViewTestCase):
         })
         with self.assert_no_mail_sent():
             response = self.view_func(request)
-            self.assert_valid_response(response, status.HTTP_404_NOT_FOUND)
+            self.assert_response_is_bad_request(response)
 
     @override_rest_registration_settings({
         'USER_LOGIN_FIELDS': ['username', 'email'],
@@ -183,7 +183,7 @@ class SendResetPasswordLinkViewTestCase(APIViewTestCase):
         })
         with self.assert_mails_sent(0):
             response = self.view_func(request)
-            self.assert_response_is_not_found(response)
+            self.assert_response_is_bad_request(response)
 
     def _assert_valid_send_link_email(self, sent_email, user, timer):
         verification_data = self._assert_valid_verification_email(

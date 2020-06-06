@@ -8,8 +8,7 @@ class BadRequest(APIException):
     default_code = 'bad-request'
 
 
-class UserNotFound(APIException):
-    status_code = 404
+class UserNotFound(BadRequest):
     default_detail = _("User not found")
     default_code = 'user-not-found'
 
