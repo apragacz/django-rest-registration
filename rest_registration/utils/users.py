@@ -12,6 +12,7 @@ from rest_registration.settings import registration_settings
 _RAISE_EXCEPTION = object()
 
 if TYPE_CHECKING:
+    from typing import List
     from django.contrib.auth.base_user import AbstractBaseUser
 
 
@@ -27,20 +28,45 @@ def get_user_by_login_or_none(login, require_verified=False):
     return user
 
 
-def authenticate_by_login_and_password_or_none(login, password):
-    user = None
-    login_field_names = get_user_login_field_names()
+def authenticate_by_login_data(
+        data: Dict[str, Any], **kwargs) -> 'AbstractBaseUser':
+    serializer = kwargs.get('serializer')
+    if serializer:
+        get_authenticated_user = getattr(
+            serializer, 'get_authenticated_user', None)
+        if callable(get_authenticated_user):
+            user = get_authenticated_user()
+            if not user:
+                raise UserNotFound()
+            return user
 
-    for field_name in login_field_names:
-        kwargs = {
+    login_field_names = get_user_login_field_names()
+    password = data.get('password')
+    login = data.get('login')
+    if password is None:
+        raise UserNotFound()
+    auth_tests = []  # type: List[Dict[str, Any]]
+    if login is not None:
+        auth_tests.extend({
             field_name: login,
             'password': password,
-        }
-        user = auth.authenticate(**kwargs)
-        if user:
-            break
+        } for field_name in login_field_names)
 
-    return user
+    for field_name in login_field_names:
+        field_value = data.get(field_name)
+        if field_value is None:
+            continue
+        auth_tests.append({
+            field_name: field_value,
+            'password': password,
+        })
+
+    for auth_kwargs in auth_tests:
+        user = auth.authenticate(**auth_kwargs)
+        if user:
+            return user
+
+    raise UserNotFound()
 
 
 def get_user_login_field_names():

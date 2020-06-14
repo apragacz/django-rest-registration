@@ -158,6 +158,31 @@ LOGIN_SETTINGS_FIELDS = [
         default='rest_registration.api.serializers.DefaultLoginSerializer',  # noqa: E501
         import_string=True,
     ),
+    Field(
+        'LOGIN_AUTHENTICATOR',
+        default='rest_registration.utils.users.authenticate_by_login_data',
+        import_string=True,
+        help=dedent("""\
+            By default the login authenticator function will use
+            :ref:`user-login-fields-setting` setting to extract the login field
+            from the validated serializer data either by using the 'login' key
+            or the specific login field name(s) (e.g. 'username', 'email').
+
+            You can change that behavior by overriding this setting.
+
+            The authenticator function receives these parameters as
+            positional arguments:
+
+            *   ``data`` - the validated data from the login serializer.
+
+            and these parameters as keyword arguments:
+
+            *   ``serializer`` - the source login serializer which generated
+                the input data. This parameter could be dropped in the future,
+                so it should be retrieved via ``kwargs.get()`` instead be named
+                directly.
+            """),
+    ),
     Field('LOGIN_AUTHENTICATE_SESSION'),
     Field('LOGIN_RETRIEVE_TOKEN'),
     Field(

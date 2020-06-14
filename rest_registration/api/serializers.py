@@ -3,7 +3,6 @@ from rest_framework import serializers
 
 from rest_registration.settings import registration_settings
 from rest_registration.utils.users import (
-    authenticate_by_login_and_password_or_none,
     get_user_by_login_or_none,
     get_user_by_lookup_dict,
     get_user_email_field_name,
@@ -34,21 +33,21 @@ class PasswordConfirmSerializerMixin(serializers.Serializer):
 
 class DefaultLoginSerializer(serializers.Serializer):  # noqa: E501 pylint: disable=abstract-method
     """
-    Default serializer used for user login. It will use
-    :ref:`user-login-fields-setting` setting to compare the login
-    to the user login fields defined by this setting.
+    Default serializer used for user login. Please keep in mind that
+    the authentication is done by separate function defined by
+    :ref:`login-authenticator-setting` setting.
+
+    By default :ref:`login-authenticator-setting` function will use
+    :ref:`user-login-fields-setting` setting to extract the login field
+    from the validated serializer data either by using the 'login' key
+    (which is used here) or the specific login field name(s)
+    (e.g. 'username', 'email').
+
+    If you want different behavior, you need to
+    override :ref:`login-authenticator-setting` in your settings.
     """
     login = serializers.CharField()
     password = serializers.CharField()
-
-    def get_authenticated_user(self):
-        """
-        Return authenticated user if login and password match.
-        Return ``None`` otherwise.
-        """
-        data = self.validated_data
-        return authenticate_by_login_and_password_or_none(
-            data['login'], data['password'])
 
 
 class DefaultRegisterEmailSerializer(serializers.Serializer):  # noqa: E501 pylint: disable=abstract-method

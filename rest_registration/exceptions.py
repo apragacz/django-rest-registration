@@ -13,6 +13,11 @@ class UserNotFound(BadRequest):
     default_code = 'user-not-found'
 
 
+class LoginInvalid(BadRequest):
+    default_detail = _("Login or password invalid.")
+    default_code = 'login-invalid'
+
+
 class AuthTokenError(BadRequest):
     default_detail = _("Could not process authentication token")
     default_code = 'auth-token-error'

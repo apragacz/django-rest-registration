@@ -35,6 +35,7 @@ class ErrorCode:
 
 class WarningCode:
     REGISTER_VERIFICATION_MULTIPLE_AUTO_LOGIN = 'W001'
+    DEPRECATION = 'W002'
 
 
 @register()

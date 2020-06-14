@@ -13,7 +13,7 @@ from rest_registration.decorators import (
     api_view_serializer_class,
     api_view_serializer_class_getter
 )
-from rest_registration.exceptions import BadRequest
+from rest_registration.exceptions import LoginInvalid, UserNotFound
 from rest_registration.settings import registration_settings
 from rest_registration.utils.responses import get_ok_response
 
@@ -32,10 +32,12 @@ def login(request):
         context={'request': request},
     )
     serializer.is_valid(raise_exception=True)
-    user = serializer.get_authenticated_user()
-
-    if not user:
-        raise BadRequest(_("Login or password invalid."))
+    login_authenticator = registration_settings.LOGIN_AUTHENTICATOR
+    try:
+        user = login_authenticator(
+            serializer.validated_data, serializer=serializer)
+    except UserNotFound:
+        raise LoginInvalid()
 
     extra_data = perform_login(request, user)
 
