@@ -344,6 +344,20 @@ def test_when_authtokenmanager_does_not_implement_methods_then_check_fails():
     assert {e.msg for e in errors} == expected_messages
 
 
+@override_rest_registration_settings({
+    'LOGIN_SERIALIZER_CLASS': 'tests.testapps.custom_serializers.serializers.DefaultDeprecatedLoginSerializer',  # noqa: E501
+})
+def test_deprecated_login_serializer_check_fails():
+    errors = simulate_checks()
+    assert_error_codes_match(errors, [
+        WarningCode.DEPRECATION,
+    ])
+    expected_messages = {
+        "LOGIN_SERIALIZER_CLASS contains deprecated get_authenticated_user method, which will be removed in version 0.7.0",  # noqa: E501
+    }
+    assert {e.msg for e in errors} == expected_messages
+
+
 def assert_error_codes_match(errors, expected_error_codes):
     error_ids = sorted(e.id for e in errors)
     expected_error_ids = sorted(

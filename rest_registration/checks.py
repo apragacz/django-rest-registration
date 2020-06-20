@@ -281,6 +281,20 @@ def valid_auth_token_manager_class_provide_token_check() -> bool:
     )
 
 
+@register()
+@simple_check(
+    'LOGIN_SERIALIZER_CLASS contains deprecated get_authenticated_user method,'
+    ' which will be removed in version 0.7.0',
+    WarningCode.DEPRECATION
+)
+def deprecated_login_serializer_check() -> bool:
+    serializer_class = registration_settings.LOGIN_SERIALIZER_CLASS
+    deprecated = (
+        hasattr(serializer_class, 'get_authenticated_user')
+        and callable(serializer_class.get_authenticated_user))
+    return not deprecated
+
+
 def _is_auth_token_manager_proper_subclass() -> bool:
     cls = registration_settings.AUTH_TOKEN_MANAGER_CLASS
     return (
