@@ -10,6 +10,7 @@ from rest_framework.settings import api_settings
 
 from rest_registration.auth_token_managers import AbstractAuthTokenManager
 from rest_registration.decorators import simple_check
+from rest_registration.enums import ErrorCode, WarningCode
 from rest_registration.notifications.email import parse_template_config
 from rest_registration.settings import registration_settings
 from rest_registration.utils.common import implies
@@ -17,25 +18,6 @@ from rest_registration.utils.users import (
     get_user_login_field_names,
     is_model_field_unique
 )
-
-
-class ErrorCode:
-    NO_RESET_PASSWORD_VER_URL = 'E001'
-    NO_REGISTER_VER_URL = 'E002'
-    NO_REGISTER_EMAIL_VER_URL = 'E003'
-    NO_VER_FROM_EMAIL = 'E004'
-    NO_TOKEN_AUTH_CONFIG = 'E005'
-    NO_TOKEN_AUTH_INSTALLED = 'E006'
-    INVALID_EMAIL_TEMPLATE_CONFIG = 'E007'
-    NO_AUTH_INSTALLED = 'E008'
-    DRF_INCOMPATIBLE_DJANGO_AUTH_BACKEND = 'E009'
-    LOGIN_FIELDS_NOT_UNIQUE = 'E010'
-    INVALID_AUTH_TOKEN_MANAGER_CLASS = 'E11'
-
-
-class WarningCode:
-    REGISTER_VERIFICATION_MULTIPLE_AUTO_LOGIN = 'W001'
-    DEPRECATION = 'W002'
 
 
 @register()
