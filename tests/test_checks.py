@@ -344,6 +344,7 @@ def test_when_authtokenmanager_does_not_implement_methods_then_check_fails():
     assert {e.msg for e in errors} == expected_messages
 
 
+# TODO: Issue #114 - remove code testing the deprecation check
 @override_rest_registration_settings({
     'LOGIN_SERIALIZER_CLASS': 'tests.testapps.custom_serializers.serializers.DefaultDeprecatedLoginSerializer',  # noqa: E501
 })

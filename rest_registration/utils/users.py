@@ -32,6 +32,7 @@ def authenticate_by_login_data(
         data: Dict[str, Any], **kwargs) -> 'AbstractBaseUser':
     serializer = kwargs.get('serializer')
     if serializer:
+        # TODO: Issue #114 - remove code supporting deprecated behavior
         get_authenticated_user = getattr(
             serializer, 'get_authenticated_user', None)
         if callable(get_authenticated_user):

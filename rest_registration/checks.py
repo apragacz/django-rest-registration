@@ -281,6 +281,7 @@ def valid_auth_token_manager_class_provide_token_check() -> bool:
     )
 
 
+# TODO: Issue #114 - remove deprecation check
 @register()
 @simple_check(
     'LOGIN_SERIALIZER_CLASS contains deprecated get_authenticated_user method,'
