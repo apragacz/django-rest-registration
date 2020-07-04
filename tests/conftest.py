@@ -10,6 +10,9 @@ from tests.helpers.constants import (
     REGISTER_EMAIL_VERIFICATION_URL,
     REGISTER_VERIFICATION_URL,
     RESET_PASSWORD_VERIFICATION_URL,
+    USER_PASSWORD,
+    USERNAME,
+    USERNAME2,
     VERIFICATION_FROM_EMAIL
 )
 from tests.helpers.settings import (
@@ -112,7 +115,7 @@ def email_change():
 @pytest.fixture()
 def password_change():
     return ValueChange(
-        old_value='testpassword',
+        old_value=USER_PASSWORD,
         new_value='testpassword2',
     )
 
@@ -124,7 +127,7 @@ def user(db, email_change, password_change):
         'password': password_change.old_value,
     }
     if settings.AUTH_USER_MODEL != 'custom_users.SimpleEmailBasedUser':
-        kwargs['username'] = 'testusername'
+        kwargs['username'] = USERNAME
     return create_test_user(**kwargs)
 
 
@@ -138,14 +141,14 @@ def user_token_obj(user):
 @pytest.fixture()
 def user2_with_user_email(db, email_change):
     return create_test_user(
-        username='testusername2',
+        username=USERNAME2,
         email=email_change.old_value)
 
 
 @pytest.fixture()
 def user2_with_user_new_email(db, email_change):
     return create_test_user(
-        username='testusername2',
+        username=USERNAME2,
         email=email_change.new_value)
 
 
