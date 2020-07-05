@@ -109,3 +109,19 @@ def test_when_deprecated_login_serializer_then_success(
     api_factory.add_session_to_request(request)
     response = api_view_provider.view_func(request)
     assert_response_is_ok(response)
+
+
+# TODO: Issue #114 - remove code testing support of deprecated behavior
+@override_rest_registration_settings({
+    'LOGIN_SERIALIZER_CLASS': 'tests.testapps.custom_serializers.serializers.DefaultDeprecatedLoginSerializer',  # noqa: E501
+})
+def test_when_deprecated_login_serializer_and_invalid_creds_then_failure(
+        settings_minimal, user,
+        api_view_provider, api_factory):
+    request = api_factory.create_post_request({
+        'login': 'abra',
+        'password': 'blabla',
+    })
+    api_factory.add_session_to_request(request)
+    response = api_view_provider.view_func(request)
+    assert_response_is_bad_request(response)
