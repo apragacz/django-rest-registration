@@ -1,9 +1,11 @@
+import pytest
 from rest_framework import status
 from rest_framework.test import force_authenticate
 
-from .base import APIViewTestCase
+from tests.helpers.api_views import assert_response_is_ok
+from tests.helpers.views import ViewProvider
 
-REGISTER_VERIFICATION_URL = '/verify-account/'
+from .base import APIViewTestCase
 
 
 class ProfileViewTestCase(APIViewTestCase):
@@ -73,3 +75,32 @@ class ProfileViewTestCase(APIViewTestCase):
         self.assertEqual(self.user.username, self.USERNAME)
         self.assertEqual(self.user.first_name, self.FIRST_NAME)
         self.assertEqual(self.user.last_name, self.LAST_NAME)
+
+
+@pytest.fixture()
+def api_view_provider():
+    return ViewProvider('profile')
+
+
+@pytest.fixture()
+def old_email(email_change):
+    return email_change.old_value
+
+
+@pytest.fixture()
+def new_email(email_change):
+    return email_change.new_value
+
+
+def test_update_email_via_profile(
+        settings_with_register_email_verification,
+        user, old_email, new_email,
+        api_view_provider, api_factory):
+    request = api_factory.create_patch_request({
+        'email': new_email,
+    })
+    force_authenticate(request, user=user)
+    response = api_view_provider.view_func(request)
+    assert_response_is_ok(response)
+    user.refresh_from_db()
+    assert user.email == old_email

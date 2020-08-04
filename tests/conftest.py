@@ -7,6 +7,7 @@ from django.test.utils import override_settings
 from tests.helpers.api_views import APIViewRequestFactory
 from tests.helpers.common import create_test_user
 from tests.helpers.constants import (
+    REGISTER_EMAIL_VERIFICATION_URL,
     REGISTER_VERIFICATION_URL,
     RESET_PASSWORD_VERIFICATION_URL,
     VERIFICATION_FROM_EMAIL
@@ -37,6 +38,16 @@ def settings_with_register_verification():
     with override_rest_registration_settings({
         'REGISTER_VERIFICATION_ENABLED': True,
         'REGISTER_VERIFICATION_URL': REGISTER_VERIFICATION_URL,
+        'VERIFICATION_FROM_EMAIL': VERIFICATION_FROM_EMAIL,
+    }):
+        yield settings
+
+
+@pytest.fixture()
+def settings_with_register_email_verification():
+    with override_rest_registration_settings({
+        'REGISTER_EMAIL_VERIFICATION_ENABLED': True,
+        'REGISTER_EMAIL_VERIFICATION_URL': REGISTER_EMAIL_VERIFICATION_URL,
         'VERIFICATION_FROM_EMAIL': VERIFICATION_FROM_EMAIL,
     }):
         yield settings
