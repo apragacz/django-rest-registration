@@ -37,7 +37,7 @@ def login(request):
         user = login_authenticator(
             serializer.validated_data, serializer=serializer)
     except UserNotFound:
-        raise LoginInvalid()
+        raise LoginInvalid() from None
 
     extra_data = perform_login(request, user)
 

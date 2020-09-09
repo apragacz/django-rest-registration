@@ -81,9 +81,9 @@ class RestFrameworkAuthTokenManager(AbstractAuthTokenManager):
         try:
             token_obj = Token.objects.get(user_id=user.pk)  # type: Token
         except Token.DoesNotExist:
-            raise AuthTokenNotFound()
+            raise AuthTokenNotFound() from None
 
         if token is not None and token_obj.key != token:
-            raise AuthTokenNotFound()
+            raise AuthTokenNotFound() from None
 
         token_obj.delete()

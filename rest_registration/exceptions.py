@@ -36,3 +36,18 @@ class AuthTokenNotRevoked(AuthTokenError):
 class AuthTokenNotFound(AuthTokenError):
     default_detail = _("Authentication token not found")
     default_code = 'auth-token-not-found'
+
+
+class SignatureError(BadRequest):
+    default_detail = _("Generic signature error")
+    default_code = 'signature-error'
+
+
+class SignatureExpired(SignatureError):
+    default_detail = _("Signature expired")
+    default_code = 'signature-expired'
+
+
+class SignatureInvalid(SignatureError):
+    default_detail = _("Invalid signature")
+    default_code = 'signature-invalid'

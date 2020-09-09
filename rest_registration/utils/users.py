@@ -121,7 +121,7 @@ def get_user_by_lookup_dict(
         user = get_object_or_404(user_class.objects.all(), **kwargs)
     except Http404:
         if default is _RAISE_EXCEPTION:
-            raise UserNotFound()
+            raise UserNotFound() from None
         return default
     else:
         return user
@@ -206,4 +206,4 @@ def get_object_or_404(queryset, *filter_args, **filter_kwargs):
     try:
         return _get_object_or_404(queryset, *filter_args, **filter_kwargs)
     except (TypeError, ValueError, ValidationError):
-        raise Http404
+        raise Http404 from None

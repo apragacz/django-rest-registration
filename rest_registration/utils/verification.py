@@ -1,18 +1,17 @@
 from urllib.parse import urlencode
 
-from django.core.signing import BadSignature, SignatureExpired
-from django.utils.translation import gettext as _
+from django.core import signing
 
-from rest_registration.exceptions import BadRequest
+from rest_registration.exceptions import SignatureExpired, SignatureInvalid
 
 
 def verify_signer_or_bad_request(signer):
     try:
         signer.verify()
-    except SignatureExpired:
-        raise BadRequest(_("Signature expired"))
-    except BadSignature:
-        raise BadRequest(_("Invalid signature"))
+    except signing.SignatureExpired:
+        raise SignatureExpired() from None
+    except signing.BadSignature:
+        raise SignatureInvalid() from None
 
 
 def build_default_verification_url(signer):

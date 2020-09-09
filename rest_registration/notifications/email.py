@@ -152,7 +152,7 @@ def parse_template_config(template_config_data):
     try:
         subject_template_name = template_config_data['subject']
     except KeyError:
-        raise ImproperlyConfigured(_("No 'subject' key found"))
+        raise ImproperlyConfigured(_("No 'subject' key found")) from None
     body_template_name = template_config_data.get('body')
     text_body_template_name = template_config_data.get('text_body')
     html_body_template_name = template_config_data.get('html_body')
@@ -217,4 +217,4 @@ def _validate_template_name_existence(template_name):
     except TemplateDoesNotExist:
         raise ImproperlyConfigured(
             'Template {template_name!r} does not exists'.format(
-                template_name=template_name))
+                template_name=template_name)) from None

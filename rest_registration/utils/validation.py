@@ -26,7 +26,7 @@ def wrap_validation_error_with_field(field_name: str):
             try:
                 func(value)
             except ValidationError as exc:
-                raise ValidationError({field_name: exc.detail})
+                raise ValidationError({field_name: exc.detail}) from None
 
         return wrapper
 
@@ -62,7 +62,7 @@ def _validate_user_password(password, user) -> None:
         validate_password(password, user=user)
     except DjangoValidationError as exc:
         # TODO: Issue #109 - remove type: ignore
-        raise ValidationError(list(exc.messages))  # type: ignore
+        raise ValidationError(list(exc.messages)) from None  # type: ignore
 
 
 def run_validators(validators: Iterable[Validator], value: Any) -> None:
