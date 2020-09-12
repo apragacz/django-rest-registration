@@ -1,0 +1,91 @@
+# Copyright (C) 2015-2019 Andrzej Pragacz
+# This file is distributed under the same license as
+# the Django-REST-Registration package.
+# Richard Savard <rax396@gmail.com>, 2019.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-10-23 12:52-0400\n"
+"PO-Revision-Date: 2019-10-23 13:01-0400\n"
+"Last-Translator: Richard Savard\n"
+"Language-Team: \n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#: api/serializers.py:159 api/views/change_password.py:40
+msgid "Passwords don't match"
+msgstr "Senhas não conferem"
+
+#: api/views/change_password.py:23
+msgid "Old password is not correct"
+msgstr "Senha antiga incorreta"
+
+#: api/views/change_password.py:60
+msgid "Password changed successfully"
+msgstr "Senha alterada com sucesso"
+
+#: api/views/login.py:40
+msgid "Login or password invalid."
+msgstr "Login ou senha inválida."
+
+#: api/views/login.py:44
+msgid "Login successful"
+msgstr "Login realizado com sucesso"
+
+#: api/views/login.py:73
+msgid "Cannot remove non-existent token"
+msgstr "Não é possível remover token inexistente"
+
+#: api/views/login.py:75
+msgid "Logout successful"
+msgstr "Logout realizado com sucesso"
+
+#: api/views/register.py:85
+msgid "User without email cannot be verified"
+msgstr "Usuário sem email não pode ser verificado"
+
+#: api/views/register.py:130
+msgid "User verified successfully"
+msgstr "Verificação de usuário feita com sucesso"
+
+#: api/views/register_email.py:77 api/views/register_email.py:131
+msgid "This email is already registered."
+msgstr "Este mail já está registrado."
+
+#: api/views/register_email.py:91
+msgid "Register email link email sent"
+msgstr "Link de registro enviado por email"
+
+#: api/views/register_email.py:110
+msgid "Email verified successfully"
+msgstr "Email verificado com sucesso"
+
+#: api/views/reset_password.py:106
+msgid "Reset password successful"
+msgstr "Senha alterada com sucesso"
+
+#: exceptions.py:7
+msgid "Bad Request"
+msgstr "Requisição inválida"
+
+#: exceptions.py:12
+msgid "User not found"
+msgstr "Usuário não encontrado"
+
+#: notifications/email.py:156
+msgid "No 'subject' key found"
+msgstr "Chave 'subject' não encontrada"
+
+#: utils/verification.py:13
+msgid "Signature expired"
+msgstr "Assinatura expirada"
+
+#: utils/verification.py:15
+msgid "Invalid signature"
+msgstr "Assinatura inválida"
