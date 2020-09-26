@@ -1,13 +1,34 @@
-from typing import Any, Callable, Union
+from typing import Callable, Iterable, Optional, Set, TypeVar, Union
 
+_T = TypeVar('_T')
 LazyBool = Callable[[], bool]
+MaybeLazyBool = Union[bool, LazyBool]
 
 
-def identity(value: Any) -> Any:
+def identity(value: _T) -> _T:
+    """
+    >>> identity(None)
+    >>> identity(1)
+    1
+    """
     return value
 
 
-def implies(premise: bool, conclusion: Union[bool, LazyBool]) -> bool:
+def materialize_bool(value: MaybeLazyBool) -> bool:
+    """
+    >>> materialize_bool(True)
+    True
+    >>> materialize_bool(False)
+    False
+    >>> materialize_bool(lambda: True)
+    True
+    >>> materialize_bool(lambda: False)
+    False
+    """
+    return value() if callable(value) else value
+
+
+def implies(premise: bool, conclusion: MaybeLazyBool) -> bool:
     """
     Calculate material implication for given premise and conclusion.
     The conclusion may be lazy evaluated if it is of LazyBool type.
@@ -30,5 +51,15 @@ def implies(premise: bool, conclusion: Union[bool, LazyBool]) -> bool:
     """
     if not premise:
         return True
-    _conclusion = conclusion() if callable(conclusion) else conclusion
-    return _conclusion
+    return materialize_bool(conclusion)
+
+
+def set_or_none(iterable: Optional[Iterable[_T]]) -> Optional[Set[_T]]:
+    """
+    >>> set_or_none(None)
+    >>> set_or_none([1,1,2]) == {1,2}
+    True
+    """
+    if iterable is None:
+        return None
+    return set(iterable)
