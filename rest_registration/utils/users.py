@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Any, Dict, Iterable, Tuple, Union
 from django.contrib import auth
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-from django.db.models import Field, ForeignObjectRel
 from django.http import Http404
 from django.shortcuts import get_object_or_404 as _get_object_or_404
 
@@ -17,6 +16,7 @@ _RAISE_EXCEPTION = object()
 if TYPE_CHECKING:
     from typing import List, Optional
     from django.contrib.auth.base_user import AbstractBaseUser
+    from django.db.models import Field, ForeignObjectRel
 
 
 class UserPublicFieldsType(Enum):
@@ -243,7 +243,7 @@ def get_user_public_field_names(
     return tuple(field_names)
 
 
-def _get_pk_name(fields: Iterable[Union[Field, ForeignObjectRel]]) -> str:
+def _get_pk_name(fields: Iterable[Union['Field', 'ForeignObjectRel']]) -> str:
     pk_names = [f.name for f in fields if getattr(f, 'primary_key', False)]
     if len(pk_names) != 1:
         raise ValueError('User model does not have one primary key')
