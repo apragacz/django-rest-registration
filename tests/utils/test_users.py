@@ -1,7 +1,6 @@
 import pytest
 
 from rest_registration.utils.users import (
-    UserPublicFieldsType,
     get_user_field_names,
     get_user_public_field_names
 )
@@ -31,71 +30,97 @@ def test_get_user_field_names(kwargs, expected_fields):
 
 
 @pytest.mark.parametrize(
-    'fields_type,restreg_settings_override,expected_fields',
+    'kwargs,restreg_settings_override,expected_fields',
     [
         pytest.param(
-            UserPublicFieldsType.READ_ONLY,
+            {'write_once': True},
+            {},
+            {
+                'id', 'first_name', 'last_name', 'username', 'email',
+                'last_login', 'password',
+            },
+            id='write-once',
+        ),
+        pytest.param(
+            {'write_once': True, 'read_only': True},
+            {},
+            {'id', 'last_login'},
+            id='write-once,read-only',
+        ),
+        pytest.param(
+            {},
             {},
             {
                 'id', 'first_name', 'last_name', 'username', 'email',
                 'last_login',
             },
-            id='read-only',
+            id='write-many',
         ),
         pytest.param(
-            UserPublicFieldsType.READ_WRITE,
+            {'read_only': True},
             {},
-            {'first_name', 'last_name', 'username'},
-            id='read-write',
+            {'id', 'email', 'last_login'},
+            id='write-many,read-only',
         ),
+
         pytest.param(
-            UserPublicFieldsType.WRITE_ONCE,
-            {},
-            {'first_name', 'last_name', 'username', 'email', 'password'},
-            id='write-once',
-        ),
-        pytest.param(
-            UserPublicFieldsType.READ_ONLY,
-            {'USER_PUBLIC_FIELDS': ['first_name', 'last_name', 'email']},
-            {'first_name', 'last_name', 'email'},
-            id='read-only;public-fields-set',
-        ),
-        pytest.param(
-            UserPublicFieldsType.READ_WRITE,
-            {'USER_PUBLIC_FIELDS': ['first_name', 'last_name', 'email']},
-            {'first_name', 'last_name'},
-            id='read-write;public-fields-set',
-        ),
-        pytest.param(
-            UserPublicFieldsType.WRITE_ONCE,
+            {'write_once': True},
             {'USER_PUBLIC_FIELDS': ['first_name', 'last_name', 'email']},
             {'first_name', 'last_name', 'email', 'password'},
             id='write-once;public-fields-set',
         ),
         pytest.param(
-            UserPublicFieldsType.READ_ONLY,
+            {'write_once': True, 'read_only': True},
+            {'USER_PUBLIC_FIELDS': ['first_name', 'last_name', 'email']},
+            set(),
+            id='write-once,read-only;public-fields-set',
+        ),
+        pytest.param(
+            {},
+            {'USER_PUBLIC_FIELDS': ['first_name', 'last_name', 'email']},
+            {'first_name', 'last_name', 'email'},
+            id='write-many;public-fields-set',
+        ),
+        pytest.param(
+            {'read_only': True},
+            {'USER_PUBLIC_FIELDS': ['first_name', 'last_name', 'email']},
+            {'email'},
+            id='write-many,read-only;public-fields-set',
+        ),
+
+        pytest.param(
+            {'write_once': True},
+            {'USER_EDITABLE_FIELDS': ['first_name', 'last_name', 'email']},
+            {
+                'id', 'first_name', 'last_name', 'username', 'email',
+                'last_login', 'password',
+            },
+            id='write-once;editable-fields-set',
+        ),
+        pytest.param(
+            {'write_once': True, 'read_only': True},
+            {'USER_EDITABLE_FIELDS': ['first_name', 'last_name', 'email']},
+            {'id', 'last_login'},
+            id='write-once,read-only;editable-fields-set',
+        ),
+        pytest.param(
+            {},
             {'USER_EDITABLE_FIELDS': ['first_name', 'last_name', 'email']},
             {
                 'id', 'first_name', 'last_name', 'username', 'email',
                 'last_login',
             },
-            id='read-only;editable-fields-set',
+            id='write-many;editable-fields-set',
         ),
         pytest.param(
-            UserPublicFieldsType.READ_WRITE,
+            {'read_only': True},
             {'USER_EDITABLE_FIELDS': ['first_name', 'last_name', 'email']},
-            {'first_name', 'last_name'},
-            id='read-write;editable-fields-set',
-        ),
-        pytest.param(
-            UserPublicFieldsType.WRITE_ONCE,
-            {'USER_EDITABLE_FIELDS': ['first_name', 'last_name', 'email']},
-            {'first_name', 'last_name', 'username', 'email', 'password'},
-            id='write-once;editable-fields-set',
+            {'id', 'username', 'last_login', 'email'},
+            id='write-many,read-only;editable-fields-set',
         ),
     ],
 )
 def test_get_user_public_field_names(
-        fields_type, restreg_settings_override, expected_fields):
+        kwargs, restreg_settings_override, expected_fields):
     with override_rest_registration_settings(restreg_settings_override):
-        assert set(get_user_public_field_names(fields_type)) == expected_fields
+        assert set(get_user_public_field_names(**kwargs)) == expected_fields

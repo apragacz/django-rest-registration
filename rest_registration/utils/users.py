@@ -1,5 +1,4 @@
-from enum import Enum
-from typing import TYPE_CHECKING, Any, Dict, Iterable, Tuple, Union
+from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Tuple, Union
 
 from django.contrib import auth
 from django.contrib.auth import get_user_model
@@ -14,15 +13,11 @@ from rest_registration.utils.common import set_or_none
 _RAISE_EXCEPTION = object()
 
 if TYPE_CHECKING:
-    from typing import List, Optional
+    from typing import Optional
     from django.contrib.auth.base_user import AbstractBaseUser
     from django.db.models import Field, ForeignObjectRel
 
-
-class UserPublicFieldsType(Enum):
-    READ_ONLY = 'read-only'
-    READ_WRITE = 'read-write'
-    WRITE_ONCE = 'write-once'
+    UserField = Union['Field', 'ForeignObjectRel']
 
 
 def get_user_by_login_or_none(login, require_verified=False):
@@ -202,53 +197,86 @@ def get_user_field_names(
 
 
 def get_user_public_field_names(
-        fields_type: UserPublicFieldsType) -> Tuple[str, ...]:
-    user_class = get_user_model()
-    fields = user_class._meta.get_fields()  # pylint: disable=protected-access
-    default_field_names = [f.name for f in fields
-                           if (getattr(f, 'serialize', False) or
-                               getattr(f, 'primary_key', False))]
-    pk_name = _get_pk_name(fields)
-    email_field_name = get_user_email_field_name()
-    hidden_field_names = set(get_user_setting('HIDDEN_FIELDS'))
-    _public_field_names = get_user_setting(
-        'PUBLIC_FIELDS')  # type: Optional[Iterable[str]]
-    _editable_field_names = get_user_setting(
-        'EDITABLE_FIELDS')  # type: Optional[Iterable[str]]
-    public_field_names = set_or_none(_public_field_names)
-    editable_field_names = set_or_none(_editable_field_names)
+        write_once: bool = False,
+        read_only: bool = False) -> Tuple[str, ...]:
 
-    field_names = default_field_names
-    if public_field_names is not None:
-        allowed_field_names = public_field_names | {
-            'password', email_field_name}
-        field_names = [f for f in field_names if f in allowed_field_names]
+    fields = _get_user_default_fields()
+
+    if read_only:
+        field_names = _get_user_public_read_only_field_names(
+            fields, write_once=write_once)
     else:
-        field_names = [f for f in field_names if f not in hidden_field_names]
-
-    excludes_by_type = {
-        UserPublicFieldsType.READ_WRITE: {
-            'password', 'last_login', email_field_name, pk_name,
-        },
-        UserPublicFieldsType.READ_ONLY: {'password'},
-        UserPublicFieldsType.WRITE_ONCE: {'last_login', pk_name},
-    }
-    excludes = excludes_by_type[fields_type]
-    field_names = [f for f in field_names if f not in excludes]
-
-    if (fields_type == UserPublicFieldsType.READ_WRITE
-            and editable_field_names is not None):
-        field_names = [f for f in field_names if f in editable_field_names]
+        field_names = _get_user_public_base_field_names(
+            fields, write_once=write_once)
 
     return tuple(field_names)
 
 
-def _get_pk_name(fields: Iterable[Union['Field', 'ForeignObjectRel']]) -> str:
+def _get_user_public_read_only_field_names(
+        fields: Iterable['UserField'],
+        write_once: bool = False) -> List[str]:
+    pk_name = _get_pk_name(fields)
+    base_field_names = _get_user_public_base_field_names(
+        fields, write_once=write_once)
+    email_field_name = get_user_email_field_name()
+    _editable_field_names = get_user_setting(
+        'EDITABLE_FIELDS')  # type: Optional[Iterable[str]]
+    editable_field_names = set_or_none(_editable_field_names)
+    if write_once:
+        excludes = {'last_login', pk_name}
+    else:
+        excludes = {'last_login', email_field_name, pk_name}
+    field_names_rw = [f for f in base_field_names if f not in excludes]
+
+    if not write_once and editable_field_names is not None:
+        field_names_rw = [
+            f for f in field_names_rw if f in editable_field_names]
+
+    return [f for f in base_field_names if f not in field_names_rw]
+
+
+def _get_user_public_base_field_names(
+        fields: Iterable['UserField'],
+        write_once: bool = False) -> List[str]:
+    default_field_names = [f.name for f in fields]
+    email_field_name = get_user_email_field_name()
+    hidden_field_names = set(get_user_setting('HIDDEN_FIELDS'))
+    _public_field_names = get_user_setting(
+        'PUBLIC_FIELDS')  # type: Optional[Iterable[str]]
+    public_field_names = set_or_none(_public_field_names)
+
+    base_field_names = default_field_names
+    if public_field_names is not None:
+        allowed_field_names = public_field_names | {
+            'password', email_field_name}
+        base_field_names = [
+            f for f in base_field_names if f in allowed_field_names]
+    else:
+        base_field_names = [
+            f for f in base_field_names if f not in hidden_field_names]
+
+    if not write_once:
+        base_field_names = [f for f in base_field_names if f != 'password']
+
+    return base_field_names
+
+
+def _get_pk_name(fields: Iterable['UserField']) -> str:
     pk_names = [f.name for f in fields if getattr(f, 'primary_key', False)]
     if len(pk_names) != 1:
         raise ValueError('User model does not have one primary key')
     pk_name = pk_names[0]
     return pk_name
+
+
+def _get_user_default_fields() -> List['UserField']:
+    user_class = get_user_model()
+    fields = user_class._meta.get_fields()  # pylint: disable=protected-access
+    default_field_names = [
+        f for f in fields
+        if getattr(f, 'serialize', False) or getattr(f, 'primary_key', False)
+    ]
+    return default_field_names
 
 
 def is_model_field_unique(field):
