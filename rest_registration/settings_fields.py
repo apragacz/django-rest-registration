@@ -29,6 +29,7 @@ USER_SETTINGS_FIELDS = [
     Field(
         'USER_HIDDEN_FIELDS',
         default=(
+            'last_login',
             'is_active',
             'is_staff',
             'is_superuser',

@@ -12,7 +12,7 @@ def serializer():
 def test_generated_fields(settings_with_register_verification, serializer):
     field_names = set(serializer.get_fields())
     assert field_names == {
-        'id', 'username', 'first_name', 'last_name', 'email', 'last_login',
+        'id', 'username', 'first_name', 'last_name', 'email',
         'password', 'password_confirm',
     }
 
@@ -23,7 +23,7 @@ def test_simple_email_based_user_generated_fields(
         serializer):
     field_names = set(serializer.get_fields())
 
-    assert field_names == {'id', 'email', 'last_login', 'password', 'password_confirm'}
+    assert field_names == {'id', 'email', 'password', 'password_confirm'}
 
 
 def test_no_password_generated_fields(
@@ -32,5 +32,5 @@ def test_no_password_generated_fields(
         serializer):
     field_names = set(serializer.get_fields())
     assert field_names == {
-        'id', 'username', 'first_name', 'last_name', 'email', 'last_login', 'password',
+        'id', 'username', 'first_name', 'last_name', 'email', 'password',
     }

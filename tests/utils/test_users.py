@@ -35,32 +35,90 @@ def test_get_user_field_names(kwargs, expected_fields):
         pytest.param(
             {'write_once': True},
             {},
-            {
-                'id', 'first_name', 'last_name', 'username', 'email',
-                'last_login', 'password',
-            },
+            {'id', 'first_name', 'last_name', 'username', 'email', 'password'},
             id='write-once',
         ),
         pytest.param(
             {'write_once': True, 'read_only': True},
             {},
-            {'id', 'last_login'},
+            {'id'},
             id='write-once,read-only',
         ),
         pytest.param(
             {},
             {},
-            {
-                'id', 'first_name', 'last_name', 'username', 'email',
-                'last_login',
-            },
+            {'id', 'first_name', 'last_name', 'username', 'email'},
             id='write-many',
         ),
         pytest.param(
             {'read_only': True},
             {},
-            {'id', 'email', 'last_login'},
+            {'id', 'email'},
             id='write-many,read-only',
+        ),
+
+        pytest.param(
+            {'write_once': True},
+            {
+                'USER_HIDDEN_FIELDS': (
+                    'is_active',
+                    'is_staff',
+                    'is_superuser',
+                    'user_permissions',
+                    'groups',
+                    'date_joined',
+                )
+            },
+            {
+                'id', 'first_name', 'last_name', 'username', 'email', 'last_login',
+                'password',
+            },
+            id='write-once;hidden-fields-set',
+        ),
+        pytest.param(
+            {'write_once': True, 'read_only': True},
+            {
+                'USER_HIDDEN_FIELDS': (
+                    'is_active',
+                    'is_staff',
+                    'is_superuser',
+                    'user_permissions',
+                    'groups',
+                    'date_joined',
+                )
+            },
+            {'id', 'last_login'},
+            id='write-once,read-only;hidden-fields-set',
+        ),
+        pytest.param(
+            {},
+            {
+                'USER_HIDDEN_FIELDS': (
+                    'is_active',
+                    'is_staff',
+                    'is_superuser',
+                    'user_permissions',
+                    'groups',
+                    'date_joined',
+                )
+            },
+            {'id', 'first_name', 'last_name', 'username', 'email', 'last_login'},
+            id='write-many;hidden-fields-set',
+        ),
+        pytest.param(
+            {'read_only': True},
+            {
+                'USER_HIDDEN_FIELDS': (
+                    'is_active',
+                    'is_staff',
+                    'is_superuser',
+                    'user_permissions',
+                    'groups',
+                    'date_joined',
+                )
+            },
+            {'id', 'email', 'last_login'},
+            id='write-many,read-only;hidden-fields-set',
         ),
 
         pytest.param(
@@ -91,31 +149,25 @@ def test_get_user_field_names(kwargs, expected_fields):
         pytest.param(
             {'write_once': True},
             {'USER_EDITABLE_FIELDS': ['first_name', 'last_name', 'email']},
-            {
-                'id', 'first_name', 'last_name', 'username', 'email',
-                'last_login', 'password',
-            },
+            {'id', 'first_name', 'last_name', 'username', 'email', 'password'},
             id='write-once;editable-fields-set',
         ),
         pytest.param(
             {'write_once': True, 'read_only': True},
             {'USER_EDITABLE_FIELDS': ['first_name', 'last_name', 'email']},
-            {'id', 'last_login'},
+            {'id'},
             id='write-once,read-only;editable-fields-set',
         ),
         pytest.param(
             {},
             {'USER_EDITABLE_FIELDS': ['first_name', 'last_name', 'email']},
-            {
-                'id', 'first_name', 'last_name', 'username', 'email',
-                'last_login',
-            },
+            {'id', 'first_name', 'last_name', 'username', 'email'},
             id='write-many;editable-fields-set',
         ),
         pytest.param(
             {'read_only': True},
             {'USER_EDITABLE_FIELDS': ['first_name', 'last_name', 'email']},
-            {'id', 'username', 'last_login', 'email'},
+            {'id', 'username', 'email'},
             id='write-many,read-only;editable-fields-set',
         ),
     ],
