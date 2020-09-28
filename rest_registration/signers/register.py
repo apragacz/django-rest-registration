@@ -1,9 +1,6 @@
 
 from rest_registration.settings import registration_settings
-from rest_registration.utils.users import (
-    get_user_by_verification_id,
-    get_user_setting
-)
+from rest_registration.utils.users import get_user_by_verification_id, get_user_setting
 from rest_registration.verification import URLParamsSigner
 
 
@@ -19,15 +16,13 @@ class RegisterSigner(URLParamsSigner):
 
     def _calculate_salt(self, data):
         if registration_settings.REGISTER_VERIFICATION_ONE_TIME_USE:
-            user = get_user_by_verification_id(
-                data['user_id'], require_verified=False)
+            user = get_user_by_verification_id(data['user_id'], require_verified=False)
             # Use current user verification flag as a part of the salt.
             # If the verification flag gets changed, then assume that
             # the change was caused by previous verification and the signature
             # is not valid anymore because changed user verification flag
             # implies changed salt used when verifying the input data.
-            verification_flag_field = get_user_setting(
-                'VERIFICATION_FLAG_FIELD')
+            verification_flag_field = get_user_setting('VERIFICATION_FLAG_FIELD')
             verification_flag = getattr(user, verification_flag_field)
             salt = '{self.SALT_BASE}:{verification_flag}'.format(
                 self=self, verification_flag=verification_flag)

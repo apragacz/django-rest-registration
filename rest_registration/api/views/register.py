@@ -35,10 +35,7 @@ def register(request):
     Register new user.
     '''
     serializer_class = registration_settings.REGISTER_SERIALIZER_CLASS
-    serializer = serializer_class(
-        data=request.data,
-        context={'request': request},
-    )
+    serializer = serializer_class(data=request.data, context={'request': request})
     serializer.is_valid(raise_exception=True)
 
     kwargs = {}
@@ -57,7 +54,7 @@ def register(request):
             send_register_verification_email_notification(request, user)
 
     signals.user_registered.send(sender=None, user=user, request=request)
-    output_serializer_class = registration_settings.REGISTER_OUTPUT_SERIALIZER_CLASS  # noqa: E501
+    output_serializer_class = registration_settings.REGISTER_OUTPUT_SERIALIZER_CLASS
     output_serializer = output_serializer_class(
         instance=user,
         context={'request': request},
@@ -85,8 +82,7 @@ def verify_registration(request):
     extra_data = None
     if registration_settings.REGISTER_VERIFICATION_AUTO_LOGIN:
         extra_data = perform_login(request, user)
-    return get_ok_response(_("User verified successfully"),
-                           extra_data=extra_data)
+    return get_ok_response(_("User verified successfully"), extra_data=extra_data)
 
 
 def process_verify_registration_data(input_data, serializer_context=None):

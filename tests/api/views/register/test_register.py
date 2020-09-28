@@ -10,10 +10,7 @@ from rest_framework import status
 
 from rest_registration.signers.register import RegisterSigner
 from tests.helpers.api_views import assert_response_status_is_created
-from tests.helpers.constants import (
-    REGISTER_VERIFICATION_URL,
-    VERIFICATION_FROM_EMAIL
-)
+from tests.helpers.constants import REGISTER_VERIFICATION_URL, VERIFICATION_FROM_EMAIL
 from tests.helpers.email import assert_one_email_sent, capture_sent_emails
 from tests.helpers.settings import override_rest_registration_settings
 from tests.helpers.text import assert_one_url_line_in_text

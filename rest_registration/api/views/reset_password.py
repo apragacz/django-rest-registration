@@ -9,9 +9,7 @@ from rest_registration.decorators import (
     api_view_serializer_class_getter
 )
 from rest_registration.exceptions import UserNotFound
-from rest_registration.notifications.email import (
-    send_verification_notification
-)
+from rest_registration.notifications.email import send_verification_notification
 from rest_registration.notifications.enums import NotificationType
 from rest_registration.settings import registration_settings
 from rest_registration.utils.responses import get_ok_response
@@ -40,8 +38,7 @@ class ResetPasswordSigner(URLParamsSigner):
 
     def _calculate_salt(self, data):
         if registration_settings.RESET_PASSWORD_VERIFICATION_ONE_TIME_USE:
-            user = get_user_by_verification_id(
-                data['user_id'], require_verified=False)
+            user = get_user_by_verification_id(data['user_id'], require_verified=False)
             user_password_hash = user.password
             # Use current user password hash as a part of the salt.
             # If the password gets changed, then assume that the change
@@ -65,11 +62,8 @@ def send_reset_password_link(request):
     '''
     if not registration_settings.RESET_PASSWORD_VERIFICATION_ENABLED:
         raise Http404()
-    serializer_class = registration_settings.SEND_RESET_PASSWORD_LINK_SERIALIZER_CLASS  # noqa: E501
-    serializer = serializer_class(
-        data=request.data,
-        context={'request': request},
-    )
+    serializer_class = registration_settings.SEND_RESET_PASSWORD_LINK_SERIALIZER_CLASS
+    serializer = serializer_class(data=request.data, context={'request': request})
     serializer.is_valid(raise_exception=True)
     if registration_settings.RESET_PASSWORD_FAIL_WHEN_USER_NOT_FOUND:
         success_message = _("Reset link sent")
@@ -123,8 +117,7 @@ def reset_password(request):
     '''
     Reset password, given the signature and timestamp from the link.
     '''
-    process_reset_password_data(
-        request.data, serializer_context={'request': request})
+    process_reset_password_data(request.data, serializer_context={'request': request})
     return get_ok_response(_("Reset password successful"))
 
 
@@ -133,10 +126,7 @@ def process_reset_password_data(input_data, serializer_context=None):
         serializer_context = {}
     if not registration_settings.RESET_PASSWORD_VERIFICATION_ENABLED:
         raise Http404()
-    serializer = ResetPasswordSerializer(
-        data=input_data,
-        context=serializer_context,
-    )
+    serializer = ResetPasswordSerializer(data=input_data, context=serializer_context)
     serializer.is_valid(raise_exception=True)
 
     data = serializer.validated_data.copy()

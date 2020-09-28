@@ -1,9 +1,6 @@
 from typing import TYPE_CHECKING, NewType, Optional, Sequence, Type
 
-from rest_framework.authentication import (
-    BaseAuthentication,
-    TokenAuthentication
-)
+from rest_framework.authentication import BaseAuthentication, TokenAuthentication
 
 from rest_registration.exceptions import AuthTokenNotFound, AuthTokenNotRevoked
 

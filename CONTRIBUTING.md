@@ -68,13 +68,13 @@ Then, having your virtualenv set up, you can run:
 
 ### Code checks
 
-Code changes should follow the [PEP 8][pep-8] style conventions (this includes
-the controversial rule of limiting all lines to a maximum of 79 characters!),
+Code changes should follow the [PEP 8][pep-8] style conventions (with the
+exception of limiting all lines to a maximum of 88 instead of 79 characters),
 and we recommend you set up your editor to automatically indicate
 non-conforming styles.
 
 Ocassionaly, you may need to disable particular checks. For instance,
-breaking a line to with within 79 character limit is not possible;
+breaking a line to fit within 88 character limit is not possible;
 in that case, disabling specific check (not the whole linter!) is allowed for
 specific line (not the whole file!). Examples below:
 

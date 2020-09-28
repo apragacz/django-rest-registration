@@ -1,15 +1,9 @@
 from django.shortcuts import redirect
 from django.views.decorators.http import require_http_methods
 
-from rest_registration.api.views.register import (
-    process_verify_registration_data
-)
-from rest_registration.api.views.register_email import (
-    process_verify_email_data
-)
-from rest_registration.api.views.reset_password import (
-    process_reset_password_data
-)
+from rest_registration.api.views.register import process_verify_registration_data
+from rest_registration.api.views.register_email import process_verify_email_data
+from rest_registration.api.views.reset_password import process_reset_password_data
 from rest_registration.contrib.verification_redirects.settings import \
     verification_redirects_settings as vr_settings
 

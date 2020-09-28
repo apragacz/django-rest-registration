@@ -2,10 +2,7 @@
 from django.test.utils import override_settings
 
 from rest_registration.signers.register import RegisterSigner
-from tests.helpers.constants import (
-    REGISTER_VERIFICATION_URL,
-    VERIFICATION_FROM_EMAIL
-)
+from tests.helpers.constants import REGISTER_VERIFICATION_URL, VERIFICATION_FROM_EMAIL
 from tests.helpers.settings import override_rest_registration_settings
 from tests.helpers.testcases import TestCase
 

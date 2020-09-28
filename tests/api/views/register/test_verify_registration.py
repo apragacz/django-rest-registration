@@ -5,10 +5,7 @@ from unittest.mock import patch
 from rest_framework import status
 
 from rest_registration.api.views.register import RegisterSigner
-from tests.helpers.constants import (
-    REGISTER_VERIFICATION_URL,
-    VERIFICATION_FROM_EMAIL
-)
+from tests.helpers.constants import REGISTER_VERIFICATION_URL, VERIFICATION_FROM_EMAIL
 from tests.helpers.settings import override_rest_registration_settings
 
 from ..base import APIViewTestCase

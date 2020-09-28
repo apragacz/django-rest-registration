@@ -17,7 +17,7 @@ class ChangePasswordSerializer(  # pylint: disable=abstract-method
     password = serializers.CharField()
 
     def has_password_confirm_field(self):
-        return registration_settings.CHANGE_PASSWORD_SERIALIZER_PASSWORD_CONFIRM  # noqa: E501
+        return registration_settings.CHANGE_PASSWORD_SERIALIZER_PASSWORD_CONFIRM
 
     def validate_old_password(self, old_password):
         user = self.context['request'].user

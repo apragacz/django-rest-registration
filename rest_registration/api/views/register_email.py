@@ -10,9 +10,7 @@ from rest_registration.decorators import (
     api_view_serializer_class_getter
 )
 from rest_registration.exceptions import BadRequest
-from rest_registration.notifications.email import (
-    send_verification_notification
-)
+from rest_registration.notifications.email import send_verification_notification
 from rest_registration.notifications.enums import NotificationType
 from rest_registration.settings import registration_settings
 from rest_registration.utils.responses import get_ok_response
@@ -49,14 +47,11 @@ def register_email(request):
     user = request.user
 
     serializer_class = registration_settings.REGISTER_EMAIL_SERIALIZER_CLASS
-    serializer = serializer_class(
-        data=request.data,
-        context={'request': request},
-    )
+    serializer = serializer_class(data=request.data, context={'request': request})
     serializer.is_valid(raise_exception=True)
 
     email = serializer.get_email()
-    email_already_used = is_user_email_field_unique() and user_with_email_exists(email)  # noqa: E501
+    email_already_used = is_user_email_field_unique() and user_with_email_exists(email)
 
     if registration_settings.REGISTER_EMAIL_VERIFICATION_ENABLED:
         signer = RegisterEmailSigner({
@@ -104,8 +99,7 @@ def verify_email(request):
     '''
     Verify email via signature.
     '''
-    process_verify_email_data(
-        request.data, serializer_context={'request': request})
+    process_verify_email_data(request.data, serializer_context={'request': request})
     return get_ok_response(_("Email verified successfully"))
 
 
@@ -114,10 +108,7 @@ def process_verify_email_data(input_data, serializer_context=None):
         serializer_context = {}
     if not registration_settings.REGISTER_EMAIL_VERIFICATION_ENABLED:
         raise Http404()
-    serializer = VerifyEmailSerializer(
-        data=input_data,
-        context=serializer_context,
-    )
+    serializer = VerifyEmailSerializer(data=input_data, context=serializer_context)
     serializer.is_valid(raise_exception=True)
 
     data = serializer.validated_data

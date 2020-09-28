@@ -1,10 +1,7 @@
 from django.contrib import auth
 from django.utils.translation import gettext as _
 from rest_framework import serializers
-from rest_framework.authentication import (
-    SessionAuthentication,
-    TokenAuthentication
-)
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.settings import api_settings
@@ -27,15 +24,11 @@ def login(request):
     Logs in the user via given login and password.
     '''
     serializer_class = registration_settings.LOGIN_SERIALIZER_CLASS
-    serializer = serializer_class(
-        data=request.data,
-        context={'request': request},
-    )
+    serializer = serializer_class(data=request.data, context={'request': request})
     serializer.is_valid(raise_exception=True)
     login_authenticator = registration_settings.LOGIN_AUTHENTICATOR
     try:
-        user = login_authenticator(
-            serializer.validated_data, serializer=serializer)
+        user = login_authenticator(serializer.validated_data, serializer=serializer)
     except UserNotFound:
         raise LoginInvalid() from None
 
@@ -44,7 +37,7 @@ def login(request):
     return get_ok_response(_("Login successful"), extra_data=extra_data)
 
 
-class LogoutSerializer(serializers.Serializer):  # noqa: E501 pylint: disable=abstract-method
+class LogoutSerializer(serializers.Serializer):  # pylint: disable=abstract-method
     revoke_token = serializers.BooleanField(default=False)
 
 
