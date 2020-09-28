@@ -149,7 +149,7 @@ def get_user_setting(name):
 
 
 def build_initial_user(data: Dict[str, Any]) -> 'AbstractBaseUser':
-    user_field_names = get_user_field_names(allow_primary_key=False)
+    user_field_names = get_user_public_field_names(write_once=True)
     user_data = {}
     for field_name in user_field_names:
         if field_name in data:

@@ -6,7 +6,7 @@ from rest_registration.utils.users import (
     get_user_by_login_or_none,
     get_user_by_lookup_dict,
     get_user_email_field_name,
-    get_user_field_names
+    get_user_public_field_names
 )
 from rest_registration.utils.validation import (
     run_validators,
@@ -113,10 +113,8 @@ class DefaultUserProfileSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         user_class = get_user_model()
-        field_names = get_user_field_names(allow_primary_key=True)
-        read_only_field_names = get_user_field_names(
-            allow_primary_key=True,
-            non_editable=True)
+        field_names = get_user_public_field_names()
+        read_only_field_names = get_user_public_field_names(read_only=True)
         meta_obj = MetaObj()
         meta_obj.model = user_class
         meta_obj.fields = field_names
@@ -140,11 +138,9 @@ class DefaultRegisterUserSerializer(
 
     def __init__(self, *args, **kwargs):
         user_class = get_user_model()
-        field_names = get_user_field_names(allow_primary_key=True)
-        field_names = field_names + ('password',)
-        read_only_field_names = get_user_field_names(
-            allow_primary_key=True,
-            non_editable=True)
+        field_names = get_user_public_field_names(write_once=True)
+        read_only_field_names = get_user_public_field_names(
+            write_once=True, read_only=True)
         meta_obj = MetaObj()
         meta_obj.model = user_class
         meta_obj.fields = field_names
