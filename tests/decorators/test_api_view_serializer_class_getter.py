@@ -42,14 +42,16 @@ def test_success(input_post_view, decorator):
     assert isinstance(wrapper_cls.get_serializer(), ExampleSerializer)
 
 
-@pytest.mark.skipif('rest_framework_version_info < (3, 10, 0)')
+@pytest.mark.skipif(
+    'rest_framework_version_info < (3, 10, 0)'
+    ' or rest_framework_version_info >= (3, 12, 0)')
 def test_default_schema_success(input_post_view, decorator):
     output_view = decorator(input_post_view)
     wrapper_cls = _get_view_class(output_view)
 
     schema = wrapper_cls().schema
     operation = schema.get_operation('/api/dummy-view/', 'POST')
-    operation_schema = operation['requestBody']['content']['application/json']['schema']  # noqa: E501
+    operation_schema = operation['requestBody']['content']['application/json']['schema']
     expected_operation_schema = {
         'properties': {
             'test_field': {'type': 'string'},
