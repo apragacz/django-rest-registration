@@ -363,6 +363,10 @@ MISC_SETTINGS_FIELDS = [
         default='rest_registration.utils.responses.build_default_success_response',  # noqa: E501
         import_string=True,
     ),
+    Field(
+        'USE_NON_FIELD_ERRORS_KEY_FROM_DRF_SETTINGS',
+        default=False
+    ),
 ]
 
 PERMISSIONS_SETTINGS_FIELDS = [

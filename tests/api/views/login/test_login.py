@@ -81,6 +81,22 @@ def test_when_faulty_auth_token_manager_then_login_fails(
 
 
 @override_rest_registration_settings({
+    'USE_NON_FIELD_ERRORS_KEY_FROM_DRF_SETTINGS': True,
+})
+def test_invalid_non_field_errors(
+        settings_minimal,
+        user, password_change, api_view_provider, api_factory):
+    request = api_factory.create_post_request({
+        'login': user.username,
+        'password': "blah",
+    })
+    api_factory.add_session_to_request(request)
+    response = api_view_provider.view_func(request)
+    assert "non_field_errors" in response.data
+    assert_response_is_bad_request(response)
+
+
+@override_rest_registration_settings({
     'LOGIN_SERIALIZER_CLASS': 'tests.testapps.custom_serializers.serializers.DefaultDeprecatedLoginSerializer',  # noqa: E501
 })
 def test_when_deprecated_login_serializer_then_success(
