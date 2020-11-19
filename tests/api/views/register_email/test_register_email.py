@@ -1,9 +1,15 @@
+from unittest import mock
+
+import pytest
 from django.conf import settings
+from django.core import signing
 from django.test.utils import override_settings
 from rest_framework import status
 from rest_framework.test import force_authenticate
 
 from rest_registration.api.views.register_email import RegisterEmailSigner
+from rest_registration.exceptions import SignatureExpired, SignatureInvalid
+from rest_registration.utils.verification import verify_signer_or_bad_request
 from tests.helpers.constants import (
     REGISTER_EMAIL_VERIFICATION_URL,
     VERIFICATION_FROM_EMAIL
@@ -205,6 +211,49 @@ class RegisterEmailViewTestCase(APIViewTestCase):
         self.user.refresh_from_db()
         self.assertEqual(self.user.email, self.new_email)
 
+    @override_rest_registration_settings({
+        'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
+        'USE_NON_FIELD_ERRORS_KEY_FROM_DRF_SETTINGS': True,
+    })
+    def test_register_email_fail_with_non_field_errors(self):
+        # arrange
+        with mock.patch(
+            'rest_registration.utils.users.is_user_email_field_unique',
+            return_value=True
+        ), mock.patch(
+            'rest_registration.utils.users.user_with_email_exists', return_value=True
+        ):
+            self.setup_user()
+            data = {
+                'email': self.new_email,
+            }
+            # act, assert
+            with self.assert_no_mail_sent():
+                response = self._test_authenticated(data)
+                self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
+            assert "non_field_errors" in response.data
+
+    @override_rest_registration_settings({
+        'REGISTER_EMAIL_VERIFICATION_ENABLED': False
+    })
+    def test_register_email_fail_email_already_used(self):
+        # arrange
+        with mock.patch(
+            'rest_registration.utils.users.is_user_email_field_unique',
+            return_value=True
+        ), mock.patch(
+            'rest_registration.utils.users.user_with_email_exists', return_value=True
+        ):
+            self.setup_user()
+            data = {
+                'email': self.new_email,
+            }
+            # act, assert
+            with self.assert_no_mail_sent():
+                response = self._test_authenticated(data)
+                self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
+            assert "detail" in response.data
+
     @override_settings(
         TEMPLATES=(),
     )
@@ -220,3 +269,23 @@ class RegisterEmailViewTestCase(APIViewTestCase):
         self.assert_response_is_ok(response)
         self.assert_len_equals(sent_emails, 0)
         self.assert_user_email_changed()
+
+
+@override_rest_registration_settings({
+    'USE_NON_FIELD_ERRORS_KEY_FROM_DRF_SETTINGS': True
+})
+@pytest.mark.parametrize("exception,expected", (
+    (signing.SignatureExpired, SignatureExpired),
+    (signing.BadSignature, SignatureInvalid))
+                         )
+def test_verify_signer_or_bad_request_non_field_errors(exception, expected):
+    # arrange
+    mock_signer = mock.MagicMock()
+    mock_verify = mock.Mock(side_effect=exception())
+    mock_signer.verify = mock_verify
+
+    # act, assert
+    with pytest.raises(expected) as context:
+        verify_signer_or_bad_request(mock_signer)
+
+    assert 'non_field_errors' in context.value.get_full_details()
