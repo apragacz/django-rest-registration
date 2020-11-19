@@ -302,6 +302,17 @@ class RegisterViewTestCase(APIViewTestCase):
             response = self.view_func(request)
             self.assert_response_is_bad_request(response)
 
+    @override_rest_registration_settings(
+        {'USE_NON_FIELD_ERRORS_KEY_FROM_DRF_SETTINGS': True}
+    )
+    def test_register_empty_email_non_field_errors(self):
+        data = self._get_register_user_data(password='testpassword', email='')
+        request = self.create_post_request(data)
+        with self.assert_no_mail_sent():
+            response = self.view_func(request)
+            assert "non_field_errors" in response.data
+            self.assert_response_is_bad_request(response)
+
     def test_register_short_password(self):
         data = self._get_register_user_data(password='a')
         request = self.create_post_request(data)

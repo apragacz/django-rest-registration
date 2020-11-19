@@ -195,3 +195,17 @@ class VerifyEmailViewTestCase(APIViewTestCase):
         response = self.view_func(request)
         self.assert_response_is_bad_request(response)
         self.assert_user_email_not_changed()
+
+    @override_auth_model_settings('custom_users.UserWithUniqueEmail')
+    @override_rest_registration_settings({
+        'USE_NON_FIELD_ERRORS_KEY_FROM_DRF_SETTINGS': True
+    })
+    def test_user_with_unique_email_user_email_already_exists_non_field_errors(self):
+        self.setup_user()
+        self.setup_user2_with_user_new_email()
+        signer = self.build_signer()
+        request = self.create_post_request(signer.get_signed_data())
+        response = self.view_func(request)
+        self.assert_response_is_bad_request(response)
+        self.assert_user_email_not_changed()
+        assert "non_field_errors" in response.data

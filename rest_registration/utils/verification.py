@@ -1,16 +1,26 @@
 from urllib.parse import urlencode
 
 from django.core import signing
+from rest_framework.settings import api_settings
 
 from rest_registration.exceptions import SignatureExpired, SignatureInvalid
+from rest_registration.settings import registration_settings
 
 
 def verify_signer_or_bad_request(signer):
     try:
         signer.verify()
     except signing.SignatureExpired:
+        if registration_settings.USE_NON_FIELD_ERRORS_KEY_FROM_DRF_SETTINGS:
+            raise SignatureExpired({
+                api_settings.NON_FIELD_ERRORS_KEY: [SignatureExpired.default_detail]
+            }) from None
         raise SignatureExpired() from None
     except signing.BadSignature:
+        if registration_settings.USE_NON_FIELD_ERRORS_KEY_FROM_DRF_SETTINGS:
+            raise SignatureInvalid({
+                api_settings.NON_FIELD_ERRORS_KEY: [SignatureInvalid.default_detail]
+            }) from None
         raise SignatureInvalid() from None
 
 
