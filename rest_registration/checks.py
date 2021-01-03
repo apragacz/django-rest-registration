@@ -6,7 +6,6 @@ from django.contrib.auth import get_user_model
 from django.core.checks import register
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Model
-from django.utils.module_loading import import_string
 from rest_framework.settings import api_settings
 
 from rest_registration.auth_token_managers import AbstractAuthTokenManager
@@ -115,7 +114,7 @@ def _is_auth_token_manager_auth_class_enabled() -> bool:
     auth_token_manager = _get_auth_token_manager()
     auth_cls = auth_token_manager.get_authentication_class()
     return any(
-        issubclass(import_string(cls), auth_cls)
+        issubclass(cls, auth_cls)
         for cls in api_settings.DEFAULT_AUTHENTICATION_CLASSES
     )
 
