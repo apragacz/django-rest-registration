@@ -8,9 +8,14 @@ cache:
     - "$HOME/virtualenv/python3.6.10"
 
 stages:
-  - check
-  - test
-  - tox-test
+  - name: check
+    if: (type = push AND branch = master) OR (type = pull_request AND NOT branch =~ /no-ci/)
+  - name: test
+    if: (type = push AND branch = master) OR (type = pull_request AND NOT branch =~ /no-ci/)
+  - name: tox-test-baseline
+    if: (type = push AND branch = master) OR (type = pull_request AND NOT branch =~ /no-ci/)
+  - name: tox-test
+    if: type = push AND branch = master
 
 jobs:
   fast_finish: true
@@ -45,26 +50,27 @@ jobs:
         - codecov
 
     - env: TOXENV=py37-django30
-      stage: tox-test
+      stage: tox-test-baseline
       python: "3.7"
+    - env: TOXENV=py37-django22
+      stage: tox-test-baseline
+      python: "3.7"
+    - env: TOXENV=py36-django21
+      stage: tox-test-baseline
+      python: "3.6"
+    - env: TOXENV=py36-django20
+      stage: tox-test-baseline
+      python: "3.6"
+
     - env: TOXENV=py36-django30
       stage: tox-test
       python: "3.6"
-    - env: TOXENV=py37-django22
-      stage: tox-test
-      python: "3.7"
     - env: TOXENV=py36-django22
-      stage: tox-test
-      python: "3.6"
-    - env: TOXENV=py36-django21
       stage: tox-test
       python: "3.6"
     - env: TOXENV=py35-django21
       stage: tox-test
       python: "3.5"
-    - env: TOXENV=py36-django20
-      stage: tox-test
-      python: "3.6"
     - env: TOXENV=py35-django20
       stage: tox-test
       python: "3.5"
