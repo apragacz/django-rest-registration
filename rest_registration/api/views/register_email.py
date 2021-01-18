@@ -14,8 +14,14 @@ from rest_registration.exceptions import BadRequest
 from rest_registration.notifications.email import send_verification_notification
 from rest_registration.notifications.enums import NotificationType
 from rest_registration.settings import registration_settings
-from rest_registration.utils import users
 from rest_registration.utils.responses import get_ok_response
+from rest_registration.utils.users import (
+    get_user_by_verification_id,
+    get_user_email_field_name,
+    get_user_verification_id,
+    is_user_email_field_unique,
+    user_with_email_exists
+)
 from rest_registration.utils.verification import verify_signer_or_bad_request
 from rest_registration.verification import URLParamsSigner
 
@@ -46,13 +52,11 @@ def register_email(request):
     serializer.is_valid(raise_exception=True)
 
     email = serializer.get_email()
-    email_already_used = (
-        users.is_user_email_field_unique() and users.user_with_email_exists(email)
-    )
+    email_already_used = is_user_email_field_unique() and user_with_email_exists(email)
 
     if registration_settings.REGISTER_EMAIL_VERIFICATION_ENABLED:
         signer = RegisterEmailSigner({
-            'user_id': users.get_user_verification_id(user),
+            'user_id': get_user_verification_id(user),
             'email': email,
         }, request=request)
         notification_data = {
@@ -70,7 +74,7 @@ def register_email(request):
                 raise BadRequest({api_settings.NON_FIELD_ERRORS_KEY: [detail]})
             raise BadRequest(detail)
 
-        email_field_name = users.get_user_email_field_name()
+        email_field_name = get_user_email_field_name()
         old_email = getattr(user, email_field_name)
         setattr(user, email_field_name, email)
         user.save()
@@ -117,14 +121,14 @@ def process_verify_email_data(input_data, serializer_context=None):
     request = serializer_context.get('request')
     new_email = data['email']
 
-    if users.is_user_email_field_unique() and users.user_with_email_exists(new_email):
+    if is_user_email_field_unique() and user_with_email_exists(new_email):
         detail = _("This email is already registered.")
         if registration_settings.USE_NON_FIELD_ERRORS_KEY_FROM_DRF_SETTINGS:
             raise BadRequest({api_settings.NON_FIELD_ERRORS_KEY: [detail]})
         raise BadRequest(detail)
 
-    email_field_name = users.get_user_email_field_name()
-    user = users.get_user_by_verification_id(data['user_id'])
+    email_field_name = get_user_email_field_name()
+    user = get_user_by_verification_id(data['user_id'])
     old_email = getattr(user, email_field_name)
     setattr(user, email_field_name, new_email)
     user.save()

@@ -119,11 +119,13 @@ def password_change():
 
 @pytest.fixture()
 def user(db, email_change, password_change):
-    return create_test_user(
-        username='testusername',
-        email=email_change.old_value,
-        password=password_change.old_value,
-    )
+    kwargs = {
+        'email': email_change.old_value,
+        'password': password_change.old_value,
+    }
+    if settings.AUTH_USER_MODEL != 'custom_users.SimpleEmailBasedUser':
+        kwargs['username'] = 'testusername'
+    return create_test_user(**kwargs)
 
 
 @pytest.fixture()
