@@ -1,5 +1,22 @@
 from django.utils.translation import gettext_lazy as _
-from rest_framework.exceptions import APIException
+from rest_framework.exceptions import APIException as _APIException
+from rest_framework.settings import api_settings
+
+from rest_registration.settings import registration_settings
+
+
+class APIException(_APIException):
+
+    def __init__(self, detail=None, code=None):
+        if detail is None:
+            detail = self.default_detail
+        if code is None:
+            code = self.default_code
+
+        if registration_settings.USE_NON_FIELD_ERRORS_KEY_FROM_DRF_SETTINGS:
+            detail = _wrap_detail_in_dict(detail)
+
+        super().__init__(detail=detail, code=code)
 
 
 class BadRequest(APIException):
@@ -16,6 +33,16 @@ class UserNotFound(BadRequest):
 class LoginInvalid(BadRequest):
     default_detail = _("Login or password invalid.")
     default_code = 'login-invalid'
+
+
+class EmailAlreadyRegistered(BadRequest):
+    default_detail = _("This email is already registered.")
+    default_code = 'email-already-registered'
+
+
+class UserWithoutEmailNonverifiable(BadRequest):
+    default_detail = _("User without email cannot be verified")
+    default_code = 'user-without-email-nonverifiable'
 
 
 class AuthTokenError(BadRequest):
@@ -51,3 +78,11 @@ class SignatureExpired(SignatureError):
 class SignatureInvalid(SignatureError):
     default_detail = _("Invalid signature")
     default_code = 'signature-invalid'
+
+
+def _wrap_detail_in_dict(detail):
+    if isinstance(detail, list):
+        return {api_settings.NON_FIELD_ERRORS_KEY: detail}
+    if isinstance(detail, dict):
+        return detail
+    return {api_settings.NON_FIELD_ERRORS_KEY: [detail]}

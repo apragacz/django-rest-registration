@@ -30,10 +30,6 @@ def login(request):
     try:
         user = login_authenticator(serializer.validated_data, serializer=serializer)
     except UserNotFound:
-        if registration_settings.USE_NON_FIELD_ERRORS_KEY_FROM_DRF_SETTINGS:
-            raise LoginInvalid({
-                api_settings.NON_FIELD_ERRORS_KEY: [LoginInvalid.default_detail]
-            }) from None
         raise LoginInvalid() from None
 
     extra_data = perform_login(request, user)
