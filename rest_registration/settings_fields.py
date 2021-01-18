@@ -365,7 +365,12 @@ MISC_SETTINGS_FIELDS = [
     ),
     Field(
         'USE_NON_FIELD_ERRORS_KEY_FROM_DRF_SETTINGS',
-        default=False
+        default=False,
+        help=dedent("""\
+            If ``True``, the base API exception class will wrap the detail
+            string message (or message list) into a dictionary with a key
+            defined by ``REST_FRAMEWORK['NON_FIELD_ERRORS_KEY']``.
+            """),
     ),
 ]
 
