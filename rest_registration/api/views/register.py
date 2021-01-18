@@ -4,7 +4,6 @@ from django.utils.translation import gettext as _
 from rest_framework import serializers, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework.settings import api_settings
 
 from rest_registration import signals
 from rest_registration.api.views.login import perform_login
@@ -12,7 +11,7 @@ from rest_registration.decorators import (
     api_view_serializer_class,
     api_view_serializer_class_getter
 )
-from rest_registration.exceptions import BadRequest
+from rest_registration.exceptions import UserWithoutEmailNonverifiable
 from rest_registration.settings import registration_settings
 from rest_registration.signers.register import RegisterSigner
 from rest_registration.utils.responses import get_ok_response
@@ -47,10 +46,7 @@ def register(request):
         email_field_name = get_user_email_field_name()
         if (email_field_name not in serializer.validated_data
                 or not serializer.validated_data[email_field_name]):
-            detail = _("User without email cannot be verified")
-            if registration_settings.USE_NON_FIELD_ERRORS_KEY_FROM_DRF_SETTINGS:
-                raise BadRequest({api_settings.NON_FIELD_ERRORS_KEY: [detail]})
-            raise BadRequest(detail)
+            raise UserWithoutEmailNonverifiable()
 
     with transaction.atomic():
         user = serializer.save(**kwargs)

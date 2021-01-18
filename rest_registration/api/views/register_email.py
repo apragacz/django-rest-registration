@@ -3,14 +3,13 @@ from django.utils.translation import gettext as _
 from rest_framework import serializers
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.settings import api_settings
 
 from rest_registration import signals
 from rest_registration.decorators import (
     api_view_serializer_class,
     api_view_serializer_class_getter
 )
-from rest_registration.exceptions import BadRequest
+from rest_registration.exceptions import EmailAlreadyRegistered
 from rest_registration.notifications.email import send_verification_notification
 from rest_registration.notifications.enums import NotificationType
 from rest_registration.settings import registration_settings
@@ -69,10 +68,7 @@ def register_email(request):
             notification_data, template_config_data, custom_user_address=email)
     else:
         if email_already_used:
-            detail = _("This email is already registered.")
-            if registration_settings.USE_NON_FIELD_ERRORS_KEY_FROM_DRF_SETTINGS:
-                raise BadRequest({api_settings.NON_FIELD_ERRORS_KEY: [detail]})
-            raise BadRequest(detail)
+            raise EmailAlreadyRegistered()
 
         email_field_name = get_user_email_field_name()
         old_email = getattr(user, email_field_name)
@@ -122,10 +118,7 @@ def process_verify_email_data(input_data, serializer_context=None):
     new_email = data['email']
 
     if is_user_email_field_unique() and user_with_email_exists(new_email):
-        detail = _("This email is already registered.")
-        if registration_settings.USE_NON_FIELD_ERRORS_KEY_FROM_DRF_SETTINGS:
-            raise BadRequest({api_settings.NON_FIELD_ERRORS_KEY: [detail]})
-        raise BadRequest(detail)
+        raise EmailAlreadyRegistered()
 
     email_field_name = get_user_email_field_name()
     user = get_user_by_verification_id(data['user_id'])
