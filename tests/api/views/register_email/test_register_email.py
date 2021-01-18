@@ -10,14 +10,17 @@ from rest_framework.test import force_authenticate
 from rest_registration.api.views.register_email import RegisterEmailSigner
 from rest_registration.exceptions import SignatureExpired, SignatureInvalid
 from rest_registration.utils.verification import verify_signer_or_bad_request
+from tests.helpers.api_views import assert_response_is_bad_request
 from tests.helpers.constants import (
     REGISTER_EMAIL_VERIFICATION_URL,
     VERIFICATION_FROM_EMAIL
 )
+from tests.helpers.email import assert_no_email_sent, capture_sent_emails
 from tests.helpers.settings import (
     override_auth_model_settings,
     override_rest_registration_settings
 )
+from tests.helpers.views import ViewProvider
 
 from ..base import APIViewTestCase
 
@@ -211,49 +214,6 @@ class RegisterEmailViewTestCase(APIViewTestCase):
         self.user.refresh_from_db()
         self.assertEqual(self.user.email, self.new_email)
 
-    @override_rest_registration_settings({
-        'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
-        'USE_NON_FIELD_ERRORS_KEY_FROM_DRF_SETTINGS': True,
-    })
-    def test_register_email_fail_with_non_field_errors(self):
-        # arrange
-        with mock.patch(
-            'rest_registration.utils.users.is_user_email_field_unique',
-            return_value=True
-        ), mock.patch(
-            'rest_registration.utils.users.user_with_email_exists', return_value=True
-        ):
-            self.setup_user()
-            data = {
-                'email': self.new_email,
-            }
-            # act, assert
-            with self.assert_no_mail_sent():
-                response = self._test_authenticated(data)
-                self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
-            assert "non_field_errors" in response.data
-
-    @override_rest_registration_settings({
-        'REGISTER_EMAIL_VERIFICATION_ENABLED': False
-    })
-    def test_register_email_fail_email_already_used(self):
-        # arrange
-        with mock.patch(
-            'rest_registration.utils.users.is_user_email_field_unique',
-            return_value=True
-        ), mock.patch(
-            'rest_registration.utils.users.user_with_email_exists', return_value=True
-        ):
-            self.setup_user()
-            data = {
-                'email': self.new_email,
-            }
-            # act, assert
-            with self.assert_no_mail_sent():
-                response = self._test_authenticated(data)
-                self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
-            assert "detail" in response.data
-
     @override_settings(
         TEMPLATES=(),
     )
@@ -289,3 +249,45 @@ def test_verify_signer_or_bad_request_non_field_errors(exception, expected):
         verify_signer_or_bad_request(mock_signer)
 
     assert 'non_field_errors' in context.value.get_full_details()
+
+
+@override_rest_registration_settings({
+    'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
+    'USE_NON_FIELD_ERRORS_KEY_FROM_DRF_SETTINGS': True,
+})
+def test_register_email_fail_with_non_field_errors(
+        settings_with_simple_email_based_user,
+        user,
+        api_view_provider, api_factory):
+    request = api_factory.create_post_request({
+        'email': user.email,
+    })
+    force_authenticate(request, user=user)
+    with capture_sent_emails() as sent_emails:
+        response = api_view_provider.view_func(request)
+    assert_no_email_sent(sent_emails)
+    assert_response_is_bad_request(response)
+    assert "non_field_errors" in response.data
+
+
+@override_rest_registration_settings({
+    'REGISTER_EMAIL_VERIFICATION_ENABLED': False
+})
+def test_register_email_fail_email_already_used(
+        settings_with_simple_email_based_user,
+        user,
+        api_view_provider, api_factory):
+    request = api_factory.create_post_request({
+        'email': user.email,
+    })
+    force_authenticate(request, user=user)
+    with capture_sent_emails() as sent_emails:
+        response = api_view_provider.view_func(request)
+    assert_no_email_sent(sent_emails)
+    assert_response_is_bad_request(response)
+    assert "detail" in response.data
+
+
+@pytest.fixture()
+def api_view_provider():
+    return ViewProvider('register-email')
