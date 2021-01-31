@@ -95,7 +95,7 @@ DefaultSendResetPasswordLinkSerializer
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: rest_registration.api.serializers.DefaultSendResetPasswordLinkSerializer
-   :members: get_user_or_none
+   :members:
 
 List of settings
 ----------------

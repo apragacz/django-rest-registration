@@ -265,6 +265,20 @@ def test_when_no_user_reveal_and_user_not_found_then_send_link_successful(
     assert_no_email_sent(sent_emails)
 
 
+@override_rest_registration_settings({
+    'SEND_RESET_PASSWORD_LINK_SERIALIZER_CLASS': 'tests.testapps.custom_serializers.serializers.DefaultDeprecatedSendResetPasswordLinkSerializer',  # noqa: E501
+})
+def test_when_deprecated_send_reset_password_link_serializer_then_success(
+        settings_with_reset_password_verification, user,
+        api_view_provider, api_factory):
+    request = api_factory.create_post_request({
+        'login': 'abra',
+    })
+    api_factory.add_session_to_request(request)
+    response = api_view_provider.view_func(request)
+    assert_response_is_ok(response)
+
+
 def assert_valid_send_link_email(sent_email, user, timer):
     verification_data = _assert_valid_reset_password_verification_email(
         sent_email, user)

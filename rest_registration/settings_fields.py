@@ -213,6 +213,31 @@ RESET_PASSWORD_SETTINGS_FIELDS = [
             """)
     ),
     Field(
+        'SEND_RESET_PASSWORD_LINK_USER_FINDER',
+        default='rest_registration.utils.users.find_user_by_by_send_reset_password_link_data',  # noqa: E501
+        import_string=True,
+        help=dedent("""\
+            By default the user finder function will use
+            :ref:`user-login-fields-setting` setting to extract the login field
+            from the validated serializer data either by using the 'login' key
+            or the specific login field name(s) (e.g. 'username', 'email').
+            You can change that behavior by overriding this setting.
+
+            The user finder function receives these parameters as
+            positional arguments:
+
+            *   ``data`` - the validated data from the send reset pasword
+                link serializer.
+
+            and these parameters as keyword arguments:
+
+            *   ``serializer`` - the source send reset password link serializer
+                which generated the input data. This parameter could be dropped
+                in the future, so it should be retrieved via ``kwargs.get()``
+                instead be named directly.
+            """)
+    ),
+    Field(
         'SEND_RESET_PASSWORD_LINK_SERIALIZER_USE_EMAIL',
         default=False,
         help=dedent("""\

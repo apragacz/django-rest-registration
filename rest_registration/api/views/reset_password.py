@@ -69,10 +69,12 @@ def send_reset_password_link(request):
         success_message = _("Reset link sent")
     else:
         success_message = _("Reset link sent if the user exists in database")
-    user = serializer.get_user_or_none()
-    if not user:
+    user_finder = registration_settings.SEND_RESET_PASSWORD_LINK_USER_FINDER
+    try:
+        user = user_finder(serializer.validated_data, serializer=serializer)
+    except UserNotFound:
         if registration_settings.RESET_PASSWORD_FAIL_WHEN_USER_NOT_FOUND:
-            raise UserNotFound()
+            raise
         return get_ok_response(success_message)
     signer = ResetPasswordSigner({
         'user_id': get_user_verification_id(user),

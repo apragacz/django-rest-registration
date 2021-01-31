@@ -2,12 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from rest_registration.settings import registration_settings
-from rest_registration.utils.users import (
-    get_user_by_login_or_none,
-    get_user_by_lookup_dict,
-    get_user_email_field_name,
-    get_user_public_field_names
-)
+from rest_registration.utils.users import get_user_public_field_names
 from rest_registration.utils.validation import (
     run_validators,
     validate_user_password,
@@ -78,25 +73,6 @@ class DefaultSendResetPasswordLinkSerializer(serializers.Serializer):  # noqa: E
         else:
             fields['login'] = serializers.CharField(required=True)
         return fields
-
-    def get_user_or_none(self):
-        """
-        Return user if matching given criteria (login fields / e-mail).
-        Return ``None`` otherwise.
-        """
-        if registration_settings.SEND_RESET_PASSWORD_LINK_SERIALIZER_USE_EMAIL:
-            email = self.validated_data['email']
-            return self._get_user_by_email_or_none(email)
-        login = self.validated_data['login']
-        return self._get_user_by_login_or_none(login)
-
-    def _get_user_by_login_or_none(self, login):
-        return get_user_by_login_or_none(login)
-
-    def _get_user_by_email_or_none(self, email):
-        email_field_name = get_user_email_field_name()
-        return get_user_by_lookup_dict(
-            {email_field_name: email}, default=None, require_verified=False)
 
 
 class DefaultUserProfileSerializer(serializers.ModelSerializer):

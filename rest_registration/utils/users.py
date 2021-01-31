@@ -93,6 +93,38 @@ def get_user_by_verification_id(
         require_verified=require_verified)
 
 
+def find_user_by_by_send_reset_password_link_data(
+        data: Dict[str, Any], **kwargs) -> 'AbstractBaseUser':
+    """
+    Return user if matching given criteria (login fields / e-mail).
+    Return ``None`` otherwise.
+    """
+    serializer = kwargs.get('serializer')
+    if serializer:
+        # TODO: Issue #114 - remove code supporting deprecated behavior
+        get_user_or_none = getattr(serializer, 'get_user_or_none', None)
+        if callable(get_user_or_none):
+            user = get_user_or_none()
+            if not user:
+                raise UserNotFound()
+            return user
+    login_field_names = get_user_login_field_names()
+    finder_tests = [('login', login_field_names)]
+    finder_tests.extend((f, [f]) for f in login_field_names)
+
+    for field_name, db_field_names in finder_tests:
+        value = data.get(field_name)
+        if value is None:
+            continue
+        for db_fn in db_field_names:
+            user = get_user_by_lookup_dict(
+                {db_fn: value}, default=None, require_verified=False)
+            if user is not None:
+                return user
+
+    raise UserNotFound()
+
+
 def user_with_email_exists(email):
     user_class = get_user_model()
     email_field_name = get_user_email_field_name()
