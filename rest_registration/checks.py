@@ -299,12 +299,12 @@ def deprecated_login_serializer_check() -> bool:
 # TODO: Issue #114 - remove deprecation check
 @register()
 @simple_check(
-    'SEND_RESET_PASSWORD_LINK_USER_FINDER contains deprecated get_user_or_none method,'
-    ' which will be removed in version 0.7.0',
+    'SEND_RESET_PASSWORD_LINK_SERIALIZER_CLASS contains deprecated'
+    ' get_user_or_none method, which will be removed in version 0.7.0',
     WarningCode.DEPRECATION
 )
 def deprecated_send_reset_password_link_serializer_check() -> bool:
-    serializer_class = registration_settings.SEND_RESET_PASSWORD_LINK_USER_FINDER
+    serializer_class = registration_settings.SEND_RESET_PASSWORD_LINK_SERIALIZER_CLASS
     deprecated = (
         hasattr(serializer_class, 'get_user_or_none')
         and callable(serializer_class.get_user_or_none))

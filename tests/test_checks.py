@@ -361,7 +361,7 @@ def test_deprecated_login_serializer_check_fails():
 
 # TODO: Issue #114 - remove code testing the deprecation check
 @override_rest_registration_settings({
-    'SEND_RESET_PASSWORD_LINK_USER_FINDER': 'tests.testapps.custom_serializers.serializers.DefaultDeprecatedSendResetPasswordLinkSerializer',  # noqa: E501
+    'SEND_RESET_PASSWORD_LINK_SERIALIZER_CLASS': 'tests.testapps.custom_serializers.serializers.DefaultDeprecatedSendResetPasswordLinkSerializer',  # noqa: E501
 })
 def test_deprecated_send_reset_password_link_serializer_check_fails():
     errors = simulate_checks()
@@ -369,7 +369,7 @@ def test_deprecated_send_reset_password_link_serializer_check_fails():
         WarningCode.DEPRECATION,
     ])
     expected_messages = {
-        "SEND_RESET_PASSWORD_LINK_USER_FINDER contains deprecated get_user_or_none method, which will be removed in version 0.7.0",  # noqa: E501
+        "SEND_RESET_PASSWORD_LINK_SERIALIZER_CLASS contains deprecated get_user_or_none method, which will be removed in version 0.7.0",  # noqa: E501
     }
     assert {e.msg for e in errors} == expected_messages
 
