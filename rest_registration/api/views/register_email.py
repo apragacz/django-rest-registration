@@ -50,7 +50,13 @@ def register_email(request):
     serializer = serializer_class(data=request.data, context={'request': request})
     serializer.is_valid(raise_exception=True)
 
-    email = serializer.get_email()
+    # TODO: Issue #114 - remove code supporting deprecated behavior
+    get_email = getattr(serializer, 'get_email', None)
+    if callable(get_email):
+        email = get_email()
+    else:
+        email = serializer.validated_data['email']
+
     email_already_used = is_user_email_field_unique() and user_with_email_exists(email)
 
     if registration_settings.REGISTER_EMAIL_VERIFICATION_ENABLED:

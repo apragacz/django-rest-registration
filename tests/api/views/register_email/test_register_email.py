@@ -10,7 +10,10 @@ from rest_framework.test import force_authenticate
 from rest_registration.api.views.register_email import RegisterEmailSigner
 from rest_registration.exceptions import SignatureExpired, SignatureInvalid
 from rest_registration.utils.verification import verify_signer_or_bad_request
-from tests.helpers.api_views import assert_response_is_bad_request
+from tests.helpers.api_views import (
+    assert_response_is_bad_request,
+    assert_response_is_ok
+)
 from tests.helpers.constants import (
     REGISTER_EMAIL_VERIFICATION_URL,
     VERIFICATION_FROM_EMAIL
@@ -286,6 +289,24 @@ def test_register_email_fail_email_already_used(
     assert_no_email_sent(sent_emails)
     assert_response_is_bad_request(response)
     assert "detail" in response.data
+
+
+@override_rest_registration_settings({
+    'REGISTER_EMAIL_SERIALIZER_CLASS': 'tests.testapps.custom_serializers.serializers.DefaultDeprecatedRegisterEmailSerializer',  # noqa: E501
+})
+def test_ok_when_deprecated_register_email_serializer(
+        user,
+        api_view_provider, api_factory):
+    request = api_factory.create_post_request({
+        'email': 'not@used.com',
+    })
+    force_authenticate(request, user=user)
+    with capture_sent_emails() as sent_emails:
+        response = api_view_provider.view_func(request)
+    assert_response_is_ok(response)
+    assert_no_email_sent(sent_emails)
+    user.refresh_from_db()
+    assert user.email == 'abra@cadabra.com'
 
 
 @pytest.fixture()

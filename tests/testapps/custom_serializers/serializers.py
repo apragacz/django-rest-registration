@@ -35,3 +35,26 @@ class DefaultDeprecatedSendResetPasswordLinkSerializer(serializers.Serializer):
 
     def update(self, instance, validated_data):
         pass
+
+
+class DefaultDeprecatedRegisterEmailSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+
+    def get_email(self):
+        return 'abra@cadabra.com'
+
+    def create(self, validated_data):
+        pass
+
+    def update(self, instance, validated_data):
+        pass
+
+
+class InvalidRegisterEmailSerializer(serializers.Serializer):
+    definitely_not_email = serializers.EmailField(required=True)
+
+    def create(self, validated_data):
+        pass
+
+    def update(self, instance, validated_data):
+        pass

@@ -13,6 +13,7 @@ class ErrorCode(Enum):
     DRF_INCOMPATIBLE_DJANGO_AUTH_BACKEND = 9
     LOGIN_FIELDS_NOT_UNIQUE = 10
     INVALID_AUTH_TOKEN_MANAGER_CLASS = 11
+    INVALID_REGISTER_EMAIL_SERIALIZER_CLASS = 12
 
     def __str__(self):
         return 'E{self.value:03d}'.format(self=self)

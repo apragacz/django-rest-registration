@@ -374,6 +374,35 @@ def test_deprecated_send_reset_password_link_serializer_check_fails():
     assert {e.msg for e in errors} == expected_messages
 
 
+# TODO: Issue #114 - remove code testing the deprecation check
+@override_rest_registration_settings({
+    'REGISTER_EMAIL_SERIALIZER_CLASS': 'tests.testapps.custom_serializers.serializers.DefaultDeprecatedRegisterEmailSerializer',  # noqa: E501
+})
+def test_deprecated_register_email_serializer_check_fails():
+    errors = simulate_checks()
+    assert_error_codes_match(errors, [
+        WarningCode.DEPRECATION,
+    ])
+    expected_messages = {
+        "REGISTER_EMAIL_SERIALIZER_CLASS contains deprecated get_email method, which will be removed in version 0.7.0",  # noqa: E501
+    }
+    assert {e.msg for e in errors} == expected_messages
+
+
+@override_rest_registration_settings({
+    'REGISTER_EMAIL_SERIALIZER_CLASS': 'tests.testapps.custom_serializers.serializers.InvalidRegisterEmailSerializer',  # noqa: E501
+})
+def test_invalid_register_email_serializer_check_fails():
+    errors = simulate_checks()
+    assert_error_codes_match(errors, [
+        ErrorCode.INVALID_REGISTER_EMAIL_SERIALIZER_CLASS,
+    ])
+    expected_messages = {
+        "REGISTER_EMAIL_SERIALIZER_CLASS does not contain email field",
+    }
+    assert {e.msg for e in errors} == expected_messages
+
+
 def assert_error_codes_match(errors, expected_error_codes):
     error_ids = sorted(e.id for e in errors)
     expected_error_ids = sorted(

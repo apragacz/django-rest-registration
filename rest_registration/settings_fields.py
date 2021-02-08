@@ -293,8 +293,8 @@ REGISTER_EMAIL_SETTINGS_FIELDS = [
             The serializer used by :ref:`register-email-view` endpoint.
             It is used to validate the input data and obtain new e-mail.
             You can use your custom serializer
-            to customise validation logic. Please remember that it should
-            implement ``get_email`` method.
+            to customise validation logic. The important part is that it should contain
+            ``email`` field.
             """),
     ),
     Field('REGISTER_EMAIL_VERIFICATION_ENABLED', default=True),

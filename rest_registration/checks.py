@@ -311,6 +311,35 @@ def deprecated_send_reset_password_link_serializer_check() -> bool:
     return not deprecated
 
 
+# TODO: Issue #114 - remove deprecation check
+@register()
+@simple_check(
+    'REGISTER_EMAIL_SERIALIZER_CLASS contains deprecated get_email method,'
+    ' which will be removed in version 0.7.0',
+    WarningCode.DEPRECATION
+)
+def deprecated_register_email_serializer_check() -> bool:
+    serializer_class = registration_settings.REGISTER_EMAIL_SERIALIZER_CLASS
+    deprecated = (
+        hasattr(serializer_class, 'get_email')
+        and callable(serializer_class.get_email))
+    return not deprecated
+
+
+@register()
+@simple_check(
+    'REGISTER_EMAIL_SERIALIZER_CLASS does not contain email field',
+    ErrorCode.INVALID_REGISTER_EMAIL_SERIALIZER_CLASS
+)
+def invalid_register_email_serializer_check() -> bool:
+    serializer_class = registration_settings.REGISTER_EMAIL_SERIALIZER_CLASS
+    serializer = serializer_class()
+    try:
+        return bool(serializer.fields['email'])
+    except KeyError:
+        return False
+
+
 def _is_auth_token_manager_proper_subclass() -> bool:
     cls = registration_settings.AUTH_TOKEN_MANAGER_CLASS
     return (

@@ -51,12 +51,6 @@ class DefaultRegisterEmailSerializer(serializers.Serializer):  # noqa: E501 pyli
     """
     email = serializers.EmailField(required=True)
 
-    def get_email(self):
-        """
-        Return user email.
-        """
-        return self.validated_data['email']
-
 
 class DefaultSendResetPasswordLinkSerializer(serializers.Serializer):  # noqa: E501 pylint: disable=abstract-method
     """
