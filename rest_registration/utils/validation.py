@@ -61,8 +61,7 @@ def _validate_user_password(password, user) -> None:
     try:
         validate_password(password, user=user)
     except DjangoValidationError as exc:
-        # TODO: Issue #109 - remove type: ignore
-        raise ValidationError(list(exc.messages)) from None  # type: ignore
+        raise ValidationError(list(exc.messages)) from None
 
 
 def run_validators(validators: Iterable[Validator], value: Any) -> None:
@@ -86,5 +85,4 @@ def run_validators(validators: Iterable[Validator], value: Any) -> None:
             api_settings.NON_FIELD_ERRORS_KEY, []).extend(non_field_errors)
         raise ValidationError(errors)
     if non_field_errors:
-        # TODO: Issue #109 - remove type: ignore
-        raise ValidationError(non_field_errors)  # type: ignore
+        raise ValidationError(non_field_errors)
