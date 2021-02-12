@@ -14,6 +14,7 @@ class ErrorCode(Enum):
     LOGIN_FIELDS_NOT_UNIQUE = 10
     INVALID_AUTH_TOKEN_MANAGER_CLASS = 11
     INVALID_REGISTER_EMAIL_SERIALIZER_CLASS = 12
+    NON_UNIQUE_FIELD_USED_AS_UNIQUE = 13
 
     def __str__(self):
         return 'E{self.value:03d}'.format(self=self)

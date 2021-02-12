@@ -403,6 +403,20 @@ def test_invalid_register_email_serializer_check_fails():
     assert {e.msg for e in errors} == expected_messages
 
 
+@override_rest_registration_settings({
+    'SEND_RESET_PASSWORD_LINK_SERIALIZER_USE_EMAIL': True,
+})
+def test_fail_when_send_reset_password_link_serializer_uses_non_unique_email():
+    errors = simulate_checks()
+    assert_error_codes_match(errors, [
+        ErrorCode.NON_UNIQUE_FIELD_USED_AS_UNIQUE,
+    ])
+    expected_messages = {
+        "SEND_RESET_PASSWORD_LINK_SERIALIZER_USE_EMAIL is set but email field is not unique",  # noqa: E501
+    }
+    assert {e.msg for e in errors} == expected_messages
+
+
 def assert_error_codes_match(errors, expected_error_codes):
     error_ids = sorted(e.id for e in errors)
     expected_error_ids = sorted(

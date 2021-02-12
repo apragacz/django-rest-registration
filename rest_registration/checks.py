@@ -15,6 +15,7 @@ from rest_registration.notifications.email import parse_template_config
 from rest_registration.settings import registration_settings
 from rest_registration.utils.common import implies
 from rest_registration.utils.users import (
+    get_user_email_field_name,
     get_user_login_field_names,
     is_model_field_unique
 )
@@ -331,13 +332,33 @@ def deprecated_register_email_serializer_check() -> bool:
     'REGISTER_EMAIL_SERIALIZER_CLASS does not contain email field',
     ErrorCode.INVALID_REGISTER_EMAIL_SERIALIZER_CLASS
 )
-def invalid_register_email_serializer_check() -> bool:
+def valid_register_email_serializer_check() -> bool:
     serializer_class = registration_settings.REGISTER_EMAIL_SERIALIZER_CLASS
     serializer = serializer_class()
     try:
         return bool(serializer.fields['email'])
     except KeyError:
         return False
+
+
+@register()
+@simple_check(
+    'SEND_RESET_PASSWORD_LINK_SERIALIZER_USE_EMAIL is set'
+    ' but email field is not unique',
+    ErrorCode.NON_UNIQUE_FIELD_USED_AS_UNIQUE
+)
+def send_reset_password_link_serializer_email_unique_check() -> bool:
+    return implies(
+        registration_settings.SEND_RESET_PASSWORD_LINK_SERIALIZER_USE_EMAIL,
+        _is_email_field_unique,
+    )
+
+
+def _is_email_field_unique() -> bool:
+    user_cls = get_user_model()  # type: Type[Model]
+    user_meta = user_cls._meta  # pylint: disable=protected-access
+    email_field_name = get_user_email_field_name()
+    return is_model_field_unique(user_meta.get_field(email_field_name))
 
 
 def _is_auth_token_manager_proper_subclass() -> bool:
