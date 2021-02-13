@@ -274,7 +274,6 @@ def test_when_deprecated_send_reset_password_link_serializer_then_success(
     request = api_factory.create_post_request({
         'login': 'abra',
     })
-    api_factory.add_session_to_request(request)
     response = api_view_provider.view_func(request)
     assert_response_is_ok(response)
 
