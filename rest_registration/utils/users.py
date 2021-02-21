@@ -20,18 +20,6 @@ if TYPE_CHECKING:
     UserField = Union['Field', 'ForeignObjectRel']
 
 
-def get_user_by_login_or_none(login, require_verified=False):
-    user = None
-    for login_field_name in get_user_login_field_names():
-        user = get_user_by_lookup_dict(
-            {login_field_name: login},
-            default=None, require_verified=require_verified)
-        if user:
-            break
-
-    return user
-
-
 def authenticate_by_login_data(
         data: Dict[str, Any], **kwargs) -> 'AbstractBaseUser':
     serializer = kwargs.get('serializer')
