@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Router, Route } from 'react-router-dom'
-import createBrowserHistory from 'history/createBrowserHistory';
+import {createBrowserHistory} from 'history';
 import PropTypes from 'prop-types';
 
 import AppBar from 'material-ui/AppBar';

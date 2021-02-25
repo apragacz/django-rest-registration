@@ -1,0 +1,5 @@
+Django
+django-cors-headers
+django-rest-registration
+django-rest-swagger
+djangorestframework
