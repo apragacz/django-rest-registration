@@ -1,7 +1,7 @@
 import functools
 from collections import OrderedDict
 from collections.abc import Mapping
-from typing import Any, Callable, Dict, Iterable, List
+from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, List
 
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -14,12 +14,16 @@ from rest_registration.utils.users import (
     get_user_by_verification_id
 )
 
+if TYPE_CHECKING:
+    from django.contrib.auth.base_user import AbstractBaseUser
+
 Validator = Callable[[Any], None]
 
 
-def wrap_validation_error_with_field(field_name: str):
+def wrap_validation_error_with_field(
+        field_name: str) -> Callable[[Validator], Validator]:
 
-    def decorator(func: Validator):
+    def decorator(func: Validator) -> Validator:
 
         @functools.wraps(func)
         def wrapper(value: Any) -> None:
@@ -57,7 +61,7 @@ def validate_password_with_user_id(user_data: Dict[str, Any]) -> None:
     return _validate_user_password(password, user)
 
 
-def _validate_user_password(password, user) -> None:
+def _validate_user_password(password: str, user: 'AbstractBaseUser') -> None:
     try:
         validate_password(password, user=user)
     except DjangoValidationError as exc:

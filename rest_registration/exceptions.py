@@ -1,13 +1,20 @@
+from typing import Dict, List, Optional, Union
+
 from django.utils.translation import gettext_lazy as _
 from rest_framework.exceptions import APIException as _APIException
 from rest_framework.settings import api_settings
 
 from rest_registration.settings import registration_settings
 
+DetailType = Union[str, List[str], Dict[str, List[str]]]
+
 
 class APIException(_APIException):
 
-    def __init__(self, detail=None, code=None):
+    def __init__(
+            self,
+            detail: Optional[DetailType] = None,
+            code: Optional[str] = None) -> None:
         if detail is None:
             detail = self.default_detail
         if code is None:
@@ -80,7 +87,7 @@ class SignatureInvalid(SignatureError):
     default_code = 'signature-invalid'
 
 
-def _wrap_detail_in_dict(detail):
+def _wrap_detail_in_dict(detail: DetailType) -> Dict[str, List[str]]:
     if isinstance(detail, list):
         return {api_settings.NON_FIELD_ERRORS_KEY: detail}
     if isinstance(detail, dict):

@@ -1,4 +1,5 @@
 from collections import namedtuple
+from typing import TYPE_CHECKING, Any, Dict
 
 from django.core.exceptions import ImproperlyConfigured
 from django.core.mail.message import EmailMultiAlternatives
@@ -6,10 +7,13 @@ from django.template.exceptions import TemplateDoesNotExist
 from django.template.loader import get_template, render_to_string
 from django.utils.translation import gettext as _
 
-from rest_registration.notifications.enums import NotificationMethod
+from rest_registration.notifications.enums import NotificationMethod, NotificationType
 from rest_registration.settings import registration_settings
 from rest_registration.utils.common import identity
 from rest_registration.utils.users import get_user_email_field_name
+
+if TYPE_CHECKING:
+    from django.contrib.auth.base_user import AbstractBaseUser
 
 EmailTemplateConfig = namedtuple('EmailTemplateConfig', (
     'subject_template_name',
@@ -20,8 +24,11 @@ EmailTemplateConfig = namedtuple('EmailTemplateConfig', (
 
 
 def send_verification_notification(
-        notification_type, user, data, template_config_data,
-        custom_user_address=None):
+        notification_type: NotificationType,
+        user: 'AbstractBaseUser',
+        data: Dict[str, Any],
+        template_config_data: Dict[str, Any],
+        custom_user_address: Any = None) -> None:
     if custom_user_address is None:
         user_address = get_user_address(user)
     else:
@@ -32,8 +39,11 @@ def send_verification_notification(
 
 
 def create_verification_notification(
-        notification_type, user, user_address, data,
-        template_config_data):
+        notification_type: NotificationType,
+        user: 'AbstractBaseUser',
+        user_address: Any,
+        data: Dict[str, Any],
+        template_config_data: Dict[str, Any]) -> EmailMultiAlternatives:
     from_email = registration_settings.VERIFICATION_FROM_EMAIL
     reply_to_email = (registration_settings.VERIFICATION_REPLY_TO_EMAIL or
                       from_email)
@@ -62,17 +72,17 @@ def create_verification_notification(
     return email_msg
 
 
-def send_notification(notification):
+def send_notification(notification: EmailMultiAlternatives) -> None:
     notification.send()
 
 
-def get_user_address(user):
+def get_user_address(user: 'AbstractBaseUser') -> str:
     email_field_name = get_user_email_field_name()
-    email = getattr(user, email_field_name)
+    email = getattr(user, email_field_name)  # type: str
     return email
 
 
-def parse_template_config(template_config_data):
+def parse_template_config(template_config_data: Dict[str, Any]) -> EmailTemplateConfig:
     """
     >>> from tests import doctest_utils
     >>> convert_html_to_text = registration_settings.VERIFICATION_EMAIL_HTML_TO_TEXT_CONVERTER  # noqa: E501
@@ -211,7 +221,7 @@ def parse_template_config(template_config_data):
     return config
 
 
-def _validate_template_name_existence(template_name):
+def _validate_template_name_existence(template_name: str) -> None:
     try:
         get_template(template_name)
     except TemplateDoesNotExist:
