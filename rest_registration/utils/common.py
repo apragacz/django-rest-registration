@@ -1,8 +1,16 @@
 from typing import Callable, Iterable, Optional, Set, TypeVar, Union
 
+
+class RaiseExceptionType:
+    pass
+
+
 _T = TypeVar('_T')
 LazyBool = Callable[[], bool]
 MaybeLazyBool = Union[bool, LazyBool]
+
+
+RAISE_EXCEPTION = RaiseExceptionType()
 
 
 def identity(value: _T) -> _T:

@@ -1,8 +1,12 @@
+from typing import Any, Dict, Optional
+
 from django.http import Http404
 from django.utils.translation import gettext as _
 from rest_framework import serializers
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.request import Request
+from rest_framework.response import Response
 
 from rest_registration import signals
 from rest_registration.decorators import (
@@ -40,7 +44,7 @@ class RegisterEmailSigner(URLParamsSigner):
     lambda: registration_settings.REGISTER_EMAIL_SERIALIZER_CLASS)
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def register_email(request):
+def register_email(request: Request) -> Response:
     '''
     Register new email.
     '''
@@ -101,7 +105,7 @@ class VerifyEmailSerializer(serializers.Serializer):  # noqa: E501 pylint: disab
 @api_view_serializer_class(VerifyEmailSerializer)
 @api_view(['POST'])
 @permission_classes(registration_settings.NOT_AUTHENTICATED_PERMISSION_CLASSES)
-def verify_email(request):
+def verify_email(request: Request) -> Response:
     '''
     Verify email via signature.
     '''
@@ -109,7 +113,9 @@ def verify_email(request):
     return get_ok_response(_("Email verified successfully"))
 
 
-def process_verify_email_data(input_data, serializer_context=None):
+def process_verify_email_data(
+        input_data: Dict[str, Any],
+        serializer_context: Optional[Dict[str, Any]] = None) -> None:
     if serializer_context is None:
         serializer_context = {}
     if not registration_settings.REGISTER_EMAIL_VERIFICATION_ENABLED:

@@ -20,7 +20,7 @@ verification_redirects_settings = NestedSettings(
     root_setting_name='REST_REGISTRATION_VERIFICATION_REDIRECTS')
 
 
-def settings_changed_handler(*args, **kwargs):
+def settings_changed_handler(*args, **kwargs) -> None:
     verification_redirects_settings.reset_user_settings()
     verification_redirects_settings.reset_attr_cache()
 

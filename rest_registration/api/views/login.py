@@ -1,9 +1,13 @@
+from typing import TYPE_CHECKING, Any, Dict
+
 from django.contrib import auth
 from django.utils.translation import gettext as _
 from rest_framework import serializers
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.request import Request
+from rest_framework.response import Response
 from rest_framework.settings import api_settings
 
 from rest_registration.decorators import (
@@ -14,12 +18,15 @@ from rest_registration.exceptions import LoginInvalid, UserNotFound
 from rest_registration.settings import registration_settings
 from rest_registration.utils.responses import get_ok_response
 
+if TYPE_CHECKING:
+    from django.contrib.auth.base_user import AbstractBaseUser
+
 
 @api_view_serializer_class_getter(
     lambda: registration_settings.LOGIN_SERIALIZER_CLASS)
 @api_view(['POST'])
 @permission_classes(registration_settings.NOT_AUTHENTICATED_PERMISSION_CLASSES)
-def login(request):
+def login(request: Request) -> Response:
     '''
     Logs in the user via given login and password.
     '''
@@ -44,7 +51,7 @@ class LogoutSerializer(serializers.Serializer):  # pylint: disable=abstract-meth
 @api_view_serializer_class(LogoutSerializer)
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def logout(request):
+def logout(request: Request) -> Response:
     '''
     Logs out the user. returns an error if the user is not
     authenticated.
@@ -67,25 +74,25 @@ def logout(request):
     return get_ok_response(_("Logout successful"))
 
 
-def should_authenticate_session():
+def should_authenticate_session() -> bool:
     result = registration_settings.LOGIN_AUTHENTICATE_SESSION
     if result is None:
         result = rest_auth_has_class(SessionAuthentication)
     return result
 
 
-def should_retrieve_token():
+def should_retrieve_token() -> bool:
     result = registration_settings.LOGIN_RETRIEVE_TOKEN
     if result is None:
         result = rest_auth_has_class(TokenAuthentication)
     return result
 
 
-def rest_auth_has_class(cls):
+def rest_auth_has_class(cls: type) -> bool:
     return cls in api_settings.DEFAULT_AUTHENTICATION_CLASSES
 
 
-def perform_login(request, user):
+def perform_login(request: Request, user: 'AbstractBaseUser') -> Dict[str, Any]:
     if should_authenticate_session():
         auth.login(request, user)
 

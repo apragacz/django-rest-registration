@@ -1,11 +1,16 @@
+from typing import Any, Dict, Iterable, Optional
+
 from django.conf import settings as root_settings
 from rest_framework.settings import perform_import
 
 
 class NestedSettings:
     def __init__(
-            self, user_settings, defaults, import_strings,
-            root_setting_name):
+            self,
+            user_settings: Optional[Dict[str, Any]],
+            defaults: Dict[str, Any],
+            import_strings: Iterable[str],
+            root_setting_name: str) -> None:
         if user_settings:
             self._user_settings = user_settings
         self.defaults = defaults
@@ -13,7 +18,7 @@ class NestedSettings:
         self.root_setting_name = root_setting_name
 
     @property
-    def user_settings(self):
+    def user_settings(self) -> Dict[str, Any]:
         if not hasattr(self, '_user_settings'):
             self._user_settings = getattr(
                 root_settings,
@@ -22,16 +27,16 @@ class NestedSettings:
             )
         return self._user_settings
 
-    def reset_user_settings(self):
+    def reset_user_settings(self) -> None:
         if hasattr(self, '_user_settings'):
             del self._user_settings
 
-    def reset_attr_cache(self):
+    def reset_attr_cache(self) -> None:
         for key in self.defaults.keys():
             if hasattr(self, key):
                 delattr(self, key)
 
-    def __getattr__(self, attr):
+    def __getattr__(self, attr: str) -> Any:
         if attr not in self.defaults.keys():
             raise AttributeError(
                 "Invalid {self.root_setting_name} setting: '{attr}'".format(
