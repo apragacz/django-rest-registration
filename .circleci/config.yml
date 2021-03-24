@@ -10,19 +10,29 @@ executors:
     working_directory: ~/project
 
 commands:
-  restore_deps_cache:
-    steps:
-      - restore_cache:
-        keys:
-          - v1-dependencies-{{ checksum requirements/requirements-all.txt }}
   save_deps_cache:
     steps:
       - save_cache:
-        paths:
-          - ~/.cache/pip
-          - ~/.venv
-        keys:
-          - v1-dependencies-{{ checksum requirements/requirements-all.txt }}
+          paths:
+            - ~/.cache/pip
+            - ~/.venv
+          key: v1-dependencies-{{ checksum requirements/requirements-all.txt }}
+  restore_deps_cache:
+    steps:
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum requirements/requirements-all.txt }}
+  save_project_workspace:
+    steps:
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - .
+  restore_project_workspace:
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run: source ~/.venv/bin/activate
 
 jobs:
   setup_project:
@@ -32,50 +42,42 @@ jobs:
     steps:
       - restore_deps_cache
       - checkout
-      - python -m venv ~/.venv
-      - source ~/.venv/bin/activate
-      - make install_dev
+      - run: python -m venv ~/.venv
+      - run: source ~/.venv/bin/activate
+      - run: make install_dev
       - save_deps_cache
-      - persist_to_workspace:
-          root: ~
-          paths:
-            - .
+      - save_project_workspace
   flake8:
     executor: docker-executor
     steps:
-      - attach_workspace:
-          at: ~
+      - restore_project_workspace
       - run: make flake8
   mypy:
     executor: docker-executor
     steps:
-      - attach_workspace:
-          at: ~
+      - restore_project_workspace
       - run: make mypy
   pylint:
     executor: docker-executor
     steps:
-      - attach_workspace:
-          at: ~
+      - restore_project_workspace
       - run: make pylint
   docscheck:
     executor: docker-executor
     steps:
-      - attach_workspace:
-          at: ~
+      - restore_project_workspace
       - run: make docscheck
   packagecheck:
     executor: docker-executor
     steps:
-      - attach_workspace:
-          at: ~
+      - restore_project_workspace
       - run: make packagecheck
   test:
     executor: docker-executor
     steps:
-      - attach_workspace:
-          at: ~
+      - restore_project_workspace
       - run: make test ARGS="-v --cov --cov-report xml"
+
 workflows:
   workflow:
     jobs:
