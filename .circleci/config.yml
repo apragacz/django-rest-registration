@@ -16,12 +16,12 @@ commands:
           paths:
             - ~/.cache/pip
             - ~/.venv
-          key: v1-dependencies-{{ checksum requirements/requirements-all.txt }}
+          key: v1-dependencies-{{ checksum "requirements/requirements-all.txt" }}
   restore_deps_cache:
     steps:
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum requirements/requirements-all.txt }}
+            - v1-dependencies-{{ checksum "requirements/requirements-all.txt" }}
   save_project_workspace:
     steps:
       - persist_to_workspace:
