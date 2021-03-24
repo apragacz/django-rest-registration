@@ -1,0 +1,102 @@
+version: 2.1
+
+executors:
+  docker-executor:
+    docker:
+      - image: cimg/python:3.6.12
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+    working_directory: ~/project
+
+commands:
+  restore_deps_cache:
+    steps:
+      - restore_cache:
+        keys:
+          - v1-dependencies-{{ checksum requirements/requirements-all.txt }}
+  save_deps_cache:
+    steps:
+      - save_cache:
+        paths:
+          - ~/.cache/pip
+          - ~/.venv
+        keys:
+          - v1-dependencies-{{ checksum requirements/requirements-all.txt }}
+
+jobs:
+  setup_project:
+    executor: docker-executor
+    environment:
+      PIP_CACHE_DIR
+    steps:
+      - restore_deps_cache
+      - checkout
+      - python -m venv ~/.venv
+      - source ~/.venv/bin/activate
+      - make install_dev
+      - save_deps_cache
+      - persist_to_workspace:
+          root: ~
+          paths:
+            - .
+  flake8:
+    executor: docker-executor
+    steps:
+      - attach_workspace:
+          at: ~
+      - run: make flake8
+  mypy:
+    executor: docker-executor
+    steps:
+      - attach_workspace:
+          at: ~
+      - run: make mypy
+  pylint:
+    executor: docker-executor
+    steps:
+      - attach_workspace:
+          at: ~
+      - run: make pylint
+  docscheck:
+    executor: docker-executor
+    steps:
+      - attach_workspace:
+          at: ~
+      - run: make docscheck
+  packagecheck:
+    executor: docker-executor
+    steps:
+      - attach_workspace:
+          at: ~
+      - run: make packagecheck
+  test:
+    executor: docker-executor
+    steps:
+      - attach_workspace:
+          at: ~
+      - run: make test ARGS="-v --cov --cov-report xml"
+workflows:
+  workflow:
+    jobs:
+      - setup_project
+      - flake8:
+          requires:
+            - setup_project
+      - mypy:
+          requires:
+            - setup_project
+      - pylint:
+          requires:
+            - setup_project
+      - docscheck:
+          requires:
+            - setup_project
+      - packagecheck:
+          requires:
+            - setup_project
+      - test:
+          requires:
+            - flake8
+            - mypy
+            - setup_project
