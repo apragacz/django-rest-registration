@@ -38,7 +38,7 @@ jobs:
   setup_project:
     executor: docker-executor
     environment:
-      PIP_CACHE_DIR
+      CRYPTOGRAPHY_DONT_BUILD_RUST: 1
     steps:
       - restore_deps_cache
       - checkout
