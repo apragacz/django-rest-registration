@@ -27,7 +27,8 @@ commands:
       - persist_to_workspace:
           root: ~/
           paths:
-            - .
+            - project/
+            - .venv/
   restore_project_workspace:
     steps:
       - attach_workspace:
