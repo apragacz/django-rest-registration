@@ -40,8 +40,8 @@ jobs:
     environment:
       CRYPTOGRAPHY_DONT_BUILD_RUST: 1
     steps:
-      - restore_deps_cache
       - checkout
+      - restore_deps_cache
       - run: python -m venv ~/.venv
       - run: source ~/.venv/bin/activate
       - run: make install_dev
