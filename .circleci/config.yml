@@ -43,7 +43,7 @@ jobs:
     steps:
       - checkout
       - restore_deps_cache
-      - run: python -m venv ~/.venv
+      - run: python -m venv --copies ~/.venv
       - run: source ~/.venv/bin/activate
       - run: make install_dev
       - save_deps_cache
