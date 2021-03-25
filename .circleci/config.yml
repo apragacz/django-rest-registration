@@ -66,12 +66,12 @@ jobs:
     executor: docker-executor
     steps:
       - restore_project_workspace
-      - run: source ~/.venv/bin/activate && make docscheck
+      - run: source ~/.venv/bin/activate && make check_docs
   packagecheck:
     executor: docker-executor
     steps:
       - restore_project_workspace
-      - run: make packagecheck
+      - run: source ~/.venv/bin/activate && make check_package
   test:
     executor: docker-executor
     steps:
