@@ -16,13 +16,12 @@ commands:
           paths:
             - ~/.cache/pip
             - ~/.venv
-            - ~/.pyenv/versions/
-          key: v1.2-dependencies-{{ checksum "requirements/requirements-all.txt" }}
+          key: v1.3-dependencies-{{ checksum "requirements/requirements-all.txt" }}
   restore_deps_cache:
     steps:
       - restore_cache:
           keys:
-            - v1.2-dependencies-{{ checksum "requirements/requirements-all.txt" }}
+            - v1.3-dependencies-{{ checksum "requirements/requirements-all.txt" }}
   save_project_workspace:
     steps:
       - persist_to_workspace:
@@ -30,7 +29,6 @@ commands:
           paths:
             - project/
             - .venv/
-            - .pyenv/versions/
   restore_project_workspace:
     steps:
       - attach_workspace:
@@ -46,30 +44,29 @@ jobs:
       - checkout
       - restore_deps_cache
       - run: python -m venv --copies ~/.venv
-      #- run: source ~/.venv/bin/activate
-      - run: make install_dev
+      - run: source ~/.venv/bin/activate && make install_dev
       - save_deps_cache
       - save_project_workspace
   flake8:
     executor: docker-executor
     steps:
       - restore_project_workspace
-      - run: make flake8
+      - run: source ~/.venv/bin/activate && make flake8
   mypy:
     executor: docker-executor
     steps:
       - restore_project_workspace
-      - run: make mypy
+      - run: source ~/.venv/bin/activate && make mypy
   pylint:
     executor: docker-executor
     steps:
       - restore_project_workspace
-      - run: make pylint
+      - run: source ~/.venv/bin/activate && make pylint
   docscheck:
     executor: docker-executor
     steps:
       - restore_project_workspace
-      - run: make docscheck
+      - run: source ~/.venv/bin/activate && make docscheck
   packagecheck:
     executor: docker-executor
     steps:
@@ -79,7 +76,7 @@ jobs:
     executor: docker-executor
     steps:
       - restore_project_workspace
-      - run: make test ARGS="-v --cov --cov-report xml"
+      - run: source ~/.venv/bin/activate && make test ARGS="-v --cov --cov-report xml"
 
 workflows:
   workflow:
