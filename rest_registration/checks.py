@@ -26,7 +26,7 @@ from rest_registration.utils.users import (
     'django.contrib.auth is not in INSTALLED_APPS',
     ErrorCode.NO_AUTH_INSTALLED,
 )
-def auth_installed_check() -> bool:
+def auth_installed_check(**kwargs) -> bool:
     return _is_auth_installed()
 
 
@@ -35,7 +35,7 @@ def auth_installed_check() -> bool:
     'RESET_PASSWORD_VERIFICATION_URL is not set',
     ErrorCode.NO_RESET_PASSWORD_VER_URL,
 )
-def reset_password_verification_url_check() -> bool:
+def reset_password_verification_url_check(**kwargs) -> bool:
     return implies(
         registration_settings.RESET_PASSWORD_VERIFICATION_ENABLED,
         registration_settings.RESET_PASSWORD_VERIFICATION_URL,
@@ -48,7 +48,7 @@ def reset_password_verification_url_check() -> bool:
     ' but REGISTER_VERIFICATION_URL is not set',
     ErrorCode.NO_REGISTER_VER_URL,
 )
-def register_verification_url_check() -> bool:
+def register_verification_url_check(**kwargs) -> bool:
     return implies(
         registration_settings.REGISTER_VERIFICATION_ENABLED,
         registration_settings.REGISTER_VERIFICATION_URL,
@@ -61,7 +61,7 @@ def register_verification_url_check() -> bool:
     ' but REGISTER_EMAIL_VERIFICATION_URL is not set',
     ErrorCode.NO_REGISTER_EMAIL_VER_URL,
 )
-def register_email_verification_url_check() -> bool:
+def register_email_verification_url_check(**kwargs) -> bool:
     return implies(
         registration_settings.REGISTER_EMAIL_VERIFICATION_ENABLED,
         registration_settings.REGISTER_EMAIL_VERIFICATION_URL,
@@ -73,7 +73,7 @@ def register_email_verification_url_check() -> bool:
     'VERIFICATION_FROM_EMAIL is not set',
     ErrorCode.NO_VER_FROM_EMAIL,
 )
-def verification_from_check() -> bool:
+def verification_from_check(**kwargs) -> bool:
     return implies(
         any([
             registration_settings.REGISTER_VERIFICATION_ENABLED,
@@ -91,7 +91,7 @@ def verification_from_check() -> bool:
     ' in DEFAULT_AUTHENTICATION_CLASSES',
     ErrorCode.NO_TOKEN_AUTH_CONFIG,
 )
-def token_auth_config_check() -> bool:
+def token_auth_config_check(**kwargs) -> bool:
     return implies(
         _is_auth_installed() and registration_settings.LOGIN_RETRIEVE_TOKEN,
         _is_auth_token_manager_auth_class_enabled
@@ -104,7 +104,7 @@ def token_auth_config_check() -> bool:
     ' the required Django apps are not in INSTALLED_APPS',
     ErrorCode.NO_TOKEN_AUTH_INSTALLED,
 )
-def token_auth_installed_check() -> bool:
+def token_auth_installed_check(**kwargs) -> bool:
     return implies(
         _is_auth_installed() and registration_settings.LOGIN_RETRIEVE_TOKEN,
         _is_auth_token_manager_app_name_installed,
@@ -139,7 +139,7 @@ def _get_auth_token_manager() -> AbstractAuthTokenManager:
     ' This can allow multiple logins using the verification url.',
     WarningCode.REGISTER_VERIFICATION_MULTIPLE_AUTO_LOGIN,
 )
-def register_verification_one_time_auto_login_check() -> bool:
+def register_verification_one_time_auto_login_check(**kwargs) -> bool:
     return implies(
         all([
             registration_settings.REGISTER_VERIFICATION_ENABLED,
@@ -154,7 +154,7 @@ def register_verification_one_time_auto_login_check() -> bool:
     'REGISTER_VERIFICATION_EMAIL_TEMPLATES is invalid',
     ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
 )
-def valid_register_verification_email_template_config_check() -> bool:
+def valid_register_verification_email_template_config_check(**kwargs) -> bool:
     return implies(
         registration_settings.REGISTER_VERIFICATION_ENABLED,
         _is_email_template_config_valid(
@@ -167,7 +167,7 @@ def valid_register_verification_email_template_config_check() -> bool:
     'RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES is invalid',
     ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
 )
-def valid_reset_password_verification_email_template_config_check() -> bool:
+def valid_reset_password_verification_email_template_config_check(**kwargs) -> bool:
     return implies(
         registration_settings.RESET_PASSWORD_VERIFICATION_ENABLED,
         _is_email_template_config_valid(
@@ -180,7 +180,7 @@ def valid_reset_password_verification_email_template_config_check() -> bool:
     'REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES is invalid',
     ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
 )
-def valid_register_email_verification_email_template_config_check() -> bool:
+def valid_register_email_verification_email_template_config_check(**kwargs) -> bool:
     return implies(
         registration_settings.REGISTER_EMAIL_VERIFICATION_ENABLED,
         _is_email_template_config_valid(
@@ -216,7 +216,7 @@ __DRF_INCOMPATIBLE_DJANGO_AUTH_BACKENDS__ = [
     + '\n'.join(__DRF_INCOMPATIBLE_DJANGO_AUTH_BACKENDS__),
     ErrorCode.DRF_INCOMPATIBLE_DJANGO_AUTH_BACKEND,
 )
-def drf_compatible_django_auth_backend_check() -> bool:
+def drf_compatible_django_auth_backend_check(**kwargs) -> bool:
     return all(
         incompat_cls_name not in settings.AUTHENTICATION_BACKENDS
         for incompat_cls_name in __DRF_INCOMPATIBLE_DJANGO_AUTH_BACKENDS__
@@ -228,7 +228,7 @@ def drf_compatible_django_auth_backend_check() -> bool:
     'At least one of LOGIN_FIELDS is not unique',
     ErrorCode.LOGIN_FIELDS_NOT_UNIQUE,
 )
-def login_fields_unique_check() -> bool:
+def login_fields_unique_check(**kwargs) -> bool:
     return implies(_is_auth_installed(), _are_login_fields_unique)
 
 
@@ -246,7 +246,7 @@ def _are_login_fields_unique() -> bool:
     ' of AbstractAuthTokenManager',
     ErrorCode.INVALID_AUTH_TOKEN_MANAGER_CLASS,
 )
-def valid_auth_token_manager_class_proper_subclass_check() -> bool:
+def valid_auth_token_manager_class_proper_subclass_check(**kwargs) -> bool:
     return implies(
         _is_auth_installed(),
         _is_auth_token_manager_proper_subclass,
@@ -259,7 +259,7 @@ def valid_auth_token_manager_class_proper_subclass_check() -> bool:
     ' method get_authentication_class',
     ErrorCode.INVALID_AUTH_TOKEN_MANAGER_CLASS,
 )
-def valid_auth_token_manager_class_get_authentication_class_check() -> bool:
+def valid_auth_token_manager_class_get_authentication_class_check(**kwargs) -> bool:
     return implies(
         _is_auth_installed(),
         partial(
@@ -273,7 +273,7 @@ def valid_auth_token_manager_class_get_authentication_class_check() -> bool:
     'AUTH_TOKEN_MANAGER_CLASS is not implementing method provide_token',
     ErrorCode.INVALID_AUTH_TOKEN_MANAGER_CLASS,
 )
-def valid_auth_token_manager_class_provide_token_check() -> bool:
+def valid_auth_token_manager_class_provide_token_check(**kwargs) -> bool:
     return implies(
         _is_auth_installed(),
         partial(
@@ -289,7 +289,7 @@ def valid_auth_token_manager_class_provide_token_check() -> bool:
     ' which will be removed in version 0.7.0',
     WarningCode.DEPRECATION
 )
-def deprecated_login_serializer_check() -> bool:
+def deprecated_login_serializer_check(**kwargs) -> bool:
     serializer_class = registration_settings.LOGIN_SERIALIZER_CLASS
     deprecated = (
         hasattr(serializer_class, 'get_authenticated_user')
@@ -304,7 +304,7 @@ def deprecated_login_serializer_check() -> bool:
     ' get_user_or_none method, which will be removed in version 0.7.0',
     WarningCode.DEPRECATION
 )
-def deprecated_send_reset_password_link_serializer_check() -> bool:
+def deprecated_send_reset_password_link_serializer_check(**kwargs) -> bool:
     serializer_class = registration_settings.SEND_RESET_PASSWORD_LINK_SERIALIZER_CLASS
     deprecated = (
         hasattr(serializer_class, 'get_user_or_none')
@@ -319,7 +319,7 @@ def deprecated_send_reset_password_link_serializer_check() -> bool:
     ' which will be removed in version 0.7.0',
     WarningCode.DEPRECATION
 )
-def deprecated_register_email_serializer_check() -> bool:
+def deprecated_register_email_serializer_check(**kwargs) -> bool:
     serializer_class = registration_settings.REGISTER_EMAIL_SERIALIZER_CLASS
     deprecated = (
         hasattr(serializer_class, 'get_email')
@@ -332,7 +332,7 @@ def deprecated_register_email_serializer_check() -> bool:
     'REGISTER_EMAIL_SERIALIZER_CLASS does not contain email field',
     ErrorCode.INVALID_REGISTER_EMAIL_SERIALIZER_CLASS
 )
-def valid_register_email_serializer_check() -> bool:
+def valid_register_email_serializer_check(**kwargs) -> bool:
     serializer_class = registration_settings.REGISTER_EMAIL_SERIALIZER_CLASS
     serializer = serializer_class()
     try:
@@ -347,7 +347,7 @@ def valid_register_email_serializer_check() -> bool:
     ' but email field is not unique',
     ErrorCode.NON_UNIQUE_FIELD_USED_AS_UNIQUE
 )
-def send_reset_password_link_serializer_email_unique_check() -> bool:
+def send_reset_password_link_serializer_email_unique_check(**kwargs) -> bool:
     return implies(
         registration_settings.SEND_RESET_PASSWORD_LINK_SERIALIZER_USE_EMAIL,
         _is_email_field_unique,
