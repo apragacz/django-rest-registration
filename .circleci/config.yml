@@ -45,18 +45,28 @@ executors:
     working_directory: ~/project
 
 commands:
-  save_deps_cache:
+  save_pip_cache:
     steps:
       - save_cache:
           paths:
             - ~/.cache/pip
-            - ~/.venv
-          key: v1.3-dependencies-{{ checksum "requirements/requirements-all.txt" }}
-  restore_deps_cache:
+          key: v1.0-pip-cache-{{ checksum "requirements/requirements-all.txt" }}
+  restore_pip_cache:
     steps:
       - restore_cache:
           keys:
-            - v1.3-dependencies-{{ checksum "requirements/requirements-all.txt" }}
+            - v1.0-pip-cache-{{ checksum "requirements/requirements-all.txt" }}
+  save_py_venv_cache:
+    steps:
+      - save_cache:
+          paths:
+            - ~/.venv
+          key: v1.0-py-venv-{{ checksum "requirements/requirements-all.txt" }}
+  restore_py_venv_cache:
+    steps:
+      - restore_cache:
+          keys:
+            - v1.0-py-venv-{{ checksum "requirements/requirements-all.txt" }}
   save_project_workspace:
     steps:
       - persist_to_workspace:
@@ -76,10 +86,12 @@ jobs:
       CRYPTOGRAPHY_DONT_BUILD_RUST: 1
     steps:
       - checkout
-      - restore_deps_cache
+      - restore_pip_cache
+      - restore_py_venv_cache
       - run: python -m venv --copies ~/.venv
       - run: source ~/.venv/bin/activate && make install_dev
-      - save_deps_cache
+      - save_pip_cache
+      - save_py_venv_cache
       - save_project_workspace
   flake8:
     executor: docker-executor
@@ -122,6 +134,8 @@ jobs:
       TOXENV: py<< parameters.py >>-django<< parameters.django >>
     steps:
       - restore_project_workspace
+      - restore_pip_cache
+      - run: pip install tox
       - run: tox
 
 workflows:
