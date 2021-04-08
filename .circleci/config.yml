@@ -8,6 +8,41 @@ executors:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
     working_directory: ~/project
+  docker-executor-py34:
+    docker:
+      - image: cimg/python:3.4
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+    working_directory: ~/project
+  docker-executor-py35:
+    docker:
+      - image: cimg/python:3.5
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+    working_directory: ~/project
+  docker-executor-py36:
+    docker:
+      - image: cimg/python:3.6
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+    working_directory: ~/project
+  docker-executor-py37:
+    docker:
+      - image: cimg/python:3.7
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+    working_directory: ~/project
+  docker-executor-py38:
+    docker:
+      - image: cimg/python:3.8
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+    working_directory: ~/project
 
 commands:
   save_deps_cache:
@@ -33,7 +68,6 @@ commands:
     steps:
       - attach_workspace:
           at: ~/
-      #- run: source ~/.venv/bin/activate
 
 jobs:
   setup_project:
@@ -77,6 +111,18 @@ jobs:
     steps:
       - restore_project_workspace
       - run: source ~/.venv/bin/activate && make test ARGS="-v --cov --cov-report xml"
+  test-tox:
+    parameters:
+      py:
+        type: string
+      django:
+        type: string
+    executor: docker-executor-py<< parameters.py >>
+    environment:
+      TOXENV: py<< parameters.py >>-django<< parameters.django >>
+    steps:
+      - restore_project_workspace
+      - run: tox
 
 workflows:
   workflow:
@@ -102,3 +148,23 @@ workflows:
             - flake8
             - mypy
             - setup_project
+      - test-tox:
+          py: "37"
+          django: "30"
+          requires:
+            - test
+      - test-tox:
+          py: "37"
+          django: "22"
+          requires:
+            - test
+      - test-tox:
+          py: "36"
+          django: "21"
+          requires:
+            - test
+      - test-tox:
+          py: "36"
+          django: "20"
+          requires:
+            - test

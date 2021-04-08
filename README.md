@@ -1,6 +1,6 @@
 # Django REST Registration
 
-[![Build Status](https://travis-ci.org/apragacz/django-rest-registration.svg?branch=master)](https://travis-ci.org/apragacz/django-rest-registration)
+[![CircleCI Build Status](https://circleci.com/gh/apragacz/django-rest-registration.svg?style=shield)](https://circleci.com/gh/apragacz/django-rest-registration)
 [![Codecov Coverage](https://codecov.io/gh/apragacz/django-rest-registration/branch/master/graphs/badge.svg?branch=master)](https://codecov.io/github/apragacz/django-rest-registration?branch=master)
 [![PyPi Version](https://badge.fury.io/py/django-rest-registration.svg)](https://pypi.python.org/pypi/django-rest-registration/)
 [![Documentation Status](https://readthedocs.org/projects/django-rest-registration/badge/?version=latest)](https://django-rest-registration.readthedocs.io/en/latest/?badge=latest)
