@@ -43,6 +43,13 @@ executors:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
     working_directory: ~/project
+  docker-executor-py39:
+    docker:
+      - image: cimg/python:3.9
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+    working_directory: ~/project
 
 commands:
   save_pip_cache:
@@ -163,21 +170,37 @@ workflows:
             - mypy
             - setup_project
       - test-tox:
+          name: test-tox-py39-django32
+          py: "39"
+          django: "32"
+          requires:
+            - test
+      - test-tox:
+          name: test-tox-py38-django31
+          py: "38"
+          django: "31"
+          requires:
+            - test
+      - test-tox:
+          name: test-tox-py37-django30
           py: "37"
           django: "30"
           requires:
             - test
       - test-tox:
+          name: test-tox-py37-django22
           py: "37"
           django: "22"
           requires:
             - test
       - test-tox:
+          name: test-tox-py36-django21
           py: "36"
           django: "21"
           requires:
             - test
       - test-tox:
+          name: test-tox-py36-django20
           py: "36"
           django: "20"
           requires:
