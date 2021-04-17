@@ -14,30 +14,19 @@ from rest_registration.decorators import (
     api_view_serializer_class_getter
 )
 from rest_registration.exceptions import EmailAlreadyRegistered
-from rest_registration.notifications.email import send_verification_notification
-from rest_registration.notifications.enums import NotificationType
 from rest_registration.settings import registration_settings
+from rest_registration.signers.register_email import RegisterEmailSigner
 from rest_registration.utils.responses import get_ok_response
 from rest_registration.utils.users import (
     get_user_by_verification_id,
     get_user_email_field_name,
-    get_user_verification_id,
     is_user_email_field_unique,
     user_with_email_exists
 )
 from rest_registration.utils.verification import verify_signer_or_bad_request
-from rest_registration.verification import URLParamsSigner
-
-
-class RegisterEmailSigner(URLParamsSigner):
-    SALT_BASE = 'register-email'
-    USE_TIMESTAMP = True
-
-    def get_base_url(self):
-        return registration_settings.REGISTER_EMAIL_VERIFICATION_URL
-
-    def get_valid_period(self):
-        return registration_settings.REGISTER_EMAIL_VERIFICATION_PERIOD
+from rest_registration.utils.verification_notifications import (
+    send_register_email_verification_email_notification
+)
 
 
 @api_view_serializer_class_getter(
@@ -64,18 +53,8 @@ def register_email(request: Request) -> Response:
     email_already_used = is_user_email_field_unique() and user_with_email_exists(email)
 
     if registration_settings.REGISTER_EMAIL_VERIFICATION_ENABLED:
-        signer = RegisterEmailSigner({
-            'user_id': get_user_verification_id(user),
-            'email': email,
-        }, request=request)
-        notification_data = {
-            'params_signer': signer,
-            'email_already_used': email_already_used,
-        }
-        template_config_data = registration_settings.REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES  # noqa: E501
-        send_verification_notification(
-            NotificationType.REGISTER_EMAIL_VERIFICATION, user,
-            notification_data, template_config_data, custom_user_address=email)
+        send_register_email_verification_email_notification(
+            request, user, email, email_already_used=email_already_used)
     else:
         if email_already_used:
             raise EmailAlreadyRegistered()

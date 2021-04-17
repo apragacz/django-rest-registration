@@ -9,47 +9,19 @@ from rest_registration.decorators import (
     api_view_serializer_class_getter
 )
 from rest_registration.exceptions import UserNotFound
-from rest_registration.notifications.email import send_verification_notification
-from rest_registration.notifications.enums import NotificationType
 from rest_registration.settings import registration_settings
+from rest_registration.signers.reset_password import ResetPasswordSigner
 from rest_registration.utils.responses import get_ok_response
-from rest_registration.utils.users import (
-    get_user_by_verification_id,
-    get_user_verification_id
-)
+from rest_registration.utils.users import get_user_by_verification_id
 from rest_registration.utils.validation import (
     run_validators,
     validate_password_with_user_id,
     validate_user_password_confirm
 )
 from rest_registration.utils.verification import verify_signer_or_bad_request
-from rest_registration.verification import URLParamsSigner
-
-
-class ResetPasswordSigner(URLParamsSigner):
-    SALT_BASE = 'reset-password'
-    USE_TIMESTAMP = True
-
-    def get_base_url(self):
-        return registration_settings.RESET_PASSWORD_VERIFICATION_URL
-
-    def get_valid_period(self):
-        return registration_settings.RESET_PASSWORD_VERIFICATION_PERIOD
-
-    def _calculate_salt(self, data):
-        if registration_settings.RESET_PASSWORD_VERIFICATION_ONE_TIME_USE:
-            user = get_user_by_verification_id(data['user_id'], require_verified=False)
-            user_password_hash = user.password
-            # Use current user password hash as a part of the salt.
-            # If the password gets changed, then assume that the change
-            # was caused by previous password reset and the signature
-            # is not valid anymore because changed password hash implies
-            # changed salt used when verifying the input data.
-            salt = '{self.SALT_BASE}:{user_password_hash}'.format(
-                self=self, user_password_hash=user_password_hash)
-        else:
-            salt = self.SALT_BASE
-        return salt
+from rest_registration.utils.verification_notifications import (
+    send_reset_password_verification_email_notification
+)
 
 
 @api_view_serializer_class_getter(
@@ -76,18 +48,7 @@ def send_reset_password_link(request):
         if registration_settings.RESET_PASSWORD_FAIL_WHEN_USER_NOT_FOUND:
             raise
         return get_ok_response(success_message)
-    signer = ResetPasswordSigner({
-        'user_id': get_user_verification_id(user),
-    }, request=request)
-
-    template_config_data = registration_settings.RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES  # noqa: E501
-    notification_data = {
-        'params_signer': signer,
-    }
-    send_verification_notification(
-        NotificationType.RESET_PASSWORD_VERIFICATION, user, notification_data,
-        template_config_data)
-
+    send_reset_password_verification_email_notification(request, user)
     return get_ok_response(success_message)
 
 

@@ -1,4 +1,3 @@
-
 from rest_registration.settings import registration_settings
 from rest_registration.utils.users import get_user_by_verification_id, get_user_setting
 from rest_registration.verification import URLParamsSigner
