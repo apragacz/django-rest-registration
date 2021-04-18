@@ -390,6 +390,48 @@ def test_when_user_with_foreign_key_then_register_succeeds(
     assert_valid_register_verification_email(sent_email, user, timer)
 
 
+@pytest.mark.django_db
+@override_rest_registration_settings({
+    'VERIFICATION_TEMPLATES_SELECTOR': 'tests.testapps.custom_templates.utils.select_verification_templates',  # noqa E501
+})
+def test_ok_when_custom_verification_template_selector(
+        settings_with_register_verification,
+        api_view_provider, api_factory):
+    data = _get_register_user_data(password='testpassword')
+    request = api_factory.create_post_request(data)
+    with capture_sent_emails() as sent_emails, capture_time() as timer:
+        response = api_view_provider.view_func(request)
+    assert_response_status_is_created(response)
+    user = _get_register_response_user(response)
+    assert_user_state_matches_data(user, data)
+
+    assert_one_email_sent(sent_emails)
+    sent_email = sent_emails[0]
+    assert sent_email.subject == "Generic verification link was sent"
+    assert sent_email.body.startswith("Click URL to verify:")
+    assert_valid_register_verification_email(sent_email, user, timer)
+
+
+@pytest.mark.django_db
+@override_rest_registration_settings({
+    'VERIFICATION_TEMPLATES_SELECTOR': 'tests.testapps.custom_templates.utils.faulty_select_verification_templates',  # noqa E501
+})
+def test_ok_when_faulty_verification_template_selector(
+        settings_with_register_verification,
+        api_view_provider, api_factory):
+    data = _get_register_user_data(password='testpassword')
+    request = api_factory.create_post_request(data)
+    with capture_sent_emails() as sent_emails, capture_time() as timer:
+        response = api_view_provider.view_func(request)
+    assert_response_status_is_created(response)
+    user = _get_register_response_user(response)
+    assert_user_state_matches_data(user, data)
+
+    assert_one_email_sent(sent_emails)
+    sent_email = sent_emails[0]
+    assert_valid_register_verification_email(sent_email, user, timer)
+
+
 def assert_user_state_matches_data(user, data, verified=False):
     assert user.username == data['username']
     assert user.email == data['email']

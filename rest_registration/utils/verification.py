@@ -2,9 +2,11 @@ from typing import TYPE_CHECKING, Any, Dict, Optional
 from urllib.parse import urlencode
 
 from django.core import signing
+from rest_framework.request import Request
 
 from rest_registration.exceptions import SignatureExpired, SignatureInvalid
 from rest_registration.notifications.enums import NotificationMethod, NotificationType
+from rest_registration.settings import registration_settings
 from rest_registration.utils.signers import URLParamsSigner
 
 if TYPE_CHECKING:
@@ -45,3 +47,23 @@ def build_default_template_context(
         context['verification_url'] = params_signer.get_url()
     context.update(data)
     return context
+
+
+def select_default_templates(
+        request: Request,
+        user: 'AbstractBaseUser',
+        notification_type: NotificationType,
+        notification_method: NotificationMethod) -> Dict[str, str]:
+    mapping = _get_default_email_templates_mapping()
+    assert notification_type in mapping
+    # Note: in case of KeyError we should raise VerificationTemplatesNotFound,
+    # but that's not expected as we're covering all the cases here.
+    return mapping[notification_type]
+
+
+def _get_default_email_templates_mapping() -> Dict[NotificationType, Dict[str, str]]:
+    return {
+        NotificationType.REGISTER_VERIFICATION: registration_settings.REGISTER_VERIFICATION_EMAIL_TEMPLATES,  # noqa: E501
+        NotificationType.REGISTER_EMAIL_VERIFICATION: registration_settings.REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES,  # noqa: E501
+        NotificationType.RESET_PASSWORD_VERIFICATION: registration_settings.RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES,  # noqa: E501
+    }

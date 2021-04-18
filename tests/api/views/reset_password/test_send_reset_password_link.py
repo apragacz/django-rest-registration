@@ -266,6 +266,27 @@ def test_when_no_user_reveal_and_user_not_found_then_send_link_successful(
 
 
 @override_rest_registration_settings({
+    'VERIFICATION_TEMPLATES_SELECTOR': 'tests.testapps.custom_templates.utils.select_verification_templates',  # noqa E501
+})
+def test_ok_when_custom_verification_templates_selector(
+        settings_with_reset_password_verification,
+        api_view_provider, api_factory,
+        user):
+    request = api_factory.create_post_request({
+        'login': user.username,
+    })
+    with capture_sent_emails() as sent_emails, capture_time() as timer:
+        response = api_view_provider.view_func(request)
+    assert_response_is_ok(response)
+    assert_one_email_sent(sent_emails)
+
+    sent_email = sent_emails[0]
+    assert sent_email.subject == "Generic verification link was sent"
+    assert sent_email.body.startswith("Click URL to verify:")
+    assert_valid_send_link_email(sent_email, user, timer)
+
+
+@override_rest_registration_settings({
     'SEND_RESET_PASSWORD_LINK_SERIALIZER_CLASS': 'tests.testapps.custom_serializers.serializers.DefaultDeprecatedSendResetPasswordLinkSerializer',  # noqa: E501
 })
 def test_when_deprecated_send_reset_password_link_serializer_then_success(
@@ -279,13 +300,6 @@ def test_when_deprecated_send_reset_password_link_serializer_then_success(
 
 
 def assert_valid_send_link_email(sent_email, user, timer):
-    verification_data = _assert_valid_reset_password_verification_email(
-        sent_email, user)
-    _assert_valid_reset_password_verification_data(
-        verification_data, user, timer)
-
-
-def _assert_valid_reset_password_verification_email(sent_email, user):
     assert sent_email.from_email == VERIFICATION_FROM_EMAIL
     assert sent_email.to == [user.email]
     url = assert_one_url_line_in_text(sent_email.body)
@@ -293,15 +307,8 @@ def _assert_valid_reset_password_verification_email(sent_email, user):
         url,
         expected_path=RESET_PASSWORD_VERIFICATION_URL,
         expected_fields={'signature', 'user_id', 'timestamp'},
+        signer_cls=ResetPasswordSigner,
+        timer=timer,
     )
-    return verification_data
-
-
-def _assert_valid_reset_password_verification_data(
-        verification_data, user, timer):
     assert int(verification_data['user_id']) == user.id
-    url_sig_timestamp = int(verification_data['timestamp'])
-    assert url_sig_timestamp >= timer.start_time
-    assert url_sig_timestamp <= timer.end_time
-    signer = ResetPasswordSigner(verification_data)
-    signer.verify()
+    return verification_data
