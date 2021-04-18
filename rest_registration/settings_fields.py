@@ -374,6 +374,45 @@ GLOBAL_VERIFICATION_SETTINGS_FIELDS = [
             of the function.
             """),
     ),
+    Field(
+        'VERIFICATION_TEMPLATES_SELECTOR',
+        default='rest_registration.utils.verification.select_default_templates',
+        import_string=True,
+        help=dedent("""\
+            By default, the verification templates selector function will use
+            templates defined by these settings:
+
+            *   :ref:`register-verification-email-templates-setting`
+            *   :ref:`register-email-verification-email-templates-setting`
+            *   :ref:`reset-password-verification-email-templates-setting`
+
+            depending on the notification type (register,
+            registere email, reset password).
+            You can change that behavior by overriding this setting.
+
+            The verification template selector function receives these parameters
+            as keyword arguments:
+
+            *   ``request`` - the request which is source of sending given verification.
+            *   ``user`` - the user which is to be notified.
+            *   ``notification_type`` - value of
+                ``rest_registration.notifications.enums.NotificationType``
+                enum.
+            *   ``notification_method`` - value of
+                ``rest_registration.notifications.enums.NotificationMethod``
+
+            It is possible that in the future, additional keyword arguments
+            may be added. Therefore the implementer
+            of the custom selector function should take account of that,
+            for instance by adding ``**kwargs`` in the signature
+            of the function.
+
+            The verification template selector should raise
+            ``VerificationTemplatesNotFound`` exception when no matching templates
+            were found. In that case, Django REST Registration will fall back
+            to the default behavior (described above).
+            """),
+    ),
 ]
 
 CHANGE_PASSWORD_SETTINGS_FIELDS = [

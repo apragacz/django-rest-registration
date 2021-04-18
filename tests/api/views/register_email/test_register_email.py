@@ -18,11 +18,18 @@ from tests.helpers.constants import (
     REGISTER_EMAIL_VERIFICATION_URL,
     VERIFICATION_FROM_EMAIL
 )
-from tests.helpers.email import assert_no_email_sent, capture_sent_emails
+from tests.helpers.email import (
+    assert_no_email_sent,
+    assert_one_email_sent,
+    capture_sent_emails
+)
 from tests.helpers.settings import (
     override_auth_model_settings,
     override_rest_registration_settings
 )
+from tests.helpers.text import assert_one_url_line_in_text
+from tests.helpers.timer import capture_time
+from tests.helpers.verification import assert_valid_verification_url
 from tests.helpers.views import ViewProvider
 
 from ..base import APIViewTestCase
@@ -309,6 +316,46 @@ def test_ok_when_deprecated_register_email_serializer(
     assert user.email == 'abra@cadabra.com'
 
 
+@override_rest_registration_settings({
+    'VERIFICATION_TEMPLATES_SELECTOR': 'tests.testapps.custom_templates.utils.select_verification_templates',  # noqa E501
+})
+def test_ok_when_custom_verification_templates_selector(
+        settings_with_register_email_verification,
+        user, email_change,
+        api_view_provider, api_factory):
+    new_email = email_change.new_value
+    request = api_factory.create_post_request({
+        'email': new_email,
+    })
+    force_authenticate(request, user=user)
+    with capture_sent_emails() as sent_emails, capture_time() as timer:
+        response = api_view_provider.view_func(request)
+    assert_response_is_ok(response)
+    assert_one_email_sent(sent_emails)
+    sent_email = sent_emails[0]
+    assert sent_email.subject == "Generic verification link was sent"
+    assert sent_email.body.startswith("Click URL to verify:")
+    assert_valid_register_email_verification_email(sent_email, user, new_email, timer)
+    user.refresh_from_db()
+    assert user.email == email_change.old_value
+
+
 @pytest.fixture()
 def api_view_provider():
     return ViewProvider('register-email')
+
+
+def assert_valid_register_email_verification_email(sent_email, user, new_email, timer):
+    assert sent_email.from_email == VERIFICATION_FROM_EMAIL
+    assert sent_email.to == [new_email]
+    url = assert_one_url_line_in_text(sent_email.body)
+
+    verification_data = assert_valid_verification_url(
+        url,
+        expected_path=REGISTER_EMAIL_VERIFICATION_URL,
+        expected_fields={'signature', 'user_id', 'timestamp', 'email'},
+        timer=timer,
+        signer_cls=RegisterEmailSigner,
+    )
+    url_user_id = int(verification_data['user_id'])
+    assert url_user_id == user.pk

@@ -24,6 +24,7 @@ INSTALLED_APPS = (
     'rest_registration',
 
     'tests.testapps.custom_users',
+    'tests.testapps.custom_templates',
 )
 
 

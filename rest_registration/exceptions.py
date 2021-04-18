@@ -87,6 +87,12 @@ class SignatureInvalid(SignatureError):
     default_code = 'signature-invalid'
 
 
+class VerificationTemplatesNotFound(APIException):
+    status_code = 500
+    default_detail = _("Could not find verification templates")
+    default_code = 'verification-templates-not-found'
+
+
 def _wrap_detail_in_dict(detail: DetailType) -> Dict[str, List[str]]:
     if isinstance(detail, list):
         return {api_settings.NON_FIELD_ERRORS_KEY: detail}
