@@ -5,7 +5,7 @@ from django.core import signing
 
 from rest_registration.exceptions import SignatureExpired, SignatureInvalid
 from rest_registration.notifications.enums import NotificationMethod, NotificationType
-from rest_registration.verification import URLParamsSigner
+from rest_registration.utils.signers import URLParamsSigner
 
 if TYPE_CHECKING:
     from django.contrib.auth.base_user import AbstractBaseUser

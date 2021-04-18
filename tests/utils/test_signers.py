@@ -7,7 +7,7 @@ from django.core.signing import BadSignature, SignatureExpired
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory
 
-from rest_registration.verification import DataSigner, URLParamsSigner
+from rest_registration.utils.signers import DataSigner, URLParamsSigner
 
 
 class ExampleSigner(DataSigner):

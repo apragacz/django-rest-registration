@@ -1,6 +1,6 @@
 import contextlib
 
-from rest_registration.verification import get_current_timestamp
+from rest_registration.utils.signers import get_current_timestamp
 
 
 @contextlib.contextmanager

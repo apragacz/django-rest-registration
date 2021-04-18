@@ -1,5 +1,5 @@
 from rest_registration.settings import registration_settings
-from rest_registration.verification import URLParamsSigner
+from rest_registration.utils.signers import URLParamsSigner
 
 
 class RegisterEmailSigner(URLParamsSigner):

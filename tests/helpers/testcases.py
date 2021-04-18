@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase as DjangoTestCase
 from django.urls import reverse
 
-from rest_registration.verification import get_current_timestamp
+from rest_registration.utils.signers import get_current_timestamp
 
 from .common import create_test_user
 from .email import capture_sent_emails
