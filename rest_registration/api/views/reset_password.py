@@ -19,7 +19,7 @@ from rest_registration.utils.validation import (
     validate_user_password_confirm
 )
 from rest_registration.utils.verification import verify_signer_or_bad_request
-from rest_registration.utils.verification_notifications import (
+from rest_registration.verification_notifications import (
     send_reset_password_verification_email_notification
 )
 

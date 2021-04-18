@@ -24,7 +24,7 @@ from rest_registration.utils.users import (
     user_with_email_exists
 )
 from rest_registration.utils.verification import verify_signer_or_bad_request
-from rest_registration.utils.verification_notifications import (
+from rest_registration.verification_notifications import (
     send_register_email_verification_email_notification
 )
 
