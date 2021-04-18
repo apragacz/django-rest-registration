@@ -39,5 +39,5 @@ def get_version(package):
 setup(
     version=get_version(PACKAGE_NAME),
     packages=find_packages(exclude=['tests.*', 'tests']),
-    install_requires=get_requirements('requirements/requirements-base.txt'),
+    install_requires=get_requirements('requirements/requirements-base.in'),
 )

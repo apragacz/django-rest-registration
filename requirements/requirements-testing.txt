@@ -1,3 +1,0 @@
-tox
-pytest-django
-pytest-cov

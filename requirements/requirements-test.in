@@ -1,0 +1,36 @@
+# linting
+flake8
+flake8-comprehensions
+flake8-debugger
+flake8-isort
+flake8-print
+flake8-tuple
+isort<5.0
+pylint
+
+# type checking
+mypy
+django-stubs
+djangorestframework-stubs<1.3.0
+
+# testing
+coreapi
+pytest
+tox
+pytest-django
+pytest-cov
+codecov
+
+# package building
+docutils
+Pygments>=2.2.0
+twine>=1.11.0
+wheel>=0.31.0
+readme_renderer[md]
+
+# documentation
+Sphinx
+sphinx_rtd_theme
+sphinx-autobuild
+sphinx-jinja
+doc8

@@ -27,6 +27,8 @@ PYLINT_OPTS := --rcfile=setup.cfg
 PYTEST := py.test
 PYTEST_OPTS :=
 TWINE := twine
+PIP_COMPILE := pip-compile
+PIP_COMPILE_OPTS :=
 SPHINXBUILD := sphinx-build
 SPHINXBUILD_OPTS :=
 SPHINXBUILD_WARNING_LOG = sphinx-warnings.log
@@ -38,8 +40,14 @@ all: check test build check_package  ## check code, test, build, check package
 
 .PHONY: install_dev
 install_dev:  ## install all pip requirements and the package as editable
-	${PYTHON} -m pip install -r requirements/requirements-all.txt ${ARGS}
+	${PYTHON} -m pip install -r requirements/requirements-dev.lock.txt ${ARGS}
 	${PYTHON} -m pip install -e .
+
+.PHONY: upgrade_requirements
+upgrade_requirements:  ## upgrade pip requirements lock files
+	${PIP_COMPILE} ${PIP_COMPILE_OPTS} --output-file=requirements/requirements-base.lock.txt requirements/requirements-base.in
+	${PIP_COMPILE} ${PIP_COMPILE_OPTS} --output-file=requirements/requirements-test.lock.txt requirements/requirements-base.lock.txt requirements/requirements-test.in
+	${PIP_COMPILE} ${PIP_COMPILE_OPTS} --output-file=requirements/requirements-dev.lock.txt requirements/requirements-test.lock.txt requirements/requirements-dev.in
 
 .PHONY: test
 test:  ## run tests

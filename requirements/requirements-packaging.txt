@@ -1,5 +1,0 @@
-docutils
-Pygments>=2.2.0
-twine>=1.11.0
-wheel>=0.31.0
-readme_renderer[md]
