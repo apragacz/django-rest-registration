@@ -286,7 +286,8 @@ def valid_auth_token_manager_class_provide_token_check() -> bool:
 @register()
 @simple_check(
     'LOGIN_SERIALIZER_CLASS contains deprecated get_authenticated_user method,'
-    ' which will be removed in version 0.7.0',
+    ' which will be removed in version 0.7.0;'
+    ' for a replacement, please refer to LOGIN_AUTHENTICATOR setting',
     WarningCode.DEPRECATION
 )
 def deprecated_login_serializer_check() -> bool:
@@ -301,7 +302,8 @@ def deprecated_login_serializer_check() -> bool:
 @register()
 @simple_check(
     'SEND_RESET_PASSWORD_LINK_SERIALIZER_CLASS contains deprecated'
-    ' get_user_or_none method, which will be removed in version 0.7.0',
+    ' get_user_or_none method, which will be removed in version 0.7.0;'
+    ' for a replacement, please refer to SEND_RESET_PASSWORD_LINK_USER_FINDER setting',
     WarningCode.DEPRECATION
 )
 def deprecated_send_reset_password_link_serializer_check() -> bool:

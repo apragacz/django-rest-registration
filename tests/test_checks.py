@@ -354,7 +354,7 @@ def test_deprecated_login_serializer_check_fails():
         WarningCode.DEPRECATION,
     ])
     expected_messages = {
-        "LOGIN_SERIALIZER_CLASS contains deprecated get_authenticated_user method, which will be removed in version 0.7.0",  # noqa: E501
+        "LOGIN_SERIALIZER_CLASS contains deprecated get_authenticated_user method, which will be removed in version 0.7.0; for a replacement, please refer to LOGIN_AUTHENTICATOR setting",  # noqa: E501
     }
     assert {e.msg for e in errors} == expected_messages
 
@@ -369,7 +369,7 @@ def test_deprecated_send_reset_password_link_serializer_check_fails():
         WarningCode.DEPRECATION,
     ])
     expected_messages = {
-        "SEND_RESET_PASSWORD_LINK_SERIALIZER_CLASS contains deprecated get_user_or_none method, which will be removed in version 0.7.0",  # noqa: E501
+        "SEND_RESET_PASSWORD_LINK_SERIALIZER_CLASS contains deprecated get_user_or_none method, which will be removed in version 0.7.0; for a replacement, please refer to SEND_RESET_PASSWORD_LINK_USER_FINDER setting",  # noqa: E501
     }
     assert {e.msg for e in errors} == expected_messages
 

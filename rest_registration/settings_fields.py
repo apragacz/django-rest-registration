@@ -182,6 +182,9 @@ LOGIN_SETTINGS_FIELDS = [
                 the input data. This parameter could be dropped in the future,
                 so it should be retrieved via ``kwargs.get()`` instead be named
                 directly.
+
+            If the user cannot be found, the function should raise ``UserNotFound``
+            exception (from ``rest_registration.exceptions``).
             """),
     ),
     Field('LOGIN_AUTHENTICATE_SESSION'),
@@ -235,6 +238,9 @@ RESET_PASSWORD_SETTINGS_FIELDS = [
                 which generated the input data. This parameter could be dropped
                 in the future, so it should be retrieved via ``kwargs.get()``
                 instead be named directly.
+
+            If the user cannot be found, the function should raise ``UserNotFound``
+            exception (from ``rest_registration.exceptions``).
             """)
     ),
     Field(
