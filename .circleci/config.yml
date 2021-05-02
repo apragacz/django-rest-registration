@@ -130,6 +130,7 @@ jobs:
     steps:
       - restore_project_workspace
       - run: source ~/.venv/bin/activate && make test ARGS="-v --cov --cov-report xml"
+      - run: source ~/.venv/bin/activate && codecov
   test-tox:
     parameters:
       py:
@@ -181,12 +182,18 @@ workflows:
           django: "31"
           requires:
             - test
+          filters:
+            branches:
+              only: master
       - test-tox:
           name: test-tox-py37-django30
           py: "37"
           django: "30"
           requires:
             - test
+          filters:
+            branches:
+              only: master
       - test-tox:
           name: test-tox-py37-django22
           py: "37"
@@ -199,9 +206,15 @@ workflows:
           django: "21"
           requires:
             - test
+          filters:
+            branches:
+              only: master
       - test-tox:
           name: test-tox-py36-django20
           py: "36"
           django: "20"
           requires:
             - test
+          filters:
+            branches:
+              only: master
