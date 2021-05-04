@@ -1,7 +1,19 @@
 from enum import Enum
+from typing import Type
+
+from django.core import checks
+
+from rest_registration.utils.checks import CheckCode, CheckMessage
 
 
-class ErrorCode(Enum):
+class _BaseCheckCodeMixin(CheckCode):  # noqa: E501 pylint: disable=abstract-method
+
+    def get_app_name(self) -> str:
+        from rest_registration.apps import RestRegistrationConfig  # noqa: E501 pylint: disable=import-outside-toplevel, cyclic-import
+        return RestRegistrationConfig.name
+
+
+class ErrorCode(_BaseCheckCodeMixin, Enum):
     NO_RESET_PASSWORD_VER_URL = 1
     NO_REGISTER_VER_URL = 2
     NO_REGISTER_EMAIL_VER_URL = 3
@@ -16,13 +28,25 @@ class ErrorCode(Enum):
     INVALID_REGISTER_EMAIL_SERIALIZER_CLASS = 12
     NON_UNIQUE_FIELD_USED_AS_UNIQUE = 13
 
-    def __str__(self):
+    def get_code_id(self) -> str:
         return 'E{self.value:03d}'.format(self=self)
 
+    def get_check_message_class(self) -> Type[CheckMessage]:
+        return checks.Error
 
-class WarningCode(Enum):
+    def __str__(self) -> str:
+        return self.get_code_id()
+
+
+class WarningCode(_BaseCheckCodeMixin, Enum):
     REGISTER_VERIFICATION_MULTIPLE_AUTO_LOGIN = 1
     DEPRECATION = 2
 
-    def __str__(self):
+    def get_code_id(self) -> str:
         return 'W{self.value:03d}'.format(self=self)
+
+    def get_check_message_class(self) -> Type[CheckMessage]:
+        return checks.Warning
+
+    def __str__(self) -> str:
+        return self.get_code_id()

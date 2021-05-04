@@ -3,7 +3,6 @@ from django.core.checks.registry import registry
 from django.test import TestCase
 from django.test.utils import override_settings
 
-from rest_registration.apps import RestRegistrationConfig
 from rest_registration.auth_token_managers import AbstractAuthTokenManager
 from rest_registration.checks import ErrorCode, WarningCode
 from rest_registration.settings import DEFAULTS
@@ -420,10 +419,7 @@ def test_fail_when_send_reset_password_link_serializer_uses_non_unique_email():
 def assert_error_codes_match(errors, expected_error_codes):
     error_ids = sorted(e.id for e in errors)
     expected_error_ids = sorted(
-        '{RestRegistrationConfig.name}.{code}'.format(
-            RestRegistrationConfig=RestRegistrationConfig,
-            code=code)
-        for code in expected_error_codes)
+        code.get_full_code_id() for code in expected_error_codes)
     msg = "\n\nList of errors:\n"
     for error in errors:
         msg += "- {error}\n".format(error=error)

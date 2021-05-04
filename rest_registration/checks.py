@@ -9,10 +9,10 @@ from django.db.models import Model
 from rest_framework.settings import api_settings
 
 from rest_registration.auth_token_managers import AbstractAuthTokenManager
-from rest_registration.decorators import simple_check
 from rest_registration.enums import ErrorCode, WarningCode
 from rest_registration.notifications.email import parse_template_config
 from rest_registration.settings import registration_settings
+from rest_registration.utils.checks import predicate_check
 from rest_registration.utils.common import implies
 from rest_registration.utils.users import (
     get_user_email_field_name,
@@ -22,7 +22,7 @@ from rest_registration.utils.users import (
 
 
 @register()
-@simple_check(
+@predicate_check(
     'django.contrib.auth is not in INSTALLED_APPS',
     ErrorCode.NO_AUTH_INSTALLED,
 )
@@ -31,7 +31,7 @@ def auth_installed_check() -> bool:
 
 
 @register()
-@simple_check(
+@predicate_check(
     'RESET_PASSWORD_VERIFICATION_URL is not set',
     ErrorCode.NO_RESET_PASSWORD_VER_URL,
 )
@@ -43,7 +43,7 @@ def reset_password_verification_url_check() -> bool:
 
 
 @register()
-@simple_check(
+@predicate_check(
     'register verification is enabled,'
     ' but REGISTER_VERIFICATION_URL is not set',
     ErrorCode.NO_REGISTER_VER_URL,
@@ -56,7 +56,7 @@ def register_verification_url_check() -> bool:
 
 
 @register()
-@simple_check(
+@predicate_check(
     'register email verification is enabled,'
     ' but REGISTER_EMAIL_VERIFICATION_URL is not set',
     ErrorCode.NO_REGISTER_EMAIL_VER_URL,
@@ -69,7 +69,7 @@ def register_email_verification_url_check() -> bool:
 
 
 @register()
-@simple_check(
+@predicate_check(
     'VERIFICATION_FROM_EMAIL is not set',
     ErrorCode.NO_VER_FROM_EMAIL,
 )
@@ -85,7 +85,7 @@ def verification_from_check() -> bool:
 
 
 @register()
-@simple_check(
+@predicate_check(
     'LOGIN_RETRIEVE_TOKEN is set but'
     ' the matching token authentication class is not'
     ' in DEFAULT_AUTHENTICATION_CLASSES',
@@ -99,7 +99,7 @@ def token_auth_config_check() -> bool:
 
 
 @register()
-@simple_check(
+@predicate_check(
     'LOGIN_RETRIEVE_TOKEN is set but'
     ' the required Django apps are not in INSTALLED_APPS',
     ErrorCode.NO_TOKEN_AUTH_INSTALLED,
@@ -133,7 +133,7 @@ def _get_auth_token_manager() -> AbstractAuthTokenManager:
 
 
 @register()
-@simple_check(
+@predicate_check(
     'REGISTER_VERIFICATION_AUTO_LOGIN is enabled,'
     ' but REGISTER_VERIFICATION_ONE_TIME_USE is not enabled.'
     ' This can allow multiple logins using the verification url.',
@@ -150,7 +150,7 @@ def register_verification_one_time_auto_login_check() -> bool:
 
 
 @register()
-@simple_check(
+@predicate_check(
     'REGISTER_VERIFICATION_EMAIL_TEMPLATES is invalid',
     ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
 )
@@ -163,7 +163,7 @@ def valid_register_verification_email_template_config_check() -> bool:
 
 
 @register()
-@simple_check(
+@predicate_check(
     'RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES is invalid',
     ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
 )
@@ -176,7 +176,7 @@ def valid_reset_password_verification_email_template_config_check() -> bool:
 
 
 @register()
-@simple_check(
+@predicate_check(
     'REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES is invalid',
     ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
 )
@@ -210,7 +210,7 @@ __DRF_INCOMPATIBLE_DJANGO_AUTH_BACKENDS__ = [
 
 
 @register()
-@simple_check(
+@predicate_check(
     'One of following Django authentication backends (which are incompatible'
     ' with Django REST Framework authentication classes) is being used:\n\n'
     + '\n'.join(__DRF_INCOMPATIBLE_DJANGO_AUTH_BACKENDS__),
@@ -224,7 +224,7 @@ def drf_compatible_django_auth_backend_check() -> bool:
 
 
 @register()
-@simple_check(
+@predicate_check(
     'At least one of LOGIN_FIELDS is not unique',
     ErrorCode.LOGIN_FIELDS_NOT_UNIQUE,
 )
@@ -241,7 +241,7 @@ def _are_login_fields_unique() -> bool:
 
 
 @register()
-@simple_check(
+@predicate_check(
     'AUTH_TOKEN_MANAGER_CLASS is not proper subclass'
     ' of AbstractAuthTokenManager',
     ErrorCode.INVALID_AUTH_TOKEN_MANAGER_CLASS,
@@ -254,7 +254,7 @@ def valid_auth_token_manager_class_proper_subclass_check() -> bool:
 
 
 @register()
-@simple_check(
+@predicate_check(
     'AUTH_TOKEN_MANAGER_CLASS is not implementing'
     ' method get_authentication_class',
     ErrorCode.INVALID_AUTH_TOKEN_MANAGER_CLASS,
@@ -269,7 +269,7 @@ def valid_auth_token_manager_class_get_authentication_class_check() -> bool:
 
 
 @register()
-@simple_check(
+@predicate_check(
     'AUTH_TOKEN_MANAGER_CLASS is not implementing method provide_token',
     ErrorCode.INVALID_AUTH_TOKEN_MANAGER_CLASS,
 )
@@ -284,7 +284,7 @@ def valid_auth_token_manager_class_provide_token_check() -> bool:
 
 # TODO: Issue #114 - remove deprecation check
 @register()
-@simple_check(
+@predicate_check(
     'LOGIN_SERIALIZER_CLASS contains deprecated get_authenticated_user method,'
     ' which will be removed in version 0.7.0;'
     ' for a replacement, please refer to LOGIN_AUTHENTICATOR setting',
@@ -300,7 +300,7 @@ def deprecated_login_serializer_check() -> bool:
 
 # TODO: Issue #114 - remove deprecation check
 @register()
-@simple_check(
+@predicate_check(
     'SEND_RESET_PASSWORD_LINK_SERIALIZER_CLASS contains deprecated'
     ' get_user_or_none method, which will be removed in version 0.7.0;'
     ' for a replacement, please refer to SEND_RESET_PASSWORD_LINK_USER_FINDER setting',
@@ -316,7 +316,7 @@ def deprecated_send_reset_password_link_serializer_check() -> bool:
 
 # TODO: Issue #114 - remove deprecation check
 @register()
-@simple_check(
+@predicate_check(
     'REGISTER_EMAIL_SERIALIZER_CLASS contains deprecated get_email method,'
     ' which will be removed in version 0.7.0',
     WarningCode.DEPRECATION
@@ -330,7 +330,7 @@ def deprecated_register_email_serializer_check() -> bool:
 
 
 @register()
-@simple_check(
+@predicate_check(
     'REGISTER_EMAIL_SERIALIZER_CLASS does not contain email field',
     ErrorCode.INVALID_REGISTER_EMAIL_SERIALIZER_CLASS
 )
@@ -344,7 +344,7 @@ def valid_register_email_serializer_check() -> bool:
 
 
 @register()
-@simple_check(
+@predicate_check(
     'SEND_RESET_PASSWORD_LINK_SERIALIZER_USE_EMAIL is set'
     ' but email field is not unique',
     ErrorCode.NON_UNIQUE_FIELD_USED_AS_UNIQUE
