@@ -270,9 +270,9 @@ def test_fail_when_no_templates_preferred_setup(
     ])
 
     expected_messages = {
-        "REGISTER_VERIFICATION_EMAIL_TEMPLATES is invalid: Template 'rest_registration/register/subject.txt' does not exist",  # noqa: E501
-        "REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES is invalid: Template 'rest_registration/register_email/subject.txt' does not exist",  # noqa: E501
-        "RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES is invalid: Template 'rest_registration/reset_password/subject.txt' does not exist",  # noqa: E501
+        "REGISTER_VERIFICATION_EMAIL_TEMPLATES is invalid: Template 'rest_registration/register/subject.txt' does not exist; ensure that your Django TEMPLATES setting is configured correctly",  # noqa: E501
+        "REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES is invalid: Template 'rest_registration/register_email/subject.txt' does not exist; ensure that your Django TEMPLATES setting is configured correctly",  # noqa: E501
+        "RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES is invalid: Template 'rest_registration/reset_password/subject.txt' does not exist; ensure that your Django TEMPLATES setting is configured correctly",  # noqa: E501
     }
     assert {e.msg for e in errors} == expected_messages
 
