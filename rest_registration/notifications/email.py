@@ -226,5 +226,5 @@ def _validate_template_name_existence(template_name: str) -> None:
         get_template(template_name)
     except TemplateDoesNotExist:
         raise ImproperlyConfigured(
-            'Template {template_name!r} does not exists'.format(
+            'Template {template_name!r} does not exist'.format(
                 template_name=template_name)) from None

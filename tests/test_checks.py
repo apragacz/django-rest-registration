@@ -24,68 +24,6 @@ def simulate_checks():
 
 class ChecksTestCase(TestCase):
 
-    @override_settings(REST_REGISTRATION=DEFAULTS)
-    def test_checks_default(self):
-        errors = simulate_checks()
-        self.assert_error_codes_match(errors, [
-            ErrorCode.NO_REGISTER_EMAIL_VER_URL,
-            ErrorCode.NO_REGISTER_VER_URL,
-            ErrorCode.NO_RESET_PASSWORD_VER_URL,
-            ErrorCode.NO_VER_FROM_EMAIL,
-        ])
-
-    @override_settings(
-        REST_REGISTRATION={
-            'REGISTER_VERIFICATION_ENABLED': False,
-            'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
-            'RESET_PASSWORD_VERIFICATION_ENABLED': False,
-        },
-    )
-    def test_checks_minimal_setup(self):
-        errors = simulate_checks()
-        self.assert_error_codes_match(errors, [])
-
-    @override_settings(
-        TEMPLATES=(),
-        REST_REGISTRATION={
-            'REGISTER_VERIFICATION_ENABLED': False,
-            'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
-            'RESET_PASSWORD_VERIFICATION_ENABLED': False,
-        },
-    )
-    def test_checks_no_templates_minimal_setup(self):
-        errors = simulate_checks()
-        self.assert_error_codes_match(errors, [])
-
-    @override_settings(
-        REST_REGISTRATION={
-            'REGISTER_VERIFICATION_URL': '/verify-account/',
-            'REGISTER_EMAIL_VERIFICATION_URL': '/verify-email/',
-            'RESET_PASSWORD_VERIFICATION_URL': '/reset-password/',
-            'VERIFICATION_FROM_EMAIL': 'jon.doe@example.com',
-        },
-    )
-    def test_checks_preferred_setup(self):
-        errors = simulate_checks()
-        self.assert_error_codes_match(errors, [])
-
-    @override_settings(
-        TEMPLATES=(),
-        REST_REGISTRATION={
-            'REGISTER_VERIFICATION_URL': '/verify-account/',
-            'REGISTER_EMAIL_VERIFICATION_URL': '/verify-email/',
-            'RESET_PASSWORD_VERIFICATION_URL': '/reset-password/',
-            'VERIFICATION_FROM_EMAIL': 'jon.doe@example.com',
-        },
-    )
-    def test_checks_no_templates_preferred_setup(self):
-        errors = simulate_checks()
-        self.assert_error_codes_match(errors, [
-            ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
-            ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
-            ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
-        ])
-
     @override_settings(
         REST_REGISTRATION={
             'REGISTER_VERIFICATION_URL': '/verify-account/',
@@ -271,6 +209,72 @@ class ChecksTestCase(TestCase):
 
     def assert_error_codes_match(self, errors, expected_error_codes):
         assert_error_codes_match(errors, expected_error_codes)
+
+
+@override_settings(REST_REGISTRATION=DEFAULTS)
+def test_fail_when_default():
+    errors = simulate_checks()
+    assert_error_codes_match(errors, [
+        ErrorCode.NO_REGISTER_EMAIL_VER_URL,
+        ErrorCode.NO_REGISTER_VER_URL,
+        ErrorCode.NO_RESET_PASSWORD_VER_URL,
+        ErrorCode.NO_VER_FROM_EMAIL,
+    ])
+
+
+@override_rest_registration_settings({
+    'REGISTER_VERIFICATION_ENABLED': False,
+    'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
+    'RESET_PASSWORD_VERIFICATION_ENABLED': False,
+})
+def test_ok_when_minimal_setup():
+    errors = simulate_checks()
+    assert_error_codes_match(errors, [])
+
+
+@override_settings(
+    TEMPLATES=(),
+)
+@override_rest_registration_settings({
+    'REGISTER_VERIFICATION_ENABLED': False,
+    'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
+    'RESET_PASSWORD_VERIFICATION_ENABLED': False,
+})
+def test_ok_when_no_templates_minimal_setup():
+    errors = simulate_checks()
+    assert_error_codes_match(errors, [])
+
+
+def test_ok_when_preferred_setup(
+        settings_with_register_verification,
+        settings_with_register_email_verification,
+        settings_with_reset_password_verification,
+):
+    errors = simulate_checks()
+    assert_error_codes_match(errors, [])
+
+
+@override_settings(
+    TEMPLATES=(),
+)
+def test_fail_when_no_templates_preferred_setup(
+        settings_with_register_verification,
+        settings_with_register_email_verification,
+        settings_with_reset_password_verification,
+):
+    errors = simulate_checks()
+    assert_error_codes_match(errors, [
+        ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
+        ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
+        ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
+    ])
+
+    expected_messages = {
+        "REGISTER_VERIFICATION_EMAIL_TEMPLATES is invalid: Template 'rest_registration/register/subject.txt' does not exist",  # noqa: E501
+        "REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES is invalid: Template 'rest_registration/register_email/subject.txt' does not exist",  # noqa: E501
+        "RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES is invalid: Template 'rest_registration/reset_password/subject.txt' does not exist",  # noqa: E501
+    }
+    assert {e.msg for e in errors} == expected_messages
 
 
 @override_rest_registration_settings({
