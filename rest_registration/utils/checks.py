@@ -62,3 +62,43 @@ def predicate_check(
         return check_fun
 
     return decorator
+
+
+def no_exception_check(
+        error_message: str, error_code: CheckCode,
+        obj: Any = None
+) -> Callable[[Callable[[], None]], Callable[..., List[checks.CheckMessage]]]:
+    message_cls = error_code.get_check_message_class()
+
+    def decorator(
+            fun: Callable[[], None]
+    ) -> Callable[..., List[checks.CheckMessage]]:
+
+        def check_fun(
+                app_configs: Iterable[AppConfig], **kwargs,
+        ) -> List[checks.CheckMessage]:
+            try:
+                fun()
+            except Exception as exc:  # pylint: disable=broad-except
+                exc_str = str(exc)
+                msg = '{error_message}: {exc_str}'.format(
+                    error_message=error_message, exc_str=exc_str)
+                return [
+                    message_cls(
+                        msg,
+                        obj=obj,
+                        hint=None,
+                        id=error_code.get_full_code_id(),
+                    )
+                ]
+            else:
+                return []
+
+        update_wrapper(
+            check_fun, fun,
+            assigned=WRAPPER_ASSIGNMENTS_WITHOUT_ANNOTATIONS,
+            set_wrapped=False)
+
+        return check_fun
+
+    return decorator

@@ -12,7 +12,7 @@ from rest_registration.auth_token_managers import AbstractAuthTokenManager
 from rest_registration.enums import ErrorCode, WarningCode
 from rest_registration.notifications.email import parse_template_config
 from rest_registration.settings import registration_settings
-from rest_registration.utils.checks import predicate_check
+from rest_registration.utils.checks import no_exception_check, predicate_check
 from rest_registration.utils.common import implies
 from rest_registration.utils.users import (
     get_user_email_field_name,
@@ -150,41 +150,38 @@ def register_verification_one_time_auto_login_check() -> bool:
 
 
 @register()
-@predicate_check(
+@no_exception_check(
     'REGISTER_VERIFICATION_EMAIL_TEMPLATES is invalid',
     ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
 )
-def valid_register_verification_email_template_config_check() -> bool:
-    return implies(
+def valid_register_verification_email_template_config_check() -> None:
+    _validate_email_template_config(
         registration_settings.REGISTER_VERIFICATION_ENABLED,
-        _is_email_template_config_valid(
-            registration_settings.REGISTER_VERIFICATION_EMAIL_TEMPLATES),
+        registration_settings.REGISTER_VERIFICATION_EMAIL_TEMPLATES,
     )
 
 
 @register()
-@predicate_check(
+@no_exception_check(
     'RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES is invalid',
     ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
 )
-def valid_reset_password_verification_email_template_config_check() -> bool:
-    return implies(
+def valid_reset_password_verification_email_template_config_check() -> None:
+    _validate_email_template_config(
         registration_settings.RESET_PASSWORD_VERIFICATION_ENABLED,
-        _is_email_template_config_valid(
-            registration_settings.RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES),
+        registration_settings.RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES,
     )
 
 
 @register()
-@predicate_check(
+@no_exception_check(
     'REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES is invalid',
     ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
 )
-def valid_register_email_verification_email_template_config_check() -> bool:
-    return implies(
+def valid_register_email_verification_email_template_config_check() -> None:
+    _validate_email_template_config(
         registration_settings.REGISTER_EMAIL_VERIFICATION_ENABLED,
-        _is_email_template_config_valid(
-            registration_settings.REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES),
+        registration_settings.REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES,
     )
 
 
@@ -195,6 +192,12 @@ def _is_email_template_config_valid(template_config_data) -> bool:
         return False
     else:
         return True
+
+
+def _validate_email_template_config(enabled, template_config_data) -> None:
+    if not enabled:
+        return
+    parse_template_config(template_config_data)
 
 
 # The backends below allow inactive users to autenticate, which makes them
