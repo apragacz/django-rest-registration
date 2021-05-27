@@ -16,5 +16,3 @@ pytz==2021.1
     # via django
 sqlparse==0.4.1
     # via django
-typing-extensions==3.7.4.3
-    # via asgiref

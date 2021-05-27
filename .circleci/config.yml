@@ -96,7 +96,7 @@ jobs:
       - restore_pip_cache
       - restore_py_venv_cache
       - run: python -m venv --copies ~/.venv
-      - run: source ~/.venv/bin/activate && make install_dev
+      - run: source ~/.venv/bin/activate && make install_test
       - save_pip_cache
       - save_py_venv_cache
       - save_project_workspace

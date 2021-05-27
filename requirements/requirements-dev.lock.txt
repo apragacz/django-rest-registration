@@ -143,20 +143,8 @@ imagesize==1.2.0
 importlib-metadata==4.0.0
     # via
     #   -r requirements/requirements-test.lock.txt
-    #   flake8
-    #   flake8-comprehensions
     #   keyring
-    #   pep517
-    #   pluggy
-    #   pytest
-    #   stevedore
-    #   tox
     #   twine
-    #   virtualenv
-importlib-resources==5.1.2
-    # via
-    #   -r requirements/requirements-test.lock.txt
-    #   virtualenv
 iniconfig==1.1.1
     # via
     #   -r requirements/requirements-test.lock.txt
@@ -165,7 +153,7 @@ ipdb==0.13.7
     # via -r requirements/requirements-dev.in
 ipython-genutils==0.2.0
     # via traitlets
-ipython==7.16.1
+ipython==7.23.1
     # via
     #   -r requirements/requirements-dev.in
     #   ipdb
@@ -203,6 +191,8 @@ markupsafe==1.1.1
     # via
     #   -r requirements/requirements-test.lock.txt
     #   jinja2
+matplotlib-inline==0.1.2
+    # via ipython
 mccabe==0.6.1
     # via
     #   -r requirements/requirements-test.lock.txt
@@ -410,15 +400,12 @@ twine==3.4.1
 typed-ast==1.4.3
     # via
     #   -r requirements/requirements-test.lock.txt
-    #   astroid
     #   mypy
 typing-extensions==3.7.4.3
     # via
     #   -r requirements/requirements-test.lock.txt
-    #   asgiref
     #   django-stubs
     #   djangorestframework-stubs
-    #   importlib-metadata
     #   mypy
 uritemplate==3.0.1
     # via
@@ -448,8 +435,6 @@ zipp==3.4.1
     # via
     #   -r requirements/requirements-test.lock.txt
     #   importlib-metadata
-    #   importlib-resources
-    #   pep517
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip

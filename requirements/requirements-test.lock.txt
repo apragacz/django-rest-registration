@@ -100,17 +100,8 @@ imagesize==1.2.0
     # via sphinx
 importlib-metadata==4.0.0
     # via
-    #   flake8
-    #   flake8-comprehensions
     #   keyring
-    #   pluggy
-    #   pytest
-    #   stevedore
-    #   tox
     #   twine
-    #   virtualenv
-importlib-resources==5.1.2
-    # via virtualenv
 iniconfig==1.1.1
     # via pytest
 isort==4.3.21
@@ -269,16 +260,11 @@ tqdm==4.60.0
 twine==3.4.1
     # via -r requirements/requirements-test.in
 typed-ast==1.4.3
-    # via
-    #   astroid
-    #   mypy
+    # via mypy
 typing-extensions==3.7.4.3
     # via
-    #   -r requirements/requirements-base.lock.txt
-    #   asgiref
     #   django-stubs
     #   djangorestframework-stubs
-    #   importlib-metadata
     #   mypy
 uritemplate==3.0.1
     # via coreapi
@@ -293,9 +279,7 @@ wheel==0.36.2
 wrapt==1.12.1
     # via astroid
 zipp==3.4.1
-    # via
-    #   importlib-metadata
-    #   importlib-resources
+    # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

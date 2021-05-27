@@ -35,12 +35,21 @@ SPHINXBUILD_WARNING_LOG = sphinx-warnings.log
 SPHINXAUTOBUILD := sphinx-autobuild
 SPHINXAUTOBUILD_OPTS := --watch ${PACKAGE_DIR} --ignore ${DOCS_REFERENCE_DIR}
 
+.PHONY: help
+help: ## Display this help screen
+	@grep -E '^[\.a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
 .PHONY: all
 all: check test build check_package  ## check code, test, build, check package
 
 .PHONY: install_dev
 install_dev:  ## install all pip requirements and the package as editable
 	${PYTHON} -m pip install -r requirements/requirements-dev.lock.txt ${ARGS}
+	${PYTHON} -m pip install -e .
+
+.PHONY: install_test
+install_test:  ## install all pip requirements needed for testing and the package as editable
+	${PYTHON} -m pip install -r requirements/requirements-test.lock.txt ${ARGS}
 	${PYTHON} -m pip install -e .
 
 .PHONY: upgrade_requirements
@@ -118,7 +127,3 @@ clean:  ## remove generated files
 	-${RM} -r ${DIST_DIR}
 	-${RM} -r ${BUILD_DIR}
 	-${RM} -r ${DOCS_BUILD_DIR}
-
-.PHONY: help
-help:  ## list all make targets
-	@${AWK} -F ':.*##' '$$0 ~ FS {printf "%-32s%s\n", $$1 ":", $$2}' $(MAKEFILE_LIST) | ${GREP} -v {AWK} | ${SORT}
