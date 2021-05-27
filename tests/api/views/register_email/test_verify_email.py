@@ -108,7 +108,7 @@ class VerifyEmailViewTestCase(APIViewTestCase):
         "REGISTER_EMAIL_VERIFICATION_ENABLED": True,
         'USER_VERIFICATION_FLAG_FIELD': 'is_staff',
     })
-    def test_with_custom_flag_field_ok(self):
+    def test_with_custom_flag_field_not_verified_superuser_ok(self):
         # a superuser is created with command createsuperuser
         # the flag field (here is_staff) is not set
         self.setup_user()
@@ -126,6 +126,30 @@ class VerifyEmailViewTestCase(APIViewTestCase):
         self.assert_valid_response(response, status.HTTP_200_OK)
         self.user.refresh_from_db()
         self.assertEqual(self.user.email, self.new_email)
+
+    @override_rest_registration_settings({
+        "REGISTER_VERIFICATION_ENABLED": True,
+        "REGISTER_EMAIL_VERIFICATION_ENABLED": True,
+        'USER_VERIFICATION_FLAG_FIELD': 'is_staff',
+    })
+    def test_with_custom_flag_field_not_verified(self):
+        # a normal user is created
+        # the flag field (here is_staff) is not set
+        self.setup_user()
+        self.user.is_staff = False
+        self.user.save()
+        old_email = self.user.email
+
+        signer = RegisterEmailSigner({
+            'user_id': self.user.id,
+            'email': self.new_email,
+        })
+        data = signer.get_signed_data()
+        request = self.create_post_request(data)
+        response = self.view_func(request)
+        self.assert_response_is_bad_request(response)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.email, old_email)
 
     @override_settings(
         REST_REGISTRATION={
