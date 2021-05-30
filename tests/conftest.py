@@ -95,6 +95,12 @@ def settings_with_user_with_user_type():
 
 
 @pytest.fixture()
+def settings_with_user_with_unique_email():
+    with override_auth_model_settings('custom_users.UserWithUniqueEmail'):
+        yield settings
+
+
+@pytest.fixture()
 def settings_with_coreapi_autoschema():
     with override_settings(
         REST_FRAMEWORK={

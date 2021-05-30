@@ -125,3 +125,35 @@ def test_when_deprecated_login_serializer_and_invalid_creds_then_failure(
     api_factory.add_session_to_request(request)
     response = api_view_provider.view_func(request)
     assert_response_is_bad_request(response)
+
+
+@override_rest_registration_settings({
+    'USER_LOGIN_FIELDS': ['username', 'email'],
+})
+def test_ok_when_user_with_unique_email_logs_with_username(
+        settings_minimal, settings_with_user_with_unique_email,
+        user, password_change, api_view_provider, api_factory):
+    password = password_change.old_value
+    request = api_factory.create_post_request({
+        'login': user.username,
+        'password': password,
+    })
+    api_factory.add_session_to_request(request)
+    response = api_view_provider.view_func(request)
+    assert_response_is_ok(response)
+
+
+@override_rest_registration_settings({
+    'USER_LOGIN_FIELDS': ['username', 'email'],
+})
+def test_ok_when_user_with_unique_email_logs_with_email(
+        settings_minimal, settings_with_user_with_unique_email,
+        user, password_change, api_view_provider, api_factory):
+    password = password_change.old_value
+    request = api_factory.create_post_request({
+        'login': user.email,
+        'password': password,
+    })
+    api_factory.add_session_to_request(request)
+    response = api_view_provider.view_func(request)
+    assert_response_is_ok(response)

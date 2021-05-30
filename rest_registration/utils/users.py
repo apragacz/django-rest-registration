@@ -57,28 +57,32 @@ def authenticate_by_login_data(
             return user
 
     login_field_names = get_user_login_field_names()
+    username_field_name = get_username_field_name()
     password = data.get('password')
-    login = data.get('login')
+    login_value = data.get('login')
     if password is None:
         raise UserNotFound()
-    auth_tests = []  # type: List[Dict[str, Any]]
-    if login is not None:
-        auth_tests.extend({
-            field_name: login,
-            'password': password,
-        } for field_name in login_field_names)
+    user_selectors = []  # type: List[Tuple[str, str]]
+    if login_value is not None:
+        user_selectors.extend(
+            (field_name, login_value) for field_name in login_field_names)
 
     for field_name in login_field_names:
         field_value = data.get(field_name)
         if field_value is None:
             continue
-        auth_tests.append({
-            field_name: field_value,
-            'password': password,
-        })
+        user_selectors.append((field_name, field_value))
 
-    for auth_kwargs in auth_tests:
-        user = auth.authenticate(**auth_kwargs)
+    for field_name, field_value in user_selectors:
+        if field_name == username_field_name:
+            username = field_value
+        else:
+            user = get_user_by_lookup_dict(
+                {field_name: field_value}, default=None, require_verified=False)
+            if user is None:
+                continue
+            username = getattr(user, username_field_name)
+        user = auth.authenticate(username=username, password=password)
         if user:
             return user
 
@@ -88,6 +92,11 @@ def authenticate_by_login_data(
 def get_user_login_field_names() -> List[str]:
     user_class = get_user_model()
     return get_user_setting('LOGIN_FIELDS') or [user_class.USERNAME_FIELD]
+
+
+def get_username_field_name() -> str:
+    user_class = get_user_model()
+    return user_class.USERNAME_FIELD
 
 
 def get_user_verification_id(user: 'AbstractBaseUser') -> Any:
