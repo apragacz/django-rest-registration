@@ -411,7 +411,7 @@ uritemplate==3.0.1
     # via
     #   -r requirements/requirements-test.lock.txt
     #   coreapi
-urllib3==1.26.4
+urllib3==1.26.5
     # via
     #   -r requirements/requirements-test.lock.txt
     #   requests

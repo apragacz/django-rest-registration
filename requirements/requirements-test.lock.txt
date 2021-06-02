@@ -268,7 +268,7 @@ typing-extensions==3.7.4.3
     #   mypy
 uritemplate==3.0.1
     # via coreapi
-urllib3==1.26.4
+urllib3==1.26.5
     # via requests
 virtualenv==20.4.3
     # via tox
