@@ -52,7 +52,7 @@ django-stubs==1.8.0
     # via
     #   -r requirements/requirements-test.in
     #   djangorestframework-stubs
-django==3.2.1
+django==3.2.2
     # via
     #   -r requirements/requirements-base.lock.txt
     #   django-stubs
