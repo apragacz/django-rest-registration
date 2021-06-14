@@ -150,7 +150,7 @@ as well.
 
 You can also run specific environment; for instance:
 
-    tox -e packagecheck
+    tox -e py37-django30
 
 You can list all available environments with:
 

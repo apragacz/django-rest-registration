@@ -7,6 +7,8 @@
 
 User registration REST API, based on Django REST Framework.
 
+## Documentation
+
 Full documentation for the project is available at [https://django-rest-registration.readthedocs.io/](https://django-rest-registration.readthedocs.io/).
 
 ## Requirements
@@ -116,3 +118,7 @@ You can read more about detailed configuration
 
 You can find all `REST_REGISTRATION` configuration options
 [here](https://django-rest-registration.readthedocs.io/en/latest/detailed_configuration/all_settings.html).
+
+## Contributing
+
+If you want to contribute, please refer to separate document [CONTRIBUTING.md](CONTRIBUTING.md).
