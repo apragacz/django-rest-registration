@@ -375,6 +375,11 @@ GLOBAL_VERIFICATION_SETTINGS_FIELDS = [
             """),
     ),
     Field(
+        'VERIFICATION_TEMPLATE_BUILDER',
+        default='rest_registration.utils.verification.build_default_template',  # noqa: E501
+        import_string=True
+    ),
+    Field(
         'VERIFICATION_TEMPLATES_SELECTOR',
         default='rest_registration.utils.verification.select_default_templates',
         import_string=True,
