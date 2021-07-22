@@ -1,16 +1,22 @@
+from collections import namedtuple
 from typing import TYPE_CHECKING, Any, Dict, Optional
 from urllib.parse import urlencode
 
 from django.core import signing
+from django.template.loader import render_to_string
 from rest_framework.request import Request
 
 from rest_registration.exceptions import SignatureExpired, SignatureInvalid
 from rest_registration.notifications.enums import NotificationMethod, NotificationType
 from rest_registration.settings import registration_settings
+from rest_registration.utils.email import parse_template_config
 from rest_registration.utils.signers import URLParamsSigner
 
 if TYPE_CHECKING:
     from django.contrib.auth.base_user import AbstractBaseUser
+
+
+TemplateData = namedtuple('TemplateData', 'subject,text_body,html_body')
 
 
 def verify_signer_or_bad_request(signer: URLParamsSigner) -> None:
@@ -47,6 +53,31 @@ def build_default_template_context(
         context['verification_url'] = params_signer.get_url()
     context.update(data)
     return context
+
+
+def build_default_template(
+    user: 'AbstractBaseUser',
+    template_config_data: Dict[str, Any],
+    context: Optional[Dict[str, Any]]
+) -> TemplateData:
+    template_config = parse_template_config(template_config_data)
+
+    subject = render_to_string(
+        template_config.subject_template_name, context=context
+    ).strip()
+    text_body = template_config.text_body_processor(
+        render_to_string(
+            template_config.text_body_template_name, context=context
+        )
+    )
+    if template_config.html_body_template_name:
+        html_body = render_to_string(
+            template_config.html_body_template_name, context=context
+        )
+    else:
+        html_body = None
+
+    return TemplateData(subject, text_body, html_body)
 
 
 def select_default_templates(
