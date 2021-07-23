@@ -1,5 +1,5 @@
 from collections import namedtuple
-from typing import Dict, Any
+from typing import Dict, Any, Callable
 
 from django.core.exceptions import ImproperlyConfigured
 from django.template import TemplateDoesNotExist
@@ -15,6 +15,10 @@ EmailTemplateConfig = namedtuple('EmailTemplateConfig', (
     'html_body_template_name',
     'text_body_processor',
 ))
+
+
+def get_html_to_text_converter() -> Callable[[str], str]:
+    return registration_settings.VERIFICATION_EMAIL_HTML_TO_TEXT_CONVERTER  # noqa: E501
 
 
 def parse_template_config(template_config_data: Dict[str, Any]) -> EmailTemplateConfig:
@@ -102,7 +106,7 @@ def parse_template_config(template_config_data: Dict[str, Any]) -> EmailTemplate
     text_body_template_name = template_config_data.get('text_body')
     html_body_template_name = template_config_data.get('html_body')
     is_html_body = template_config_data.get('is_html')
-    convert_html_to_text = registration_settings.VERIFICATION_EMAIL_HTML_TO_TEXT_CONVERTER  # noqa: E501
+    convert_html_to_text = get_html_to_text_converter()
 
     if html_body_template_name and text_body_template_name:
         config = EmailTemplateConfig(
