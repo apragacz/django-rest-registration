@@ -16,7 +16,11 @@ if TYPE_CHECKING:
     from django.contrib.auth.base_user import AbstractBaseUser
 
 
-TemplateData = namedtuple('TemplateData', 'subject,text_body,html_body')
+EmailTemplateRenderResult = namedtuple('EmailTemplateRenderResult', (
+    'subject',
+    'text_body',
+    'html_body',
+))
 
 
 def verify_signer_or_bad_request(signer: URLParamsSigner) -> None:
@@ -55,11 +59,10 @@ def build_default_template_context(
     return context
 
 
-def build_default_template(
-    user: 'AbstractBaseUser',
+def default_render_template(
     template_config_data: Dict[str, Any],
     context: Optional[Dict[str, Any]]
-) -> TemplateData:
+) -> EmailTemplateRenderResult:
     template_config = parse_template_config(template_config_data)
 
     subject = render_to_string(
@@ -77,7 +80,7 @@ def build_default_template(
     else:
         html_body = None
 
-    return TemplateData(subject, text_body, html_body)
+    return EmailTemplateRenderResult(subject, text_body, html_body)
 
 
 def select_default_templates(

@@ -375,21 +375,20 @@ GLOBAL_VERIFICATION_SETTINGS_FIELDS = [
             """),
     ),
     Field(
-        'VERIFICATION_TEMPLATE_BUILDER',
-        default='rest_registration.utils.verification.build_default_template',  # noqa: E501
+        'VERIFICATION_TEMPLATE_RENDERER',
+        default='rest_registration.utils.verification.default_render_template',  # noqa: E501
         import_string=True,
         help=dedent("""\
             The builder function receives these parameters as
             positional arguments:
 
-            *   ``user`` - the user which is to be notified.
             *   ``template_config_data`` - dictionary; data is populated by
                 function set with :ref:`verification-templates-selector-setting` setting.
             *   ``context`` - dictionary; data is populated by function set
                 with :ref:`verification-template-context-builder-setting` setting.
 
             Function should return an instance of
-            ``rest_registration.utils.verification.TemplateData``
+            ``rest_registration.utils.verification.EmailTemplateRenderResult``
 
             It is possible that in the future, additional keyword arguments
             may be added. Therefore the implementer
