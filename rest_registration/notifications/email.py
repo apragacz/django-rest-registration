@@ -40,8 +40,8 @@ def create_verification_notification(
         notification_type=notification_type,
         notification_method=NotificationMethod.EMAIL)
 
-    template_builder = registration_settings.VERIFICATION_TEMPLATE_BUILDER  # noqa: E501
-    template_data = template_builder(user, template_config_data, context)
+    template_builder = registration_settings.VERIFICATION_TEMPLATE_RENDERER  # noqa: E501
+    template_data = template_builder(template_config_data, context)
 
     email_msg = EmailMultiAlternatives(
         subject=template_data.subject,
