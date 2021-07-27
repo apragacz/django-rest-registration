@@ -10,10 +10,10 @@ from rest_framework.settings import api_settings
 
 from rest_registration.auth_token_managers import AbstractAuthTokenManager
 from rest_registration.enums import ErrorCode, WarningCode
-from rest_registration.utils.email import parse_template_config
 from rest_registration.settings import registration_settings
 from rest_registration.utils.checks import no_exception_check, predicate_check
 from rest_registration.utils.common import implies
+from rest_registration.utils.email import parse_template_config
 from rest_registration.utils.users import (
     get_user_email_field_name,
     get_user_login_field_names,

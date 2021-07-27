@@ -376,16 +376,18 @@ GLOBAL_VERIFICATION_SETTINGS_FIELDS = [
     ),
     Field(
         'VERIFICATION_TEMPLATE_RENDERER',
-        default='rest_registration.utils.verification.default_render_template',  # noqa: E501
+        default='rest_registration.utils.verification.default_render_template',
         import_string=True,
         help=dedent("""\
             The builder function receives these parameters as
             positional arguments:
 
             *   ``template_config_data`` - dictionary; data is populated by
-                function set with :ref:`verification-templates-selector-setting` setting.
+                function set with :ref:`verification-templates-selector-setting`
+                setting.
             *   ``context`` - dictionary; data is populated by function set
-                with :ref:`verification-template-context-builder-setting` setting.
+                with :ref:`verification-template-context-builder-setting`
+                setting.
 
             Function should return an instance of
             ``rest_registration.utils.verification.EmailTemplateRenderResult``

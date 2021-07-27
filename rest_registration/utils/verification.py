@@ -78,7 +78,7 @@ def default_render_template(
             template_config.html_body_template_name, context=context
         )
     else:
-        html_body = None
+        html_body = ''
 
     return EmailTemplateRenderResult(subject, text_body, html_body)
 
