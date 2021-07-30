@@ -1,5 +1,5 @@
 from collections import namedtuple
-from typing import Dict, Any, Callable
+from typing import Any, Callable, Dict
 
 from django.core.exceptions import ImproperlyConfigured
 from django.template import TemplateDoesNotExist
