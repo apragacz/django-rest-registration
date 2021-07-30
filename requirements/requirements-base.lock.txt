@@ -4,9 +4,9 @@
 #
 #    pip-compile --output-file=requirements/requirements-base.lock.txt requirements/requirements-base.in
 #
-asgiref==3.3.4
+asgiref==3.4.1
     # via django
-django==3.2.4
+django==3.2.5
     # via
     #   -r requirements/requirements-base.in
     #   djangorestframework
@@ -16,3 +16,5 @@ pytz==2021.1
     # via django
 sqlparse==0.4.1
     # via django
+typing-extensions==3.10.0.0
+    # via asgiref
