@@ -2,4 +2,4 @@
 ipdb
 ipython
 pip-tools
-jedi
+jedi<0.18
