@@ -65,7 +65,7 @@ def _validate_user_password(password: str, user: 'AbstractBaseUser') -> None:
     try:
         validate_password(password, user=user)
     except DjangoValidationError as exc:
-        raise ValidationError(list(exc.messages)) from None
+        raise transform_django_validation_error(exc) from None
 
 
 def run_validators(validators: Iterable[Validator], value: Any) -> None:
@@ -90,3 +90,41 @@ def run_validators(validators: Iterable[Validator], value: Any) -> None:
         raise ValidationError(errors)
     if non_field_errors:
         raise ValidationError(non_field_errors)
+
+
+def transform_django_validation_error(
+    exc: DjangoValidationError
+) -> ValidationError:
+    if hasattr(exc, 'error_dict'):
+        return ValidationError(_extract_error_detail_dict(exc.error_dict))
+    return ValidationError(_extract_error_detail_list(exc.error_list))
+
+
+def _extract_error_detail_dict(
+    exc_data: Dict[str, List[DjangoValidationError]]
+) -> Dict[str, List[ErrorDetail]]:
+    err_detail_dict = {}
+    for key, exc_list in exc_data.items():
+        err_detail_dict[key] = _extract_error_detail_list(exc_list)
+    return err_detail_dict
+
+
+def _extract_error_detail_list(
+    exc_data: List[DjangoValidationError]
+) -> List[ErrorDetail]:
+    err_details = []
+    for sub_exc in exc_data:
+        for err_detail in _shallow_extract_error_details_from_exc(sub_exc):
+            err_details.append(err_detail)
+    return err_details
+
+
+def _shallow_extract_error_details_from_exc(
+    exc: DjangoValidationError
+) -> List[ErrorDetail]:
+    if hasattr(exc, 'message') and hasattr(exc, 'code'):
+        message = exc.message
+        if exc.params:
+            message %= exc.params
+        return [ErrorDetail(message, code=exc.code)]
+    return [ErrorDetail(msg) for msg in exc.messages]

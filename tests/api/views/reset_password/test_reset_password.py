@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 import pytest
 from rest_framework import status
+from rest_framework.exceptions import ErrorDetail
 
 from rest_registration.api.views.reset_password import ResetPasswordSigner
 from tests.helpers.api_views import (
@@ -242,38 +243,49 @@ def test_when_confirm_enabled_and_invalid_password_confirm_field_then_failure(
     assert user.check_password(old_password)
 
 
-@pytest.mark.parametrize("new_weak_password,expected_error_message", [
-    (
-        'ftayx',
-        'This password is too short. It must contain at least 8 characters.'
-    ),
-    (
-        '563495763456',
-        'This password is entirely numeric.'
-    ),
-    (
-        'creative',
-        'This password is too common.'
-    ),
-])
+@pytest.mark.parametrize(
+    "new_weak_password,expected_error_message,expected_error_code",
+    [
+        pytest.param(
+            'ftayx',
+            "This password is too short. It must contain at least 8 characters.",
+            'password_too_short',
+            id='too short',
+        ),
+        pytest.param(
+            '563495763456',
+            'This password is entirely numeric.',
+            'password_entirely_numeric',
+            id='entirely numeric',
+        ),
+        pytest.param(
+            'creative',
+            'This password is too common.',
+            'password_too_common',
+            id='too common',
+        ),
+    ],
+)
 def test_when_weak_password_then_failure(
-        settings_with_reset_password_verification,
-        user, user_signed_data, old_password, new_weak_password,
-        expected_error_message,
-        api_view_provider, api_factory):
+    settings_with_reset_password_verification,
+    user, user_signed_data, old_password, api_view_provider, api_factory,
+    new_weak_password, expected_error_message, expected_error_code,
+):
     user_signed_data['password'] = new_weak_password
     request = api_factory.create_post_request(user_signed_data)
     response = api_view_provider.view_func(request)
 
-    _assert_response_is_bad_password(response, expected_error_message)
+    _assert_response_is_bad_password(
+        response, expected_error_message, expected_error_code)
     user.refresh_from_db()
     assert user.check_password(old_password)
 
 
 def test_when_password_same_as_username_then_failure(
-        settings_with_reset_password_verification,
-        user, user_signed_data, old_password,
-        api_view_provider, api_factory):
+    settings_with_reset_password_verification,
+    user, user_signed_data, old_password,
+    api_view_provider, api_factory,
+):
     user_signed_data['password'] = user.username
     request = api_factory.create_post_request(user_signed_data)
     response = api_view_provider.view_func(request)
@@ -283,11 +295,15 @@ def test_when_password_same_as_username_then_failure(
     assert user.check_password(old_password)
 
 
-def _assert_response_is_bad_password(request, expected_error_message):
+def _assert_response_is_bad_password(
+    request, expected_error_message, expected_error_code,
+):
     assert_response_is_bad_request(request)
     assert isinstance(request.data, dict)
     assert 'password' in request.data
     password_errors = request.data['password']
     assert len(password_errors) == 1
-    error_message = password_errors[0]
-    assert error_message == expected_error_message
+    err = password_errors[0]
+    assert isinstance(err, ErrorDetail)
+    assert err == expected_error_message
+    assert err.code == expected_error_code

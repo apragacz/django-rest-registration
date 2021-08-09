@@ -1,7 +1,11 @@
 import pytest
-from rest_framework.exceptions import ValidationError
+from django.core.exceptions import ValidationError as DjangoValidationError
+from rest_framework.exceptions import ErrorDetail, ValidationError
 
-from rest_registration.utils.validation import run_validators
+from rest_registration.utils.validation import (
+    run_validators,
+    transform_django_validation_error
+)
 
 
 def fake_validator_raising_with_text(value):
@@ -70,3 +74,48 @@ def test_run_validators_fails(validators, expected_exc_detail):
         run_validators(validators, value)
 
     assert exc_info.value.detail == expected_exc_detail
+
+
+@pytest.mark.parametrize("input_exc,expected_output_exc", [
+    pytest.param(
+        DjangoValidationError("error msg", code="errcode-1"),
+        ValidationError([ErrorDetail("error msg", code="errcode-1")]),
+        id="simple"
+    ),
+    pytest.param(
+        DjangoValidationError([
+            DjangoValidationError("error msg foo", code="errcode-1"),
+            DjangoValidationError("error msg bar", code="errcode-2"),
+        ]),
+        ValidationError([
+            ErrorDetail("error msg foo", code="errcode-1"),
+            ErrorDetail("error msg bar", code="errcode-2"),
+        ]),
+        id="list"
+    ),
+    pytest.param(
+        DjangoValidationError({
+            "f1": [
+                DjangoValidationError("error msg foo", code="errcode-1"),
+                DjangoValidationError("error msg bar", code="errcode-2"),
+            ],
+            "f2": [
+                DjangoValidationError("error msg foobar", code="errcode-3"),
+            ]
+        }),
+        ValidationError({
+            "f1": [
+                ErrorDetail("error msg foo", code="errcode-1"),
+                ErrorDetail("error msg bar", code="errcode-2"),
+            ],
+            "f2": [
+                ErrorDetail("error msg foobar", code="errcode-3"),
+            ],
+        }),
+        id="dict"
+    ),
+])
+def test_transform_django_validation_error(input_exc, expected_output_exc):
+    output_exc = transform_django_validation_error(input_exc)
+    assert isinstance(output_exc, ValidationError)
+    assert output_exc.args[0] == expected_output_exc.args[0]
