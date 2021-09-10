@@ -16,18 +16,18 @@ coreapi==2.3.3
     #   openapi-codec
 coreschema==0.0.4
     # via coreapi
-django-cors-headers==3.7.0
-    # via -r requirements.in
-django-rest-registration==0.6.0
-    # via -r requirements.in
-django-rest-swagger==2.2.0
-    # via -r requirements.in
 django==3.1.12
     # via
     #   -r requirements.in
     #   django-cors-headers
     #   django-rest-registration
     #   djangorestframework
+django-cors-headers==3.7.0
+    # via -r requirements.in
+django-rest-registration==0.6.0
+    # via -r requirements.in
+django-rest-swagger==2.2.0
+    # via -r requirements.in
 djangorestframework==3.12.2
     # via
     #   -r requirements.in
@@ -49,7 +49,7 @@ requests==2.25.1
     # via coreapi
 simplejson==3.17.2
     # via django-rest-swagger
-sqlparse==0.4.1
+sqlparse==0.4.2
     # via django
 uritemplate==3.0.1
     # via coreapi
