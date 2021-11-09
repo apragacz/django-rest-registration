@@ -14,7 +14,7 @@ asgiref==3.4.1
     # via
     #   -r requirements/requirements-test.lock.txt
     #   django
-astroid==2.6.5
+astroid==2.8.4
     # via
     #   -r requirements/requirements-test.lock.txt
     #   pylint
@@ -28,33 +28,33 @@ babel==2.9.1
     #   sphinx
 backcall==0.2.0
     # via ipython
-backports.entry-points-selectable==1.1.0
+backports.entry-points-selectable==1.1.1
     # via
     #   -r requirements/requirements-test.lock.txt
     #   virtualenv
-bleach==3.3.1
+bleach==4.1.0
     # via
     #   -r requirements/requirements-test.lock.txt
     #   readme-renderer
-certifi==2021.5.30
+certifi==2021.10.8
     # via
     #   -r requirements/requirements-test.lock.txt
     #   requests
-cffi==1.14.6
+cffi==1.15.0
     # via
     #   -r requirements/requirements-test.lock.txt
     #   cmarkgfm
-charset-normalizer==2.0.4
+charset-normalizer==2.0.7
     # via
     #   -r requirements/requirements-test.lock.txt
     #   requests
-click==8.0.1
+click==8.0.3
     # via pip-tools
-cmarkgfm==0.5.3
+cmarkgfm==0.6.0
     # via
     #   -r requirements/requirements-test.lock.txt
     #   readme-renderer
-codecov==2.1.11
+codecov==2.1.12
     # via -r requirements/requirements-test.lock.txt
 colorama==0.4.4
     # via
@@ -67,31 +67,31 @@ coreschema==0.0.4
     # via
     #   -r requirements/requirements-test.lock.txt
     #   coreapi
-coverage==5.5
+coverage[toml]==6.1.1
     # via
     #   -r requirements/requirements-test.lock.txt
     #   codecov
     #   pytest-cov
-decorator==5.0.9
+decorator==5.1.0
     # via
     #   ipdb
     #   ipython
     #   traitlets
-distlib==0.3.2
+distlib==0.3.3
     # via
     #   -r requirements/requirements-test.lock.txt
     #   virtualenv
-django==3.2.5
+django==3.2.9
     # via
     #   -r requirements/requirements-test.lock.txt
     #   django-stubs
     #   django-stubs-ext
     #   djangorestframework
-django-stubs==1.8.0
+django-stubs==1.9.0
     # via
     #   -r requirements/requirements-test.lock.txt
     #   djangorestframework-stubs
-django-stubs-ext==0.2.0
+django-stubs-ext==0.3.1
     # via
     #   -r requirements/requirements-test.lock.txt
     #   django-stubs
@@ -99,9 +99,9 @@ djangorestframework==3.12.4
     # via -r requirements/requirements-test.lock.txt
 djangorestframework-stubs==1.2.0
     # via -r requirements/requirements-test.lock.txt
-doc8==0.9.0
+doc8==0.9.1
     # via -r requirements/requirements-test.lock.txt
-docutils==0.16
+docutils==0.17.1
     # via
     #   -r requirements/requirements-test.lock.txt
     #   doc8
@@ -109,12 +109,12 @@ docutils==0.16
     #   restructuredtext-lint
     #   sphinx
     #   sphinx-rtd-theme
-filelock==3.0.12
+filelock==3.3.2
     # via
     #   -r requirements/requirements-test.lock.txt
     #   tox
     #   virtualenv
-flake8==3.9.2
+flake8==4.0.1
     # via
     #   -r requirements/requirements-test.lock.txt
     #   flake8-comprehensions
@@ -122,17 +122,17 @@ flake8==3.9.2
     #   flake8-isort
     #   flake8-print
     #   flake8-tuple
-flake8-comprehensions==3.5.0
+flake8-comprehensions==3.7.0
     # via -r requirements/requirements-test.lock.txt
 flake8-debugger==4.0.0
     # via -r requirements/requirements-test.lock.txt
-flake8-isort==4.0.0
+flake8-isort==4.1.1
     # via -r requirements/requirements-test.lock.txt
 flake8-print==4.0.0
     # via -r requirements/requirements-test.lock.txt
 flake8-tuple==0.4.1
     # via -r requirements/requirements-test.lock.txt
-idna==3.2
+idna==3.3
     # via
     #   -r requirements/requirements-test.lock.txt
     #   requests
@@ -140,7 +140,7 @@ imagesize==1.2.0
     # via
     #   -r requirements/requirements-test.lock.txt
     #   sphinx
-importlib-metadata==4.6.3
+importlib-metadata==4.2.0
     # via
     #   -r requirements/requirements-test.lock.txt
     #   backports.entry-points-selectable
@@ -155,7 +155,7 @@ importlib-metadata==4.6.3
     #   tox
     #   twine
     #   virtualenv
-importlib-resources==5.2.2
+importlib-resources==5.4.0
     # via
     #   -r requirements/requirements-test.lock.txt
     #   virtualenv
@@ -184,12 +184,12 @@ jedi==0.17.2
     # via
     #   -r requirements/requirements-dev.in
     #   ipython
-jinja2==3.0.1
+jinja2==3.0.2
     # via
     #   -r requirements/requirements-test.lock.txt
     #   coreschema
     #   sphinx
-keyring==23.0.1
+keyring==23.2.1
     # via
     #   -r requirements/requirements-test.lock.txt
     #   twine
@@ -219,7 +219,7 @@ mypy-extensions==0.4.3
     # via
     #   -r requirements/requirements-test.lock.txt
     #   mypy
-packaging==21.0
+packaging==21.2
     # via
     #   -r requirements/requirements-test.lock.txt
     #   bleach
@@ -228,82 +228,83 @@ packaging==21.0
     #   tox
 parso==0.7.1
     # via jedi
-pbr==5.6.0
+pbr==5.7.0
     # via
     #   -r requirements/requirements-test.lock.txt
     #   stevedore
-pep517==0.11.0
+pep517==0.12.0
     # via pip-tools
 pexpect==4.8.0
     # via ipython
 pickleshare==0.7.5
     # via ipython
-pip-tools==6.2.0
+pip-tools==6.4.0
     # via -r requirements/requirements-dev.in
 pkginfo==1.7.1
     # via
     #   -r requirements/requirements-test.lock.txt
     #   twine
-platformdirs==2.2.0
+platformdirs==2.4.0
     # via
     #   -r requirements/requirements-test.lock.txt
+    #   pylint
     #   virtualenv
-pluggy==0.13.1
+pluggy==1.0.0
     # via
     #   -r requirements/requirements-test.lock.txt
     #   pytest
     #   tox
-prompt-toolkit==3.0.19
+prompt-toolkit==3.0.22
     # via ipython
 ptyprocess==0.7.0
     # via pexpect
-py==1.10.0
+py==1.11.0
     # via
     #   -r requirements/requirements-test.lock.txt
     #   pytest
     #   tox
-pycodestyle==2.7.0
+pycodestyle==2.8.0
     # via
     #   -r requirements/requirements-test.lock.txt
     #   flake8
     #   flake8-debugger
     #   flake8-print
-pycparser==2.20
+pycparser==2.21
     # via
     #   -r requirements/requirements-test.lock.txt
     #   cffi
-pyflakes==2.3.1
+pyflakes==2.4.0
     # via
     #   -r requirements/requirements-test.lock.txt
     #   flake8
-pygments==2.9.0
+pygments==2.10.0
     # via
     #   -r requirements/requirements-test.lock.txt
     #   doc8
     #   ipython
     #   readme-renderer
     #   sphinx
-pylint==2.9.6
+pylint==2.11.1
     # via -r requirements/requirements-test.lock.txt
 pyparsing==2.4.7
     # via
     #   -r requirements/requirements-test.lock.txt
     #   packaging
-pytest==6.2.4
+pytest==6.2.5
     # via
     #   -r requirements/requirements-test.lock.txt
     #   pytest-cov
     #   pytest-django
-pytest-cov==2.12.1
+pytest-cov==3.0.0
     # via -r requirements/requirements-test.lock.txt
 pytest-django==4.4.0
     # via -r requirements/requirements-test.lock.txt
-pytz==2021.1
+pytz==2021.3
     # via
     #   -r requirements/requirements-test.lock.txt
     #   babel
     #   django
-readme-renderer[md]==29.0
+readme-renderer[md]==30.0
     # via
     #   -r requirements/requirements-test.lock.txt
     #   twine
@@ -335,7 +336,6 @@ six==1.16.0
     #   flake8-print
     #   flake8-tuple
     #   livereload
-    #   readme-renderer
     #   tox
     #   traitlets
     #   virtualenv
@@ -343,7 +343,7 @@ snowballstemmer==2.1.0
     # via
     #   -r requirements/requirements-test.lock.txt
     #   sphinx
-sphinx==4.1.2
+sphinx==4.2.0
     # via
     #   -r requirements/requirements-test.lock.txt
     #   sphinx-autobuild
@@ -352,7 +352,7 @@ sphinx-autobuild==2021.3.14
     # via -r requirements/requirements-test.lock.txt
 sphinx-jinja==1.1.1
     # via -r requirements/requirements-test.lock.txt
-sphinx-rtd-theme==0.5.2
+sphinx-rtd-theme==1.0.0
     # via -r requirements/requirements-test.lock.txt
 sphinxcontrib-applehelp==1.0.2
     # via
@@ -382,62 +382,75 @@ sqlparse==0.4.2
     # via
     #   -r requirements/requirements-test.lock.txt
     #   django
-stevedore==3.3.0
+stevedore==3.5.0
     # via
     #   -r requirements/requirements-test.lock.txt
     #   doc8
-testfixtures==6.18.0
+testfixtures==6.18.3
     # via
     #   -r requirements/requirements-test.lock.txt
     #   flake8-isort
 toml==0.10.2
     # via
     #   -r requirements/requirements-test.lock.txt
+    #   django-stubs
     #   ipdb
     #   mypy
     #   pylint
     #   pytest
-    #   pytest-cov
     #   tox
-tomli==1.2.0
-    # via pep517
+tomli==1.2.2
+    # via
+    #   -r requirements/requirements-test.lock.txt
+    #   coverage
+    #   pep517
 tornado==6.1
     # via
     #   -r requirements/requirements-test.lock.txt
     #   livereload
-tox==3.24.1
+tox==3.24.4
     # via -r requirements/requirements-test.lock.txt
-tqdm==4.62.0
+tqdm==4.62.3
     # via
     #   -r requirements/requirements-test.lock.txt
     #   twine
 traitlets==4.3.3
     # via ipython
-twine==3.4.2
+twine==3.5.0
     # via -r requirements/requirements-test.lock.txt
 typed-ast==1.4.3
     # via
     #   -r requirements/requirements-test.lock.txt
     #   astroid
     #   mypy
-typing-extensions==3.10.0.0
+types-pytz==2021.3.0
+    # via
+    #   -r requirements/requirements-test.lock.txt
+    #   django-stubs
+types-pyyaml==6.0.0
+    # via
+    #   -r requirements/requirements-test.lock.txt
+    #   django-stubs
+typing-extensions==3.10.0.2
     # via
     #   -r requirements/requirements-test.lock.txt
     #   asgiref
     #   astroid
     #   django-stubs
+    #   django-stubs-ext
     #   djangorestframework-stubs
     #   importlib-metadata
     #   mypy
-uritemplate==3.0.1
+    #   pylint
+uritemplate==4.1.1
     # via
     #   -r requirements/requirements-test.lock.txt
     #   coreapi
-urllib3==1.26.6
+urllib3==1.26.7
     # via
     #   -r requirements/requirements-test.lock.txt
     #   requests
-virtualenv==20.7.0
+virtualenv==20.10.0
     # via
     #   -r requirements/requirements-test.lock.txt
     #   tox
@@ -447,15 +460,15 @@ webencodings==0.5.1
     # via
     #   -r requirements/requirements-test.lock.txt
     #   bleach
-wheel==0.36.2
+wheel==0.37.0
     # via
     #   -r requirements/requirements-test.lock.txt
     #   pip-tools
-wrapt==1.12.1
+wrapt==1.13.3
     # via
     #   -r requirements/requirements-test.lock.txt
     #   astroid
-zipp==3.5.0
+zipp==3.6.0
     # via
     #   -r requirements/requirements-test.lock.txt
     #   importlib-metadata

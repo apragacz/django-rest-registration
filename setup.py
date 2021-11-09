@@ -14,7 +14,7 @@ def get_requirements(local_filepath):
     '''
     requirements_path = os.path.join(ROOT_DIR, local_filepath)
     requirements = []
-    with open(requirements_path, 'rt') as req_file:
+    with open(requirements_path, 'rt', encoding='utf-8') as req_file:
         for line in req_file:
             if line.startswith('#'):
                 continue
@@ -30,7 +30,7 @@ def get_version(package):
     Return package version as listed in `__version__` in package `__init__.py`.
     '''
     init_path = os.path.join(ROOT_DIR, package, '__init__.py')
-    with open(init_path, 'rt') as init_file:
+    with open(init_path, 'rt', encoding='utf-8') as init_file:
         init_contents = init_file.read()
         return re.search(
             "__version__ = ['\"]([^'\"]+)['\"]", init_contents).group(1)
