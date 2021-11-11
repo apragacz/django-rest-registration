@@ -92,7 +92,10 @@ class VerifyRegistrationViewTestCase(APIViewTestCase):
         with patch('django.contrib.auth.login') as login_mock:
             user, request = self.prepare_user_and_request()
             response = self.view_func(request)
-            login_mock.assert_called_once_with(mock.ANY, user, backend='django.contrib.auth.backends.ModelBackend')
+            login_mock.assert_called_once_with(
+                mock.ANY,
+                user,
+                backend='django.contrib.auth.backends.ModelBackend')
         self.assert_valid_response(response, status.HTTP_200_OK)
         user.refresh_from_db()
         self.assertTrue(user.is_active)
