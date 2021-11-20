@@ -180,6 +180,7 @@ class ChecksTestCase(TestCase):
             'django.contrib.auth.backends.AllowAllUsersModelBackend',
         ],
         REST_REGISTRATION={
+            'LOGIN_AUTHENTICATION_BACKEND': 'django.contrib.auth.backends.AllowAllUsersModelBackend',  # noqa: E501
             'REGISTER_VERIFICATION_ENABLED': False,
             'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
             'RESET_PASSWORD_VERIFICATION_ENABLED': False,
@@ -196,6 +197,7 @@ class ChecksTestCase(TestCase):
             'django.contrib.auth.backends.AllowAllUsersRemoteUserBackend',
         ],
         REST_REGISTRATION={
+            'LOGIN_AUTHENTICATION_BACKEND': 'django.contrib.auth.backends.AllowAllUsersRemoteUserBackend',  # noqa: E501
             'REGISTER_VERIFICATION_ENABLED': False,
             'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
             'RESET_PASSWORD_VERIFICATION_ENABLED': False,
@@ -343,6 +345,20 @@ def test_when_authtokenmanager_does_not_implement_methods_then_check_fails():
     expected_messages = {
         "AUTH_TOKEN_MANAGER_CLASS is not implementing method get_authentication_class",  # noqa: E501
         "AUTH_TOKEN_MANAGER_CLASS is not implementing method provide_token",
+    }
+    assert {e.msg for e in errors} == expected_messages
+
+
+@override_rest_registration_settings({
+    'LOGIN_AUTHENTICATION_BACKEND': 'nonexistent.backend',
+})
+def test_when_login_auth_backend_not_in_auth_backends_then_check_fails():
+    errors = simulate_checks()
+    assert_error_codes_match(errors, [
+        ErrorCode.LOGIN_AUTH_BACKEND_NOT_IN_AUTH_BACKENDS,
+    ])
+    expected_messages = {
+        "LOGIN_AUTHENTICATION_BACKEND is not in AUTHENTICATION_BACKENDS",
     }
     assert {e.msg for e in errors} == expected_messages
 
