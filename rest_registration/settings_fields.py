@@ -201,6 +201,18 @@ LOGIN_SETTINGS_FIELDS = [
             ``rest_registration.token_managers.AbstractTokenManager``.
             """)
     ),
+    Field(
+        'LOGIN_AUTHENTICATION_BACKEND',
+        default='django.contrib.auth.backends.ModelBackend',
+        help=dedent("""\
+            This setting allows to override the backend used in the login function.
+
+            It may be useful if Django ``AUTHENTICATION_BACKENDS`` setting
+            does not contain ``django.contrib.auth.backends.ModelBackend``.
+
+            The value must be a dotted import path string.
+            """),
+    )
 ]
 RESET_PASSWORD_SETTINGS_FIELDS = [
     Field(
