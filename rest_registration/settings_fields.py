@@ -202,7 +202,7 @@ LOGIN_SETTINGS_FIELDS = [
             """)
     ),
     Field(
-        'LOGIN_AUTHENTICATION_BACKEND',
+        'DEFAULT_LOGIN_AUTHENTICATION_BACKEND',
         default='django.contrib.auth.backends.ModelBackend',
         help=dedent("""\
             This setting allows to override the backend used in the login function.

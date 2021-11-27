@@ -16,6 +16,7 @@ from rest_registration.decorators import (
 )
 from rest_registration.exceptions import LoginInvalid, UserNotFound
 from rest_registration.settings import registration_settings
+from rest_registration.utils.auth_backends import get_login_authentication_backend
 from rest_registration.utils.responses import get_ok_response
 
 if TYPE_CHECKING:
@@ -94,11 +95,8 @@ def rest_auth_has_class(cls: type) -> bool:
 
 def perform_login(request: Request, user: 'AbstractBaseUser') -> Dict[str, Any]:
     if should_authenticate_session():
-        auth.login(
-            request,
-            user,
-            backend=registration_settings.LOGIN_AUTHENTICATION_BACKEND,
-        )
+        login_auth_backend = get_login_authentication_backend()
+        auth.login(request, user, backend=login_auth_backend)
 
     extra_data = {}
 

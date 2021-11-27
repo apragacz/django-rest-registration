@@ -11,6 +11,7 @@ from rest_framework.settings import api_settings
 from rest_registration.auth_token_managers import AbstractAuthTokenManager
 from rest_registration.enums import ErrorCode, WarningCode
 from rest_registration.settings import registration_settings
+from rest_registration.utils.auth_backends import get_login_authentication_backend
 from rest_registration.utils.checks import no_exception_check, predicate_check
 from rest_registration.utils.common import implies
 from rest_registration.utils.email import parse_template_config
@@ -286,13 +287,12 @@ def valid_auth_token_manager_class_provide_token_check() -> bool:
 
 
 @register()
-@predicate_check(
-    'LOGIN_AUTHENTICATION_BACKEND is not in AUTHENTICATION_BACKENDS',
-    ErrorCode.LOGIN_AUTH_BACKEND_NOT_IN_AUTH_BACKENDS,
+@no_exception_check(
+    'invalid authentication backends configuration',
+    ErrorCode.INVALID_AUTH_BACKENDS_CONFIG,
 )
-def valid_login_authentication_backend_check() -> bool:
-    login_auth_backend = registration_settings.LOGIN_AUTHENTICATION_BACKEND
-    return login_auth_backend in settings.AUTHENTICATION_BACKENDS
+def valid_login_authentication_backend_check() -> None:
+    get_login_authentication_backend()
 
 
 # TODO: Issue #114 - remove deprecation check

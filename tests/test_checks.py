@@ -180,7 +180,6 @@ class ChecksTestCase(TestCase):
             'django.contrib.auth.backends.AllowAllUsersModelBackend',
         ],
         REST_REGISTRATION={
-            'LOGIN_AUTHENTICATION_BACKEND': 'django.contrib.auth.backends.AllowAllUsersModelBackend',  # noqa: E501
             'REGISTER_VERIFICATION_ENABLED': False,
             'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
             'RESET_PASSWORD_VERIFICATION_ENABLED': False,
@@ -197,7 +196,6 @@ class ChecksTestCase(TestCase):
             'django.contrib.auth.backends.AllowAllUsersRemoteUserBackend',
         ],
         REST_REGISTRATION={
-            'LOGIN_AUTHENTICATION_BACKEND': 'django.contrib.auth.backends.AllowAllUsersRemoteUserBackend',  # noqa: E501
             'REGISTER_VERIFICATION_ENABLED': False,
             'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
             'RESET_PASSWORD_VERIFICATION_ENABLED': False,
@@ -349,16 +347,36 @@ def test_when_authtokenmanager_does_not_implement_methods_then_check_fails():
     assert {e.msg for e in errors} == expected_messages
 
 
+@override_settings(
+    AUTHENTICATION_BACKENDS=[
+        'django.contrib.auth.backends.ModelBackend',
+        'django.contrib.auth.backends.RemoteUserBackend',
+    ],
+)
+def test_when_multiple_auth_backends_then_check_succeeds():
+    errors = simulate_checks()
+    assert_error_codes_match(errors, [])
+    expected_messages = set()
+    assert {e.msg for e in errors} == expected_messages
+
+
 @override_rest_registration_settings({
-    'LOGIN_AUTHENTICATION_BACKEND': 'nonexistent.backend',
+    'DEFAULT_LOGIN_AUTHENTICATION_BACKEND': 'nonexistent.backend',
 })
-def test_when_login_auth_backend_not_in_auth_backends_then_check_fails():
+@override_settings(
+    AUTHENTICATION_BACKENDS=[
+        'django.contrib.auth.backends.ModelBackend',
+        'django.contrib.auth.backends.RemoteUserBackend',
+    ],
+)
+def test_when_login_auth_backend_not_in_multiple_auth_backends_then_check_fails():
     errors = simulate_checks()
     assert_error_codes_match(errors, [
-        ErrorCode.LOGIN_AUTH_BACKEND_NOT_IN_AUTH_BACKENDS,
+        ErrorCode.INVALID_AUTH_BACKENDS_CONFIG,
     ])
     expected_messages = {
-        "LOGIN_AUTHENTICATION_BACKEND is not in AUTHENTICATION_BACKENDS",
+        "invalid authentication backends configuration:"
+        " DEFAULT_LOGIN_AUTHENTICATION_BACKEND is not in AUTHENTICATION_BACKENDS",
     }
     assert {e.msg for e in errors} == expected_messages
 
