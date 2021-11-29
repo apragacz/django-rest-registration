@@ -361,7 +361,7 @@ def test_when_multiple_auth_backends_then_check_succeeds():
 
 
 @override_rest_registration_settings({
-    'DEFAULT_LOGIN_AUTHENTICATION_BACKEND': 'nonexistent.backend',
+    'LOGIN_DEFAULT_SESSION_AUTHENTICATION_BACKEND': 'nonexistent.backend',
 })
 @override_settings(
     AUTHENTICATION_BACKENDS=[
@@ -376,7 +376,8 @@ def test_when_login_auth_backend_not_in_multiple_auth_backends_then_check_fails(
     ])
     expected_messages = {
         "invalid authentication backends configuration:"
-        " DEFAULT_LOGIN_AUTHENTICATION_BACKEND is not in AUTHENTICATION_BACKENDS",
+        " LOGIN_DEFAULT_SESSION_AUTHENTICATION_BACKEND"
+        " is not in AUTHENTICATION_BACKENDS",
     }
     assert {e.msg for e in errors} == expected_messages
 
