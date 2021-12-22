@@ -135,7 +135,7 @@ You can also use the excellent [tox][tox] testing tool to run the tests
 against all supported versions of Python and Django.
 
 Please note that tox is used when executing test by our CI setup
-(currently we are using Travis CI).
+(currently we are using Circle CI).
 
 Install `tox` globally, and then simply run:
 
@@ -187,7 +187,7 @@ and ideally run `tox`
 in order to check that your modifications are compatible on all
 supported versions of Python and Django.
 
-Once you've made a pull request take a look at the Travis build status in the
+Once you've made a pull request take a look at the Circle CI build status in the
 GitHub interface and make sure the tests are running as you'd expect.
 
 
