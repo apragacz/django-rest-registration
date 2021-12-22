@@ -56,7 +56,7 @@ You can list the available targets with the following command:
 
     make help
 
-Assuming you are in the cloned repository and have Python 3.4+ installed:
+Assuming you are in the cloned repository and have Python 3.5+ installed:
 
     python3 -m venv .venv
     source .venv/bin/activate
@@ -145,7 +145,7 @@ If you don't want to install `tox` globally, you should be able
 to run `tox` command within the virtualenv as well.
 
 If you want to run all tox environments, you will need to have multiple versions
-of Python installed (`3.4` - `3.7`). You will need to have GNU make installed
+of Python installed (`3.5` - `3.9`). You will need to have GNU make installed
 as well.
 
 You can also run specific environment; for instance:
