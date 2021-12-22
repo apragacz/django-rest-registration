@@ -21,8 +21,7 @@ so the app templates for notification emails can be accessed:
         'rest_registration',
     )
 
-After that, you can use the urls in your Django urlconfig, for instance
-(using new Django 2.x syntax):
+After that, you can use the urls in your Django urlconfig, for instance:
 
 .. code:: python
 
@@ -39,9 +38,7 @@ After that, you can use the urls in your Django urlconfig, for instance
         path('api/v1/', include(api_urlpatterns)),
     ]
 
-In Django 1.x you can use old ``url`` instead of ``path``.
-
-In this example, the Django REST Registraton API views will be served under
+In this example, the Django REST Registration API views will be served under
 ``https://your-backend-host/api/v1/accounts/``.
 Obviously, you can choose different URI path than ``api/v1/accounts/``,
 depending on your preferences.
@@ -50,7 +47,7 @@ depending on your preferences.
 Minimal Configuration
 ---------------------
 
-You can configure Django REST Registraton using the
+You can configure Django REST Registration using the
 ``REST_REGISTRATION`` setting in your Django settings (similarly to
 Django REST Framework).
 

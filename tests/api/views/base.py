@@ -1,10 +1,10 @@
 from urllib.parse import parse_qs, urlparse
 
-from django.contrib.sessions.middleware import SessionMiddleware
 from django.urls import resolve
 from rest_framework import status
 from rest_framework.test import APIRequestFactory
 
+from tests.helpers.api_views import add_session_to_request
 from tests.helpers.testcases import BaseViewTestCase
 
 
@@ -32,9 +32,7 @@ class APIViewTestCase(BaseViewTestCase):
         return self.factory.get(self.view_url)
 
     def add_session_to_request(self, request):
-        middleware = SessionMiddleware()
-        middleware.process_request(request)
-        request.session.save()
+        add_session_to_request(request)
 
     def assert_response(
             self, response, expected_valid_response=True,

@@ -1,6 +1,5 @@
-from django.conf.urls import include, url
+from django.urls import include, path
 
 urlpatterns = [
-    url('accounts/',
-        include('rest_registration.contrib.verification_redirects.urls')),
+    path('accounts/', include('rest_registration.contrib.verification_redirects.urls')),
 ]

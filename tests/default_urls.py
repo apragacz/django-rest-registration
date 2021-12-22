@@ -1,9 +1,9 @@
-from django.conf.urls import include, url
+from django.urls import include, path
 
 api_urlpatterns = [
-    url('accounts/', include('rest_registration.api.urls')),
+    path('accounts/', include('rest_registration.api.urls')),
 ]
 
 urlpatterns = [
-    url('api/', include(api_urlpatterns)),
+    path('api/', include(api_urlpatterns)),
 ]

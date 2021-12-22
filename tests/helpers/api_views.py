@@ -31,9 +31,17 @@ class APIViewRequestFactory:
         return self._factory.get(self.view_url)
 
     def add_session_to_request(self, request):
-        middleware = SessionMiddleware()
-        middleware.process_request(request)
-        request.session.save()
+        add_session_to_request(request)
+
+
+def add_session_to_request(request):
+    middleware = SessionMiddleware(_fake_get_response)
+    middleware.process_request(request)
+    request.session.save()
+
+
+def _fake_get_response(request):
+    raise NotImplementedError()
 
 
 def assert_valid_response(response, expected_status_code=None):

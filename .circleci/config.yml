@@ -171,6 +171,12 @@ workflows:
             - mypy
             - setup_project
       - test-tox:
+          name: test-tox-py39-django40
+          py: "39"
+          django: "40"
+          requires:
+            - test
+      - test-tox:
           name: test-tox-py39-django32
           py: "39"
           django: "32"

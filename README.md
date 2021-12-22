@@ -13,7 +13,7 @@ Full documentation for the project is available at [https://django-rest-registra
 
 ## Requirements
 
-* Django (1.10+, 2.0+, 3.0+) and Django-REST-Framework (3.3+)
+* Django (2.0+, 3.0+, 4.0+) and Django-REST-Framework (3.3+)
 * Python 3.4 or higher (no Python 2 support!)
 
 ## Features
@@ -55,7 +55,7 @@ INSTALLED_APPS=(
     'rest_registration',
 )
 ```
-After that, you can use the urls in your urlconfig, for instance (using new Django 2.x syntax):
+After that, you can use the urls in your urlconfig, for instance:
 
 ```python
 api_urlpatterns = [
@@ -72,9 +72,7 @@ urlpatterns = [
 ]
 ```
 
-In Django 1.x you can use old `url` instead of `path`.
-
-You can configure Django REST Registraton using the `REST_REGISTRATION`
+You can configure Django REST Registration using the `REST_REGISTRATION`
 setting in your Django settings (similarly to Django REST Framework).
 
 Below is sample, minimal config you can provide in your django settings which will satisfy the system checks:
