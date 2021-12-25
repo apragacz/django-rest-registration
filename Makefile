@@ -27,6 +27,7 @@ PYLINT_OPTS := --rcfile=setup.cfg
 PYTEST := py.test
 PYTEST_OPTS :=
 TWINE := twine
+PIP := pip
 PIP_COMPILE := pip-compile
 PIP_COMPILE_OPTS := --upgrade
 SPHINXBUILD := sphinx-build
@@ -54,6 +55,7 @@ install_test:  ## install all pip requirements needed for testing and the packag
 
 .PHONY: upgrade_requirements
 upgrade_requirements:  ## upgrade pip requirements lock files
+	${PIP} install pip-tools
 	${PIP_COMPILE} ${PIP_COMPILE_OPTS} --output-file=requirements/requirements-base.lock.txt requirements/requirements-base.in
 	${PIP_COMPILE} ${PIP_COMPILE_OPTS} --output-file=requirements/requirements-test.lock.txt requirements/requirements-base.lock.txt requirements/requirements-test.in
 	${PIP_COMPILE} ${PIP_COMPILE_OPTS} --output-file=requirements/requirements-dev.lock.txt requirements/requirements-test.lock.txt requirements/requirements-dev.in
