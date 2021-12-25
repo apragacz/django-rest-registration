@@ -20,16 +20,10 @@ from django.shortcuts import get_object_or_404 as _get_object_or_404
 
 from rest_registration.exceptions import UserNotFound
 from rest_registration.settings import registration_settings
-from rest_registration.utils.common import set_or_none
-
-try:
-    from typing import Literal  # type: ignore
-except ImportError:
-    from typing_extensions import Literal
-
+from rest_registration.utils.common import DefaultValues, set_or_none
+from rest_registration.utils.types import Literal
 
 _DefaultT = TypeVar('_DefaultT')
-_T = TypeVar('_T')
 _ModelT = TypeVar('_ModelT', bound=Model)
 
 if TYPE_CHECKING:
@@ -38,9 +32,6 @@ if TYPE_CHECKING:
     from django.db.models import Field, ForeignObjectRel
 
     UserField = Union['Field', 'ForeignObjectRel']
-
-
-_RAISE_EXCEPTION = object()
 
 
 def authenticate_by_login_data(
@@ -106,7 +97,9 @@ def get_user_verification_id(user: 'AbstractBaseUser') -> Any:
 
 def get_user_by_verification_id(
         user_verification_id: Any,
-        default: Union[_DefaultT, Literal[_RAISE_EXCEPTION]] = _RAISE_EXCEPTION,
+        default: Union[
+            _DefaultT,
+            Literal[DefaultValues.RAISE_EXCEPTION]] = DefaultValues.RAISE_EXCEPTION,
         require_verified: bool = True) -> Union['AbstractBaseUser', _DefaultT]:
     verification_id_field = get_user_setting('VERIFICATION_ID_FIELD')
     return get_user_by_lookup_dict({
@@ -169,7 +162,8 @@ def get_user_email_field_name() -> str:
 
 def get_user_by_lookup_dict(
         lookup_dict: Dict[str, Any],
-        default: Union[_DefaultT, Literal[_RAISE_EXCEPTION]] = _RAISE_EXCEPTION,
+        default: Union[_DefaultT, Literal[
+            DefaultValues.RAISE_EXCEPTION]] = DefaultValues.RAISE_EXCEPTION,
         require_verified: bool = True) -> Union['AbstractBaseUser', _DefaultT]:
     verification_enabled = registration_settings.REGISTER_VERIFICATION_ENABLED
     verification_flag_field = get_user_setting('VERIFICATION_FLAG_FIELD')
@@ -182,7 +176,7 @@ def get_user_by_lookup_dict(
         queryset = user_class.objects.all()  # type: QuerySet[AbstractBaseUser]
         user = get_object_or_404(queryset, **kwargs)
     except Http404:
-        if default is _RAISE_EXCEPTION:
+        if default is DefaultValues.RAISE_EXCEPTION:
             raise UserNotFound() from None
         return default
     else:

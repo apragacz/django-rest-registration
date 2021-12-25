@@ -1,16 +1,16 @@
+from enum import Enum
 from typing import Callable, Iterable, Optional, Set, TypeVar, Union
-
-
-class RaiseExceptionType:
-    pass
-
 
 _T = TypeVar('_T')
 LazyBool = Callable[[], bool]
 MaybeLazyBool = Union[bool, LazyBool]
 
 
-RAISE_EXCEPTION = RaiseExceptionType()
+class DefaultValues(Enum):
+    RAISE_EXCEPTION = 'raise-exception'
+
+
+RAISE_EXCEPTION = DefaultValues.RAISE_EXCEPTION
 
 
 def identity(value: _T) -> _T:
