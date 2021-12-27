@@ -25,6 +25,8 @@ class Field(_Field):
 USER_SETTINGS_FIELDS = [
     Field(
         'USER_LOGIN_FIELDS',
+        help=dedent("""\
+            """),
     ),
     Field(
         'USER_HIDDEN_FIELDS',
@@ -37,16 +39,24 @@ USER_SETTINGS_FIELDS = [
             'groups',
             'date_joined',
         ),
+        help=dedent("""\
+            """),
     ),
     Field(
         'USER_PUBLIC_FIELDS',
+        help=dedent("""\
+            """),
     ),
     Field(
         'USER_EDITABLE_FIELDS',
+        help=dedent("""\
+            """),
     ),
     Field(
         'USER_EMAIL_FIELD',
         default='email',
+        help=dedent("""\
+            """),
     ),
     Field(
         'USER_VERIFICATION_ID_FIELD',
@@ -62,6 +72,8 @@ USER_SETTINGS_FIELDS = [
     Field(
         'USER_VERIFICATION_FLAG_FIELD',
         default='is_active',
+        help=dedent("""\
+            """),
     ),
 ]
 
@@ -158,6 +170,8 @@ LOGIN_SETTINGS_FIELDS = [
         'LOGIN_SERIALIZER_CLASS',
         default='rest_registration.api.serializers.DefaultLoginSerializer',  # noqa: E501
         import_string=True,
+        help=dedent("""\
+            """),
     ),
     Field(
         'LOGIN_AUTHENTICATOR',
@@ -277,6 +291,8 @@ RESET_PASSWORD_SETTINGS_FIELDS = [
     Field(
         'RESET_PASSWORD_VERIFICATION_PERIOD',
         default=datetime.timedelta(days=1),
+        help=dedent("""\
+            """),
     ),
     Field('RESET_PASSWORD_VERIFICATION_URL'),
     Field('RESET_PASSWORD_VERIFICATION_ONE_TIME_USE', default=False),
@@ -286,6 +302,8 @@ RESET_PASSWORD_SETTINGS_FIELDS = [
             'subject': 'rest_registration/reset_password/subject.txt',
             'body': 'rest_registration/reset_password/body.txt',
         },
+        help=dedent("""\
+            """),
     ),
     Field(
         'RESET_PASSWORD_SERIALIZER_PASSWORD_CONFIRM',
@@ -319,6 +337,8 @@ REGISTER_EMAIL_SETTINGS_FIELDS = [
     Field(
         'REGISTER_EMAIL_VERIFICATION_PERIOD',
         default=datetime.timedelta(days=7),
+        help=dedent("""\
+            """),
     ),
     Field('REGISTER_EMAIL_VERIFICATION_URL'),
     Field(
@@ -327,6 +347,8 @@ REGISTER_EMAIL_SETTINGS_FIELDS = [
             'subject': 'rest_registration/register_email/subject.txt',
             'body': 'rest_registration/register_email/body.txt',
         },
+        help=dedent("""\
+            """),
     ),
 ]
 
@@ -337,6 +359,8 @@ GLOBAL_VERIFICATION_SETTINGS_FIELDS = [
         'VERIFICATION_EMAIL_HTML_TO_TEXT_CONVERTER',
         default='rest_registration.utils.html.convert_html_to_text_preserving_urls',  # noqa: E501
         import_string=True,
+        help=dedent("""\
+            """),
     ),
     Field(
         'VERIFICATION_URL_BUILDER',
@@ -453,7 +477,12 @@ GLOBAL_VERIFICATION_SETTINGS_FIELDS = [
 ]
 
 CHANGE_PASSWORD_SETTINGS_FIELDS = [
-    Field('CHANGE_PASSWORD_SERIALIZER_PASSWORD_CONFIRM', default=True),
+    Field(
+        'CHANGE_PASSWORD_SERIALIZER_PASSWORD_CONFIRM',
+        default=True,
+        help=dedent("""\
+            """),
+    ),
 ]
 
 PROFILE_SETTINGS_FIELDS = [
@@ -461,6 +490,8 @@ PROFILE_SETTINGS_FIELDS = [
         'PROFILE_SERIALIZER_CLASS',
         default='rest_registration.api.serializers.DefaultUserProfileSerializer',  # noqa: E501
         import_string=True,
+        help=dedent("""\
+            """),
     ),
 ]
 
@@ -469,6 +500,8 @@ MISC_SETTINGS_FIELDS = [
         'SUCCESS_RESPONSE_BUILDER',
         default='rest_registration.utils.responses.build_default_success_response',  # noqa: E501
         import_string=True,
+        help=dedent("""\
+            """),
     ),
     Field(
         'USE_NON_FIELD_ERRORS_KEY_FROM_DRF_SETTINGS',
