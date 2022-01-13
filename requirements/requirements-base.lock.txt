@@ -8,7 +8,7 @@ asgiref==3.4.1
     # via django
 backports.zoneinfo==0.2.1
     # via django
-django==4.0
+django==4.0.1
     # via
     #   -r requirements/requirements-base.in
     #   djangorestframework
