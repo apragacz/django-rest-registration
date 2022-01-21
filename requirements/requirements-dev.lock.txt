@@ -155,7 +155,7 @@ iniconfig==1.1.1
     #   pytest
 ipdb==0.13.9
     # via -r requirements/requirements-dev.in
-ipython==7.30.1
+ipython==7.31.1
     # via
     #   -r requirements/requirements-dev.in
     #   ipdb
