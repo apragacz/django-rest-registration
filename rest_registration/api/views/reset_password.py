@@ -93,7 +93,9 @@ def process_reset_password_data(input_data, serializer_context=None):
     data = serializer.validated_data.copy()
     password = data.pop('password')
     data.pop('password_confirm', None)
-    signer = ResetPasswordSigner(data)
+    # We use the signer only for verification, therefore we don't need a base_url and
+    # may set strict=False
+    signer = ResetPasswordSigner(data, strict=False)
     verify_signer_or_bad_request(signer)
 
     user = get_user_by_verification_id(data['user_id'], require_verified=False)
