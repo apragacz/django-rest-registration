@@ -37,8 +37,11 @@ def auth_installed_check() -> bool:
     ErrorCode.NO_RESET_PASSWORD_VER_URL,
 )
 def reset_password_verification_url_check() -> bool:
+    sends_emails = (registration_settings.RESET_PASSWORD_VERIFICATION_ENABLED
+                    and registration_settings.is_default(
+                        'RESET_PASSWORD_VERIFICATION_EMAIL_SENDER'))
     return implies(
-        registration_settings.RESET_PASSWORD_VERIFICATION_ENABLED,
+        sends_emails,
         registration_settings.RESET_PASSWORD_VERIFICATION_URL,
     )
 
@@ -50,8 +53,11 @@ def reset_password_verification_url_check() -> bool:
     ErrorCode.NO_REGISTER_VER_URL,
 )
 def register_verification_url_check() -> bool:
+    sends_emails = (registration_settings.REGISTER_VERIFICATION_ENABLED
+                    and registration_settings.is_default(
+                        'REGISTER_VERIFICATION_EMAIL_SENDER'))
     return implies(
-        registration_settings.REGISTER_VERIFICATION_ENABLED,
+        sends_emails,
         registration_settings.REGISTER_VERIFICATION_URL,
     )
 
@@ -63,8 +69,11 @@ def register_verification_url_check() -> bool:
     ErrorCode.NO_REGISTER_EMAIL_VER_URL,
 )
 def register_email_verification_url_check() -> bool:
+    sends_emails = (registration_settings.REGISTER_EMAIL_VERIFICATION_ENABLED
+                    and registration_settings.is_default(
+                        'REGISTER_EMAIL_VERIFICATION_EMAIL_SENDER'))
     return implies(
-        registration_settings.REGISTER_EMAIL_VERIFICATION_ENABLED,
+        sends_emails,
         registration_settings.REGISTER_EMAIL_VERIFICATION_URL,
     )
 
@@ -75,12 +84,19 @@ def register_email_verification_url_check() -> bool:
     ErrorCode.NO_VER_FROM_EMAIL,
 )
 def verification_from_check() -> bool:
+    sends_emails = any([
+        registration_settings.REGISTER_VERIFICATION_ENABLED
+        and registration_settings.is_default(
+            'REGISTER_VERIFICATION_EMAIL_SENDER'),
+        registration_settings.REGISTER_EMAIL_VERIFICATION_ENABLED
+        and registration_settings.is_default(
+            'REGISTER_EMAIL_VERIFICATION_EMAIL_SENDER'),
+        registration_settings.RESET_PASSWORD_VERIFICATION_ENABLED
+        and registration_settings.is_default(
+            'RESET_PASSWORD_VERIFICATION_EMAIL_SENDER'),
+    ])
     return implies(
-        any([
-            registration_settings.REGISTER_VERIFICATION_ENABLED,
-            registration_settings.REGISTER_EMAIL_VERIFICATION_ENABLED,
-            registration_settings.RESET_PASSWORD_VERIFICATION_ENABLED,
-        ]),
+        sends_emails,
         registration_settings.VERIFICATION_FROM_EMAIL,
     )
 
@@ -156,8 +172,11 @@ def register_verification_one_time_auto_login_check() -> bool:
     ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
 )
 def valid_register_verification_email_template_config_check() -> None:
+    sends_emails = (registration_settings.REGISTER_VERIFICATION_ENABLED
+                    and registration_settings.is_default(
+                        'REGISTER_VERIFICATION_EMAIL_SENDER'))
     _validate_email_template_config(
-        registration_settings.REGISTER_VERIFICATION_ENABLED,
+        sends_emails,
         registration_settings.REGISTER_VERIFICATION_EMAIL_TEMPLATES,
     )
 
@@ -168,8 +187,11 @@ def valid_register_verification_email_template_config_check() -> None:
     ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
 )
 def valid_reset_password_verification_email_template_config_check() -> None:
+    sends_emails = (registration_settings.RESET_PASSWORD_VERIFICATION_ENABLED
+                    and registration_settings.is_default(
+                        'RESET_PASSWORD_VERIFICATION_EMAIL_SENDER'))
     _validate_email_template_config(
-        registration_settings.RESET_PASSWORD_VERIFICATION_ENABLED,
+        sends_emails,
         registration_settings.RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES,
     )
 
@@ -180,8 +202,11 @@ def valid_reset_password_verification_email_template_config_check() -> None:
     ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
 )
 def valid_register_email_verification_email_template_config_check() -> None:
+    sends_emails = (registration_settings.REGISTER_EMAIL_VERIFICATION_ENABLED
+                    and registration_settings.is_default(
+                        'REGISTER_EMAIL_VERIFICATION_EMAIL_SENDER'))
     _validate_email_template_config(
-        registration_settings.REGISTER_EMAIL_VERIFICATION_ENABLED,
+        sends_emails,
         registration_settings.REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES,
     )
 
