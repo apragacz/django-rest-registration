@@ -36,6 +36,11 @@ class NestedSettings:
             if hasattr(self, key):
                 delattr(self, key)
 
+    def is_default(self, attr: str) -> bool:
+        if attr not in self.user_settings:
+            return True
+        return self.user_settings[attr] == self.defaults[attr]
+
     def __getattr__(self, attr: str) -> Any:
         if attr not in self.defaults.keys():
             raise AttributeError(
