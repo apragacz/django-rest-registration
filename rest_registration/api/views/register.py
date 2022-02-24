@@ -21,9 +21,6 @@ from rest_registration.utils.users import (
     get_user_setting
 )
 from rest_registration.utils.verification import verify_signer_or_bad_request
-from rest_registration.verification_notifications import (
-    send_register_verification_email_notification
-)
 
 
 @api_view_serializer_class_getter(
@@ -51,7 +48,8 @@ def register(request):
     with transaction.atomic():
         user = serializer.save(**kwargs)
         if registration_settings.REGISTER_VERIFICATION_ENABLED:
-            send_register_verification_email_notification(request, user)
+            email_sender = registration_settings.REGISTER_VERIFICATION_EMAIL_SENDER
+            email_sender(request, user)
 
     signals.user_registered.send(sender=None, user=user, request=request)
     output_serializer_class = registration_settings.REGISTER_OUTPUT_SERIALIZER_CLASS

@@ -116,6 +116,17 @@ REGISTER_SETTINGS_FIELDS = [
             """),
     ),
     Field(
+        'REGISTER_VERIFICATION_EMAIL_SENDER',
+        default='rest_registration.verification_notifications.send_register_verification_email_notification',  # noqa: E501
+        import_string=True,
+        help=dedent("""\
+            By default the email sender function will work with the build-in email
+            sending mechanism.
+
+            You can handle email sending all by yourself by overriding this setting.
+            """),
+    ),
+    Field(
         'REGISTER_VERIFICATION_PERIOD',
         default=datetime.timedelta(days=7),
         help=dedent("""\
@@ -275,6 +286,17 @@ RESET_PASSWORD_SETTINGS_FIELDS = [
     ),
     Field('RESET_PASSWORD_VERIFICATION_ENABLED', default=True),
     Field(
+        'RESET_PASSWORD_VERIFICATION_EMAIL_SENDER',
+        default='rest_registration.verification_notifications.send_reset_password_verification_email_notification',  # noqa: E501
+        import_string=True,
+        help=dedent("""\
+            By default the email sender function will work with the build-in email
+            sending mechanism.
+
+            You can handle email sending all by yourself by overriding this setting.
+            """),
+    ),
+    Field(
         'RESET_PASSWORD_VERIFICATION_PERIOD',
         default=datetime.timedelta(days=1),
     ),
@@ -316,6 +338,17 @@ REGISTER_EMAIL_SETTINGS_FIELDS = [
             """),
     ),
     Field('REGISTER_EMAIL_VERIFICATION_ENABLED', default=True),
+    Field(
+        'REGISTER_EMAIL_VERIFICATION_EMAIL_SENDER',
+        default='rest_registration.verification_notifications.send_register_email_verification_email_notification',  # noqa: E501
+        import_string=True,
+        help=dedent("""\
+            By default the email sender function will work with the build-in email
+            sending mechanism.
+
+            You can handle email sending all by yourself by overriding this setting.
+            """),
+    ),
     Field(
         'REGISTER_EMAIL_VERIFICATION_PERIOD',
         default=datetime.timedelta(days=7),

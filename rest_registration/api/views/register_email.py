@@ -24,9 +24,6 @@ from rest_registration.utils.users import (
     user_with_email_exists
 )
 from rest_registration.utils.verification import verify_signer_or_bad_request
-from rest_registration.verification_notifications import (
-    send_register_email_verification_email_notification
-)
 
 
 @api_view_serializer_class_getter(
@@ -53,8 +50,8 @@ def register_email(request: Request) -> Response:
     email_already_used = is_user_email_field_unique() and user_with_email_exists(email)
 
     if registration_settings.REGISTER_EMAIL_VERIFICATION_ENABLED:
-        send_register_email_verification_email_notification(
-            request, user, email, email_already_used=email_already_used)
+        email_sender = registration_settings.REGISTER_EMAIL_VERIFICATION_EMAIL_SENDER
+        email_sender(request, user, email, email_already_used=email_already_used)
     else:
         if email_already_used:
             raise EmailAlreadyRegistered()

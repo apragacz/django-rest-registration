@@ -19,9 +19,6 @@ from rest_registration.utils.validation import (
     validate_user_password_confirm
 )
 from rest_registration.utils.verification import verify_signer_or_bad_request
-from rest_registration.verification_notifications import (
-    send_reset_password_verification_email_notification
-)
 
 
 @api_view_serializer_class_getter(
@@ -48,7 +45,8 @@ def send_reset_password_link(request):
         if registration_settings.RESET_PASSWORD_FAIL_WHEN_USER_NOT_FOUND:
             raise
         return get_ok_response(success_message)
-    send_reset_password_verification_email_notification(request, user)
+    email_sender = registration_settings.RESET_PASSWORD_VERIFICATION_EMAIL_SENDER
+    email_sender(request, user)
     return get_ok_response(success_message)
 
 
