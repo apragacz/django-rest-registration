@@ -100,7 +100,9 @@ def process_verify_email_data(
     serializer.is_valid(raise_exception=True)
 
     data = serializer.validated_data
-    signer = RegisterEmailSigner(data)
+    # We use the signer only for verification, therefore we don't need a base_url and
+    # may set strict=False
+    signer = RegisterEmailSigner(data, strict=False)
     verify_signer_or_bad_request(signer)
     request = serializer_context.get('request')
     new_email = data['email']

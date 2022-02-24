@@ -95,7 +95,9 @@ def process_verify_registration_data(input_data, serializer_context=None):
     serializer.is_valid(raise_exception=True)
 
     data = serializer.validated_data
-    signer = RegisterSigner(data)
+    # We use the signer only for verification, therefore we don't need a base_url and
+    # may set strict=False
+    signer = RegisterSigner(data, strict=False)
     verify_signer_or_bad_request(signer)
 
     verification_flag_field = get_user_setting('VERIFICATION_FLAG_FIELD')
