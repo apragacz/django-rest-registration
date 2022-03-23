@@ -31,6 +31,8 @@ def register(request):
     '''
     Register new user.
     '''
+    if not registration_settings.REGISTER_FLOW_ENABLED:
+        raise Http404()
     serializer_class = registration_settings.REGISTER_SERIALIZER_CLASS
     serializer = serializer_class(data=request.data, context={'request': request})
     serializer.is_valid(raise_exception=True)

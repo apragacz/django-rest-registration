@@ -9,9 +9,16 @@ from django.test.utils import override_settings
 from rest_framework import status
 
 from rest_registration.signers.register import RegisterSigner
-from tests.helpers.api_views import assert_response_status_is_created
+from tests.helpers.api_views import (
+    assert_response_is_not_found,
+    assert_response_status_is_created
+)
 from tests.helpers.constants import REGISTER_VERIFICATION_URL, VERIFICATION_FROM_EMAIL
-from tests.helpers.email import assert_one_email_sent, capture_sent_emails
+from tests.helpers.email import (
+    assert_no_email_sent,
+    assert_one_email_sent,
+    capture_sent_emails
+)
 from tests.helpers.settings import override_rest_registration_settings
 from tests.helpers.text import assert_one_url_line_in_text
 from tests.helpers.timer import capture_time
@@ -430,6 +437,21 @@ def test_ok_when_faulty_verification_template_selector(
     assert_one_email_sent(sent_emails)
     sent_email = sent_emails[0]
     assert_valid_register_verification_email(sent_email, user, timer)
+
+
+@pytest.mark.django_db
+@override_rest_registration_settings({
+    'REGISTER_FLOW_ENABLED': False,
+})
+def test_fail_when_register_flow_disabled(
+        settings_with_register_verification,
+        api_view_provider, api_factory):
+    data = _get_register_user_data(password='testpassword')
+    request = api_factory.create_post_request(data)
+    with capture_sent_emails() as sent_emails:
+        response = api_view_provider.view_func(request)
+    assert_response_is_not_found(response)
+    assert_no_email_sent(sent_emails)
 
 
 def assert_user_state_matches_data(user, data, verified=False):

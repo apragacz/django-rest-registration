@@ -67,6 +67,16 @@ USER_SETTINGS_FIELDS = [
 
 REGISTER_SETTINGS_FIELDS = [
     Field(
+        'REGISTER_FLOW_ENABLED',
+        default=True,
+        help=dedent("""\
+            If enabled, then users are able to register (create new account).
+
+            One can disable it if for instance accounts should not be registered
+            by external users but rather should be created only by admin user.
+            """),
+    ),
+    Field(
         'REGISTER_SERIALIZER_CLASS',
         default='rest_registration.api.serializers.DefaultRegisterUserSerializer',  # noqa: E501,
         import_string=True,
