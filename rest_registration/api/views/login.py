@@ -95,7 +95,7 @@ def rest_auth_has_class(cls: type) -> bool:
 
 def perform_login(request: Request, user: 'AbstractBaseUser') -> Dict[str, Any]:
     if should_authenticate_session():
-        login_auth_backend = get_login_authentication_backend()
+        login_auth_backend = get_login_authentication_backend(user=user)
         auth.login(request, user, backend=login_auth_backend)
 
     extra_data = {}

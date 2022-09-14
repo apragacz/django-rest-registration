@@ -189,6 +189,8 @@ LOGIN_SETTINGS_FIELDS = [
             :ref:`user-login-fields-setting` setting to extract the login field
             from the validated serializer data either by using the 'login' key
             or the specific login field name(s) (e.g. 'username', 'email').
+            Then, it uses ``django.contrib.auth.authenticate()`` to find a
+            matching user.
 
             You can change that behavior by overriding this setting.
 
@@ -206,6 +208,11 @@ LOGIN_SETTINGS_FIELDS = [
 
             If the user cannot be found, the function should raise ``UserNotFound``
             exception (from ``rest_registration.exceptions``).
+
+            If the user can be found, it should be returned.
+            The implementer should ensure that the right authentication backend
+            (if it was used to find a match) is provided as ``backend`` attribute of
+            the returned user.
             """),
     ),
     Field('LOGIN_AUTHENTICATE_SESSION'),
