@@ -9,7 +9,9 @@ if TYPE_CHECKING:
     from django.contrib.auth.base_user import AbstractBaseUser
 
 
-def get_login_authentication_backend(user: Optional['AbstractBaseUser'] = None) -> str:
+def get_login_authentication_backend(
+    user: Optional['AbstractBaseUser'] = None
+) -> Optional[str]:
     if user and hasattr(user, 'backend'):
         return user.backend  # type: ignore
     backends = settings.AUTHENTICATION_BACKENDS
@@ -18,7 +20,7 @@ def get_login_authentication_backend(user: Optional['AbstractBaseUser'] = None) 
         raise ImproperlyConfigured("No AUTHENTICATION_BACKENDS specified")
     if len(backends) == 1:
         return backends[0]
-    if default_login_backend not in backends:
+    if default_login_backend is not None and default_login_backend not in backends:
         raise ImproperlyConfigured(
             "LOGIN_DEFAULT_SESSION_AUTHENTICATION_BACKEND"
             " is not in AUTHENTICATION_BACKENDS")

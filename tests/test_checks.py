@@ -353,11 +353,23 @@ def test_when_authtokenmanager_does_not_implement_methods_then_check_fails():
         'django.contrib.auth.backends.RemoteUserBackend',
     ],
 )
-def test_when_multiple_auth_backends_then_check_succeeds():
+def test_ok_when_multiple_auth_backends():
     errors = simulate_checks()
     assert_error_codes_match(errors, [])
-    expected_messages = set()
-    assert {e.msg for e in errors} == expected_messages
+
+
+@override_rest_registration_settings({
+    'LOGIN_DEFAULT_SESSION_AUTHENTICATION_BACKEND': 'django.contrib.auth.backends.RemoteUserBackend',  # noqa: E501
+})
+@override_settings(
+    AUTHENTICATION_BACKENDS=[
+        'django.contrib.auth.backends.ModelBackend',
+        'django.contrib.auth.backends.RemoteUserBackend',
+    ],
+)
+def test_ok_when_login_auth_backend_in_multiple_auth_backends():
+    errors = simulate_checks()
+    assert_error_codes_match(errors, [])
 
 
 @override_rest_registration_settings({
@@ -369,7 +381,7 @@ def test_when_multiple_auth_backends_then_check_succeeds():
         'django.contrib.auth.backends.RemoteUserBackend',
     ],
 )
-def test_when_login_auth_backend_not_in_multiple_auth_backends_then_check_fails():
+def test_fail_when_login_auth_backend_not_in_multiple_auth_backends():
     errors = simulate_checks()
     assert_error_codes_match(errors, [
         ErrorCode.INVALID_AUTH_BACKENDS_CONFIG,

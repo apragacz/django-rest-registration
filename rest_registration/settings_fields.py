@@ -231,14 +231,14 @@ LOGIN_SETTINGS_FIELDS = [
     ),
     Field(
         'LOGIN_DEFAULT_SESSION_AUTHENTICATION_BACKEND',
-        default='django.contrib.auth.backends.ModelBackend',
+        default=None,
         help=dedent("""\
             This setting allows to override the backend used in the login function.
 
             It may be useful if Django ``AUTHENTICATION_BACKENDS`` setting
             does contain multiple values.
 
-            The value must be a dotted import path string.
+            The value must be a dotted import path string or ``None``.
             """),
     )
 ]
