@@ -358,6 +358,17 @@ def test_ok_when_multiple_auth_backends():
     assert_error_codes_match(errors, [])
 
 
+@override_settings(
+    AUTHENTICATION_BACKENDS=[
+        'tests.testapp.custom_auth_backends.backend.CustomAuthBackend',
+        'django.contrib.auth.backends.RemoteUserBackend',
+    ],
+)
+def test_ok_when_multiple_custom_auth_backends():
+    errors = simulate_checks()
+    assert_error_codes_match(errors, [])
+
+
 @override_rest_registration_settings({
     'LOGIN_DEFAULT_SESSION_AUTHENTICATION_BACKEND': 'django.contrib.auth.backends.RemoteUserBackend',  # noqa: E501
 })
