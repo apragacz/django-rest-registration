@@ -1,18 +1,14 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Type
 
 from django.http import Http404
 from django.utils.translation import gettext as _
-from rest_framework import serializers
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import permissions, serializers
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.serializers import Serializer
 
 from rest_registration import signals
-from rest_registration.decorators import (
-    api_view_serializer_class,
-    api_view_serializer_class_getter
-)
+from rest_registration.api.views.base import BaseAPIView
 from rest_registration.exceptions import EmailAlreadyRegistered
 from rest_registration.settings import registration_settings
 from rest_registration.signers.register_email import RegisterEmailSigner
@@ -26,49 +22,54 @@ from rest_registration.utils.users import (
 from rest_registration.utils.verification import verify_signer_or_bad_request
 
 
-@api_view_serializer_class_getter(
-    lambda: registration_settings.REGISTER_EMAIL_SERIALIZER_CLASS)
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def register_email(request: Request) -> Response:
-    '''
-    Register new email.
-    '''
-    user = request.user
+class RegisterEmailView(BaseAPIView):
+    permission_classes = [permissions.IsAuthenticated]
 
-    serializer_class = registration_settings.REGISTER_EMAIL_SERIALIZER_CLASS
-    serializer = serializer_class(data=request.data, context={'request': request})
-    serializer.is_valid(raise_exception=True)
+    def post(self, request: Request) -> Response:
+        '''
+        Register new email.
+        '''
+        user = request.user
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-    # TODO: Issue #114 - remove code supporting deprecated behavior
-    get_email = getattr(serializer, 'get_email', None)
-    if callable(get_email):
-        email = get_email()
-    else:
-        email = serializer.validated_data['email']
+        # TODO: Issue #114 - remove code supporting deprecated behavior
+        get_email = getattr(serializer, 'get_email', None)
+        if callable(get_email):
+            email = get_email()
+        else:
+            email = serializer.validated_data['email']
 
-    email_already_used = is_user_email_field_unique() and user_with_email_exists(email)
+        email_already_used = (
+            is_user_email_field_unique()
+            and user_with_email_exists(email))
 
-    if registration_settings.REGISTER_EMAIL_VERIFICATION_ENABLED:
-        email_sender = registration_settings.REGISTER_EMAIL_VERIFICATION_EMAIL_SENDER
-        email_sender(request, user, email, email_already_used=email_already_used)
-    else:
-        if email_already_used:
-            raise EmailAlreadyRegistered()
+        if registration_settings.REGISTER_EMAIL_VERIFICATION_ENABLED:
+            email_sender = registration_settings.REGISTER_EMAIL_VERIFICATION_EMAIL_SENDER  # noqa: E501
+            email_sender(request, user, email, email_already_used=email_already_used)
+        else:
+            if email_already_used:
+                raise EmailAlreadyRegistered()
 
-        email_field_name = get_user_email_field_name()
-        old_email = getattr(user, email_field_name)
-        setattr(user, email_field_name, email)
-        user.save()
-        signals.user_changed_email.send(
-            sender=None,
-            user=user,
-            new_email=email,
-            old_email=old_email,
-            request=request,
-        )
+            email_field_name = get_user_email_field_name()
+            old_email = getattr(user, email_field_name)
+            setattr(user, email_field_name, email)
+            user.save()
+            signals.user_changed_email.send(
+                sender=None,
+                user=user,
+                new_email=email,
+                old_email=old_email,
+                request=request,
+            )
 
-    return get_ok_response(_("Register email link email sent"))
+        return get_ok_response(_("Register email link email sent"))
+
+    def get_serializer_class(self) -> Type[Serializer]:
+        return registration_settings.REGISTER_EMAIL_SERIALIZER_CLASS
+
+
+register_email = RegisterEmailView.as_view()
 
 
 class VerifyEmailSerializer(serializers.Serializer):  # noqa: E501 pylint: disable=abstract-method
@@ -78,15 +79,22 @@ class VerifyEmailSerializer(serializers.Serializer):  # noqa: E501 pylint: disab
     signature = serializers.CharField(required=True)
 
 
-@api_view_serializer_class(VerifyEmailSerializer)
-@api_view(['POST'])
-@permission_classes(registration_settings.NOT_AUTHENTICATED_PERMISSION_CLASSES)
-def verify_email(request: Request) -> Response:
-    '''
-    Verify email via signature.
-    '''
-    process_verify_email_data(request.data, serializer_context={'request': request})
-    return get_ok_response(_("Email verified successfully"))
+class VerifyEmailView(BaseAPIView):
+    serializer_class = VerifyEmailSerializer
+    permission_classes = registration_settings.NOT_AUTHENTICATED_PERMISSION_CLASSES
+
+    def post(self, request: Request) -> Response:
+        '''
+        Verify email via signature.
+        '''
+        process_verify_email_data(
+            request.data,
+            serializer_context=self.get_serializer_context(),
+        )
+        return get_ok_response(_("Email verified successfully"))
+
+
+verify_email = VerifyEmailView.as_view()
 
 
 def process_verify_email_data(
