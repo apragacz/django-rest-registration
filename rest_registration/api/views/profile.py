@@ -1,35 +1,42 @@
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from typing import Type
+
+from rest_framework import permissions
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.serializers import Serializer
 
-from rest_registration.decorators import api_view_serializer_class_getter
+from rest_registration.api.views.base import BaseAPIView
 from rest_registration.settings import registration_settings
 
 
-@api_view_serializer_class_getter(
-    lambda: registration_settings.PROFILE_SERIALIZER_CLASS)
-@api_view(['GET', 'POST', 'PUT', 'PATCH'])
-@permission_classes([IsAuthenticated])
-def profile(request: Request) -> Response:
-    '''
-    Get or set user profile.
-    '''
-    serializer_class = registration_settings.PROFILE_SERIALIZER_CLASS
-    if request.method in ['POST', 'PUT', 'PATCH']:
-        partial = request.method == 'PATCH'
-        serializer = serializer_class(
+class ProfileView(BaseAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_serializer_class(self) -> Type[Serializer]:
+        return registration_settings.PROFILE_SERIALIZER_CLASS
+
+    def get(self, request: Request) -> Response:
+        serializer = self.get_serializer(instance=request.user)
+        return Response(serializer.data)
+
+    def post(self, request: Request) -> Response:
+        return self._update_profile(request)
+
+    def put(self, request: Request) -> Response:
+        return self._update_profile(request)
+
+    def patch(self, request: Request) -> Response:
+        return self._update_profile(request, partial=True)
+
+    def _update_profile(self, request: Request, partial: bool = False) -> Response:
+        serializer = self.get_serializer(
             instance=request.user,
             data=request.data,
             partial=partial,
-            context={'request': request},
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
-    else:  # request.method == 'GET':
-        serializer = serializer_class(
-            instance=request.user,
-            context={'request': request},
-        )
+        return Response(serializer.data)
 
-    return Response(serializer.data)
+
+profile = ProfileView.as_view()
