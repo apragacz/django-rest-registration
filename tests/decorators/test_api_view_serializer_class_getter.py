@@ -10,7 +10,6 @@ from rest_framework.response import Response
 from rest_framework.serializers import Serializer
 from rest_framework.test import APIRequestFactory
 
-from rest_registration.api import views
 from rest_registration.decorators import api_view_serializer_class_getter
 from tests.helpers.api_views import rest_framework_version_info  # noqa: F401
 
@@ -115,14 +114,6 @@ def test_browsable_renderer_put_render(input_put_view, decorator):
         data, test_view_instance, method, request,
     )
     assert response.data == {}
-
-
-def test_views_serializer_getter_returns_correct_value():
-    view_list = [
-        v for k, v in vars(views).items() if not k.startswith('_')]
-    for view in view_list:
-        serializer = view.cls.get_serializer()
-        assert isinstance(serializer, Serializer)
 
 
 def dummy_view_func(request):
