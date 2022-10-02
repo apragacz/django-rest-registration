@@ -1,19 +1,15 @@
-from typing import TYPE_CHECKING, Any, Dict
+from typing import TYPE_CHECKING, Any, Dict, Type
 
 from django.contrib import auth
 from django.utils.translation import gettext as _
-from rest_framework import serializers
+from rest_framework import permissions, serializers
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.serializers import Serializer
 from rest_framework.settings import api_settings
 
-from rest_registration.decorators import (
-    api_view_serializer_class,
-    api_view_serializer_class_getter
-)
+from rest_registration.api.views.base import BaseAPIView
 from rest_registration.exceptions import LoginInvalid, UserNotFound
 from rest_registration.settings import registration_settings
 from rest_registration.utils.auth_backends import get_login_authentication_backend
@@ -23,56 +19,61 @@ if TYPE_CHECKING:
     from django.contrib.auth.base_user import AbstractBaseUser
 
 
-@api_view_serializer_class_getter(
-    lambda: registration_settings.LOGIN_SERIALIZER_CLASS)
-@api_view(['POST'])
-@permission_classes(registration_settings.NOT_AUTHENTICATED_PERMISSION_CLASSES)
-def login(request: Request) -> Response:
-    '''
-    Logs in the user via given login and password.
-    '''
-    serializer_class = registration_settings.LOGIN_SERIALIZER_CLASS
-    serializer = serializer_class(data=request.data, context={'request': request})
-    serializer.is_valid(raise_exception=True)
-    login_authenticator = registration_settings.LOGIN_AUTHENTICATOR
-    try:
-        user = login_authenticator(serializer.validated_data, serializer=serializer)
-    except UserNotFound:
-        raise LoginInvalid() from None
+class LoginView(BaseAPIView):
+    permission_classes = registration_settings.NOT_AUTHENTICATED_PERMISSION_CLASSES
 
-    extra_data = perform_login(request, user)
+    def post(self, request: Request) -> Response:
+        '''
+        Logs in the user via given login and password.
+        '''
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        login_authenticator = registration_settings.LOGIN_AUTHENTICATOR
+        try:
+            user = login_authenticator(serializer.validated_data, serializer=serializer)
+        except UserNotFound:
+            raise LoginInvalid() from None
 
-    return get_ok_response(_("Login successful"), extra_data=extra_data)
+        extra_data = perform_login(request, user)
+
+        return get_ok_response(_("Login successful"), extra_data=extra_data)
+
+    def get_serializer_class(self) -> Type[Serializer]:
+        return registration_settings.LOGIN_SERIALIZER_CLASS
+
+
+login = LoginView.as_view()
 
 
 class LogoutSerializer(serializers.Serializer):  # pylint: disable=abstract-method
     revoke_token = serializers.BooleanField(default=False)
 
 
-@api_view_serializer_class(LogoutSerializer)
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def logout(request: Request) -> Response:
-    '''
-    Logs out the user. returns an error if the user is not
-    authenticated.
-    '''
-    user = request.user
-    serializer = LogoutSerializer(
-        data=request.data,
-        context={'request': request},
-    )
-    serializer.is_valid(raise_exception=True)
-    data = serializer.validated_data
+class LogoutView(BaseAPIView):
+    serializer_class = LogoutSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-    if should_authenticate_session():
-        auth.logout(request)
-    if should_retrieve_token() and data['revoke_token']:
-        auth_token_manager_cls = registration_settings.AUTH_TOKEN_MANAGER_CLASS
-        auth_token_manager = auth_token_manager_cls()  # noqa: E501 type: rest_registration.auth_token_managers.AbstractAuthTokenManager
-        auth_token_manager.revoke_token(user)
+    def post(self, request: Request) -> Response:
+        '''
+        Logs out the user. returns an error if the user is not
+        authenticated.
+        '''
+        user = request.user
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
 
-    return get_ok_response(_("Logout successful"))
+        if should_authenticate_session():
+            auth.logout(request)
+        if should_retrieve_token() and data['revoke_token']:
+            auth_token_manager_cls = registration_settings.AUTH_TOKEN_MANAGER_CLASS
+            auth_token_manager = auth_token_manager_cls()  # noqa: E501 type: rest_registration.auth_token_managers.AbstractAuthTokenManager
+            auth_token_manager.revoke_token(user)
+
+        return get_ok_response(_("Logout successful"))
+
+
+logout = LogoutView.as_view()
 
 
 def should_authenticate_session() -> bool:
