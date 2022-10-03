@@ -13,8 +13,16 @@ rest_framework_version_info = tuple(
 
 class APIViewRequestFactory:
 
-    def __init__(self, view_provider: ViewProvider):
-        self._factory = APIRequestFactory()
+    def __init__(
+        self,
+        view_provider: ViewProvider,
+        enforce_csrf_checks: bool = False,
+        **defaults,
+    ):
+        self._factory = APIRequestFactory(
+            enforce_csrf_checks=enforce_csrf_checks,
+            **defaults,
+        )
         self._view_provider = view_provider
 
     @property
@@ -83,6 +91,13 @@ def assert_response_is_not_found(response):
     assert_invalid_response(
         response,
         expected_status_code=status.HTTP_404_NOT_FOUND,
+    )
+
+
+def assert_response_status_is_forbidden(response):
+    assert_invalid_response(
+        response,
+        expected_status_code=status.HTTP_403_FORBIDDEN,
     )
 
 
