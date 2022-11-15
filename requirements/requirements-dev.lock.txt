@@ -82,7 +82,7 @@ distlib==0.3.4
     # via
     #   -r requirements/requirements-test.lock.txt
     #   virtualenv
-django==4.0.7
+django==4.0.8
     # via
     #   -r requirements/requirements-test.lock.txt
     #   django-stubs
