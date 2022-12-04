@@ -48,27 +48,27 @@ msgstr "Déconnexion réussie"
 
 #: api/views/register.py:85
 msgid "User without email cannot be verified"
-msgstr "Un usager sans mot de passe ne peut être vérifié"
+msgstr "Un utilisteur sans mot de passe ne peut être vérifié"
 
 #: api/views/register.py:130
 msgid "User verified successfully"
-msgstr "Vérification de l'usager réussi"
+msgstr "Vérification de l'utilisteur réussie"
 
 #: api/views/register_email.py:77 api/views/register_email.py:131
 msgid "This email is already registered."
-msgstr "Ce courriel est déjà enregistré."
+msgstr "Cet email est déjà enregistré."
 
 #: api/views/register_email.py:91
 msgid "Register email link email sent"
-msgstr "Courriel du lien d'inscription envoyé"
+msgstr "Email du lien d'inscription envoyé"
 
 #: api/views/register_email.py:110
 msgid "Email verified successfully"
-msgstr "Vérification du courriel réussi"
+msgstr "Vérification de votre adresse email réussie"
 
 #: api/views/reset_password.py:106
 msgid "Reset password successful"
-msgstr "Réinitialisation du mot de passe réussi"
+msgstr "Réinitialisation du mot de passe réussie"
 
 #: exceptions.py:7
 msgid "Bad Request"
@@ -76,7 +76,7 @@ msgstr "Mauvaise requête"
 
 #: exceptions.py:12
 msgid "User not found"
-msgstr "Usager non trouvé"
+msgstr "Utilisateur non trouvé"
 
 #: notifications/email.py:156
 msgid "No 'subject' key found"
