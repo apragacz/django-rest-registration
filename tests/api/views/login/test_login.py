@@ -1,4 +1,5 @@
 import pytest
+from django.middleware.csrf import get_token
 from django.test.utils import override_settings
 from rest_framework import status
 from rest_framework.authtoken.models import Token
@@ -169,7 +170,7 @@ def test_ok_when_user_with_unique_email_logs_with_email(
         'rest_registration.api.authentication.SessionCSRFAuthentication',
     ],
 })
-def test_fail_with_csrf(
+def test_fail_with_csrf_enabled_and_missing_token(
     settings_minimal,
     user, password_change,
     api_view_provider,
@@ -183,3 +184,26 @@ def test_fail_with_csrf(
     api_factory.add_session_to_request(request)
     response = api_view_provider.view_func(request)
     assert_response_status_is_forbidden(response)
+
+
+# TODO: fix this test
+@override_rest_framework_settings_dict({
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_registration.api.authentication.SessionCSRFAuthentication',
+    ],
+})
+def test_ok_with_csrf_enabled(
+    settings_minimal,
+    user, password_change,
+    api_view_provider,
+):
+    password = password_change.old_value
+    api_factory = APIViewRequestFactory(api_view_provider, enforce_csrf_checks=True)
+    request = api_factory.create_post_request({
+        'login': user.username,
+        'password': password,
+    })
+    csrf_token = get_token(request)
+    api_factory.add_session_to_request(request)
+    response = api_view_provider.view_func(request)
+    assert_response_is_ok(response)
