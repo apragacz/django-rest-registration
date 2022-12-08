@@ -38,7 +38,7 @@ bleach==4.1.0
     # via
     #   -r requirements/requirements-test.lock.txt
     #   readme-renderer
-certifi==2021.10.8
+certifi==2022.12.7
     # via
     #   -r requirements/requirements-test.lock.txt
     #   requests
