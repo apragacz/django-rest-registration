@@ -452,7 +452,7 @@ webencodings==0.5.1
     # via
     #   -r requirements/requirements-test.lock.txt
     #   bleach
-wheel==0.37.1
+wheel==0.38.1
     # via
     #   -r requirements/requirements-test.lock.txt
     #   pip-tools
