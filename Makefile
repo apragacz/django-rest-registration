@@ -29,7 +29,7 @@ PYTEST_OPTS :=
 TWINE := twine
 PIP := pip
 PIP_COMPILE := pip-compile
-PIP_COMPILE_OPTS := --upgrade
+PIP_COMPILE_OPTS := --upgrade --resolver=backtracking
 SPHINXBUILD := sphinx-build
 SPHINXBUILD_OPTS :=
 SPHINXBUILD_WARNING_LOG = sphinx-warnings.log

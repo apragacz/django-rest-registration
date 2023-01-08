@@ -1,4 +1,5 @@
-from django.test.signals import setting_changed
+# TODO: #212 - remove type ignore comment
+from django.test.signals import setting_changed  # type: ignore
 
 from rest_registration.settings_fields import SETTINGS_FIELDS
 from rest_registration.utils.nested_settings import NestedSettings

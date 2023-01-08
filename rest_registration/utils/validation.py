@@ -126,5 +126,5 @@ def _shallow_extract_error_details_from_exc(
         message = exc.message
         if exc.params:
             message %= exc.params
-        return [ErrorDetail(message, code=exc.code)]
+        return [ErrorDetail(str(message), code=exc.code)]
     return [ErrorDetail(msg) for msg in exc.messages]

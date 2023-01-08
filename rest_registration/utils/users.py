@@ -29,9 +29,10 @@ _ModelT = TypeVar('_ModelT', bound=Model)
 if TYPE_CHECKING:
     from typing import Optional
     from django.contrib.auth.base_user import AbstractBaseUser
+    from django.contrib.contenttypes.fields import GenericForeignKey
     from django.db.models import Field, ForeignObjectRel
 
-    UserField = Union['Field', 'ForeignObjectRel']
+    UserField = Union[Field[Any, Any], ForeignObjectRel, GenericForeignKey]
 
 
 def authenticate_by_login_data(
@@ -179,8 +180,7 @@ def get_user_by_lookup_dict(
         if default is DefaultValues.RAISE_EXCEPTION:
             raise UserNotFound() from None
         return default
-    else:
-        return user
+    return user
 
 
 def get_user_field_obj(name: str) -> 'UserField':

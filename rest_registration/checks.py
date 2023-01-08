@@ -1,11 +1,10 @@
 from functools import partial
-from typing import Type
+from typing import TYPE_CHECKING, Type
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.checks import register
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import Model
 from rest_framework.settings import api_settings
 
 from rest_registration.auth_token_managers import AbstractAuthTokenManager
@@ -20,6 +19,9 @@ from rest_registration.utils.users import (
     get_user_login_field_names,
     is_model_field_unique
 )
+
+if TYPE_CHECKING:
+    from django.db.models import Model
 
 
 @register()
@@ -131,10 +133,9 @@ def token_auth_installed_check() -> bool:
 def _is_auth_token_manager_auth_class_enabled() -> bool:
     auth_token_manager = _get_auth_token_manager()
     auth_cls = auth_token_manager.get_authentication_class()
-    return any(
-        issubclass(cls, auth_cls)
-        for cls in api_settings.DEFAULT_AUTHENTICATION_CLASSES
-    )
+    drf_auth_classes = api_settings.DEFAULT_AUTHENTICATION_CLASSES
+    # TODO: remove type ignore when djangorestframework-stubs is fixed
+    return any(issubclass(cls, auth_cls) for cls in drf_auth_classes)  # type: ignore
 
 
 def _is_auth_token_manager_app_name_installed() -> bool:
@@ -216,8 +217,7 @@ def _is_email_template_config_valid(template_config_data) -> bool:
         parse_template_config(template_config_data)
     except ImproperlyConfigured:
         return False
-    else:
-        return True
+    return True
 
 
 def _validate_email_template_config(enabled, template_config_data) -> None:

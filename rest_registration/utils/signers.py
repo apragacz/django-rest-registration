@@ -87,7 +87,7 @@ class URLParamsSigner(DataSigner):
     def __init__(
             self,
             data: SignerData,
-            request: Request = None,
+            request: Optional[Request] = None,
             strict: bool = True) -> None:
         base_url = self.get_base_url()
         assert not strict or base_url, 'base_url is not defined'

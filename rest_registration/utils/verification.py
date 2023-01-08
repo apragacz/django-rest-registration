@@ -4,6 +4,7 @@ from urllib.parse import urlencode
 
 from django.core import signing
 from django.template.loader import render_to_string
+from django.utils.safestring import SafeString
 from rest_framework.request import Request
 
 from rest_registration.exceptions import SignatureExpired, SignatureInvalid
@@ -78,7 +79,7 @@ def default_render_template(
             template_config.html_body_template_name, context=context
         )
     else:
-        html_body = ''
+        html_body = SafeString('')
 
     return EmailTemplateRenderResult(subject, text_body, html_body)
 

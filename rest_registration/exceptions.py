@@ -1,19 +1,20 @@
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from django.utils.translation import gettext_lazy as _
+from django_stubs_ext import StrOrPromise
 from rest_framework.exceptions import APIException as _APIException
 from rest_framework.settings import api_settings
 
 from rest_registration.settings import registration_settings
 
-DetailType = Union[str, List[str], Dict[str, List[str]]]
+_DetailType = Union[StrOrPromise, List[str], Dict[str, List[str]]]
 
 
 class APIException(_APIException):
 
     def __init__(
             self,
-            detail: Optional[DetailType] = None,
+            detail: Optional[_DetailType] = None,
             code: Optional[str] = None) -> None:
         if detail is None:
             detail = self.default_detail
@@ -93,7 +94,7 @@ class VerificationTemplatesNotFound(APIException):
     default_code = 'verification-templates-not-found'
 
 
-def _wrap_detail_in_dict(detail: DetailType) -> Dict[str, List[str]]:
+def _wrap_detail_in_dict(detail: _DetailType) -> Dict[str, List[Any]]:
     if isinstance(detail, list):
         return {api_settings.NON_FIELD_ERRORS_KEY: detail}
     if isinstance(detail, dict):

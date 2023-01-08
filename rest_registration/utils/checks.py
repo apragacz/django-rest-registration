@@ -91,8 +91,7 @@ def no_exception_check(
                         id=error_code.get_full_code_id(),
                     )
                 ]
-            else:
-                return []
+            return []
 
         update_wrapper(
             check_fun, fun,
