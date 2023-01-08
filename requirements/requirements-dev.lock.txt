@@ -14,7 +14,7 @@ asgiref==3.6.0
     # via
     #   -r requirements/requirements-test.lock.txt
     #   django
-astroid==2.15.0
+astroid==2.15.1
     # via
     #   -r requirements/requirements-test.lock.txt
     #   pylint
@@ -40,6 +40,8 @@ bleach==6.0.0
     #   readme-renderer
 build==0.10.0
     # via pip-tools
+bump2version==1.0.1
+    # via -r requirements/requirements-dev.in
 cachetools==5.3.0
     # via
     #   -r requirements/requirements-test.lock.txt
@@ -131,7 +133,7 @@ exceptiongroup==1.1.1
     #   pytest
 executing==1.2.0
     # via stack-data
-filelock==3.10.0
+filelock==3.10.7
     # via
     #   -r requirements/requirements-test.lock.txt
     #   tox
@@ -144,7 +146,7 @@ flake8==5.0.4
     #   flake8-isort
     #   flake8-print
     #   flake8-tuple
-flake8-comprehensions==3.10.1
+flake8-comprehensions==3.11.1
     # via -r requirements/requirements-test.lock.txt
 flake8-debugger==4.1.2
     # via -r requirements/requirements-test.lock.txt
@@ -162,7 +164,7 @@ imagesize==1.4.1
     # via
     #   -r requirements/requirements-test.lock.txt
     #   sphinx
-importlib-metadata==6.0.0
+importlib-metadata==6.1.0
     # via
     #   -r requirements/requirements-test.lock.txt
     #   keyring
@@ -273,7 +275,7 @@ pkginfo==1.9.6
     # via
     #   -r requirements/requirements-test.lock.txt
     #   twine
-platformdirs==3.1.1
+platformdirs==3.2.0
     # via
     #   -r requirements/requirements-test.lock.txt
     #   pylint
@@ -312,7 +314,7 @@ pygments==2.14.0
     #   readme-renderer
     #   rich
     #   sphinx
-pylint==2.17.0
+pylint==2.17.1
     # via -r requirements/requirements-test.lock.txt
 pyproject-api==1.5.1
     # via
@@ -329,7 +331,7 @@ pytest-cov==4.0.0
     # via -r requirements/requirements-test.lock.txt
 pytest-django==4.5.2
     # via -r requirements/requirements-test.lock.txt
-pytz==2022.7.1
+pytz==2023.3
     # via
     #   -r requirements/requirements-test.lock.txt
     #   babel
@@ -359,7 +361,7 @@ rfc3986==2.0.0
     # via
     #   -r requirements/requirements-test.lock.txt
     #   twine
-rich==13.3.2
+rich==13.3.3
     # via
     #   -r requirements/requirements-test.lock.txt
     #   twine
@@ -438,7 +440,7 @@ tomli==2.0.1
     #   pyproject-hooks
     #   pytest
     #   tox
-tomlkit==0.11.6
+tomlkit==0.11.7
     # via
     #   -r requirements/requirements-test.lock.txt
     #   pylint
@@ -446,7 +448,7 @@ tornado==6.2
     # via
     #   -r requirements/requirements-test.lock.txt
     #   livereload
-tox==4.4.7
+tox==4.4.8
     # via -r requirements/requirements-test.lock.txt
 traitlets==5.9.0
     # via
@@ -454,20 +456,20 @@ traitlets==5.9.0
     #   matplotlib-inline
 twine==4.0.2
     # via -r requirements/requirements-test.lock.txt
-types-pytz==2022.7.1.2
+types-pytz==2023.2.0.1
     # via
     #   -r requirements/requirements-test.lock.txt
     #   django-stubs
-types-pyyaml==6.0.12.8
+types-pyyaml==6.0.12.9
     # via
     #   -r requirements/requirements-test.lock.txt
     #   django-stubs
     #   djangorestframework-stubs
-types-requests==2.28.11.15
+types-requests==2.28.11.17
     # via
     #   -r requirements/requirements-test.lock.txt
     #   djangorestframework-stubs
-types-urllib3==1.26.25.8
+types-urllib3==1.26.25.10
     # via
     #   -r requirements/requirements-test.lock.txt
     #   types-requests

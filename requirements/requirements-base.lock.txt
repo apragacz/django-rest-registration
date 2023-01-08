@@ -14,7 +14,7 @@ django==4.1.7
     #   djangorestframework
 djangorestframework==3.14.0
     # via django-rest-registration (setup.py)
-pytz==2022.7.1
+pytz==2023.3
     # via djangorestframework
 sqlparse==0.4.3
     # via django

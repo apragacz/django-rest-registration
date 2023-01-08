@@ -2,4 +2,5 @@
 ipdb
 ipython
 pip-tools
+bump2version
 jedi<0.18

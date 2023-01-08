@@ -103,6 +103,14 @@ build_package:  ## build package (source + wheel)
 	${PYTHON} setup.py sdist
 	${PYTHON} setup.py bdist_wheel
 
+.PHONY: bump_version_patch
+bump_version_patch:  ## bump package version by the patch part
+	bump2version patch
+
+.PHONY: bump_version_minor
+bump_version_minor:  ## bump package version by the minor part
+	bump2version minor
+
 .PHONY: build_docs
 build_docs:  ## build documentation
 	${SPHINXBUILD} ${SPHINXBUILD_OPTS} ${DOCS_SRC_DIR} ${DOCS_BUILD_DIR}/html ${ARGS}
