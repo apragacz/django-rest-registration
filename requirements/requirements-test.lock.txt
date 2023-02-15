@@ -46,7 +46,7 @@ coverage[toml]==6.3.2
     #   pytest-cov
 distlib==0.3.4
     # via virtualenv
-django==4.0.9
+django==4.1.7
     # via
     #   -r requirements/requirements-base.lock.txt
     #   django-stubs
