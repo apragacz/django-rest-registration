@@ -170,8 +170,6 @@ def get_user_by_lookup_dict(
     user_class = get_user_model()
     kwargs = {}
     kwargs.update(lookup_dict)
-    if require_verified and verification_enabled and verification_flag_field:
-        kwargs[verification_flag_field] = True
     try:
         queryset = user_class.objects.all()  # type: QuerySet[AbstractBaseUser]
         user = get_object_or_404(queryset, **kwargs)
@@ -180,6 +178,16 @@ def get_user_by_lookup_dict(
             raise UserNotFound() from None
         return default
     else:
+        # the user must be verified if requested and if not superuser
+        if (
+            require_verified
+            and verification_enabled
+            and verification_flag_field
+            and not getattr(user, verification_flag_field)
+            and not user.is_superuser
+        ):
+            raise UserNotFound()
+
         return user
 
 
