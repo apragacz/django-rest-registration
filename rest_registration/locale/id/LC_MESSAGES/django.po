@@ -1,0 +1,119 @@
+# Copyright (C) 2015-2023 Andrzej Pragacz
+# This file is distributed under the same license as
+# the Django-REST-Registration package.
+# Kira <kiraware@github.com>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-03-17 14:11+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Kira <kiraware@github.com>\n"
+"Language-Team: \n"
+"Language: id\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: .\api\views\change_password.py:26
+msgid "Old password is not correct"
+msgstr "Kata sandi lama tidak benar"
+
+#: .\api\views\change_password.py:54
+msgid "Password changed successfully"
+msgstr "Kata sandi berhasil diubah"
+
+#: .\api\views\login.py:39
+msgid "Login successful"
+msgstr "Berhasil masuk"
+
+#: .\api\views\login.py:73
+msgid "Logout successful"
+msgstr "Berhasil keluar"
+
+#: .\api\views\register.py:91
+msgid "User verified successfully"
+msgstr "Pengguna berhasil diverifikasi"
+
+#: .\api\views\register_email.py:66
+msgid "Register email link email sent"
+msgstr "Tautan email pendaftaran email terkirim"
+
+#: .\api\views\register_email.py:94
+msgid "Email verified successfully"
+msgstr "Email berhasil diverifikasi"
+
+#: .\api\views\reset_password.py:37
+msgid "Reset link sent"
+msgstr "Tautan reset terkirim"
+
+#: .\api\views\reset_password.py:39
+msgid "Reset link sent if the user exists in database"
+msgstr "Setel ulang tautan yang dikirim jika pengguna ada di basis data"
+
+#: .\api\views\reset_password.py:91
+msgid "Reset password successful"
+msgstr "Reset kata sandi berhasil"
+
+#: .\exceptions.py:31
+msgid "Bad Request"
+msgstr "Request Buruk"
+
+#: .\exceptions.py:36
+msgid "User not found"
+msgstr "Pengguna tidak ditemukan"
+
+#: .\exceptions.py:41
+msgid "Login or password invalid."
+msgstr "Masuk atau kata sandi tidak valid."
+
+#: .\exceptions.py:46
+msgid "This email is already registered."
+msgstr "Email ini sudah terdaftar."
+
+#: .\exceptions.py:51
+msgid "User without email cannot be verified"
+msgstr "Pengguna tanpa email tidak dapat diverifikasi"
+
+#: .\exceptions.py:56
+msgid "Could not process authentication token"
+msgstr "Tidak dapat memproses token otentikasi"
+
+#: .\exceptions.py:61
+msgid "Authentication token could not be provided"
+msgstr "Token otentikasi tidak dapat diberikan"
+
+#: .\exceptions.py:66
+msgid "Authentication token cannot be revoked"
+msgstr "Token otentikasi tidak dapat dicabut"
+
+#: .\exceptions.py:71
+msgid "Authentication token not found"
+msgstr "Token otentikasi tidak ditemukan"
+
+#: .\exceptions.py:76
+msgid "Generic signature error"
+msgstr "Kesalahan tanda tangan umum"
+
+#: .\exceptions.py:81
+msgid "Signature expired"
+msgstr "Tanda tangan kedaluwarsa"
+
+#: .\exceptions.py:86
+msgid "Invalid signature"
+msgstr "Tanda tangan tidak valid"
+
+#: .\exceptions.py:92
+msgid "Could not find verification templates"
+msgstr "Tidak dapat menemukan templat verifikasi"
+
+#: .\utils\email.py:104
+msgid "No 'subject' key found"
+msgstr "Tidak ada kunci 'subject' yang ditemukan"
+
+#: .\utils\validation.py:44
+msgid "Passwords don't match"
+msgstr "Kata sandi tidak cocok"
