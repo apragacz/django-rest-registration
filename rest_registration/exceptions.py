@@ -1,11 +1,11 @@
 from typing import Any, Dict, List, Optional, Union
 
 from django.utils.translation import gettext_lazy as _
-from django_stubs_ext import StrOrPromise
 from rest_framework.exceptions import APIException as _APIException
 from rest_framework.settings import api_settings
 
 from rest_registration.settings import registration_settings
+from rest_registration.utils.types import StrOrPromise
 
 _DetailType = Union[StrOrPromise, List[str], Dict[str, List[str]]]
 
