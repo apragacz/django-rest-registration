@@ -299,24 +299,6 @@ def test_register_email_fail_email_already_used(
 
 
 @override_rest_registration_settings({
-    'REGISTER_EMAIL_SERIALIZER_CLASS': 'tests.testapps.custom_serializers.serializers.DefaultDeprecatedRegisterEmailSerializer',  # noqa: E501
-})
-def test_ok_when_deprecated_register_email_serializer(
-        user,
-        api_view_provider, api_factory):
-    request = api_factory.create_post_request({
-        'email': 'not@used.com',
-    })
-    force_authenticate(request, user=user)
-    with capture_sent_emails() as sent_emails:
-        response = api_view_provider.view_func(request)
-    assert_response_is_ok(response)
-    assert_no_email_sent(sent_emails)
-    user.refresh_from_db()
-    assert user.email == 'abra@cadabra.com'
-
-
-@override_rest_registration_settings({
     'VERIFICATION_TEMPLATES_SELECTOR': 'tests.testapps.custom_templates.utils.select_verification_templates',  # noqa E501
 })
 def test_ok_when_custom_verification_templates_selector(

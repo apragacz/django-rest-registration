@@ -286,19 +286,6 @@ def test_ok_when_custom_verification_templates_selector(
     assert_valid_send_link_email(sent_email, user, timer)
 
 
-@override_rest_registration_settings({
-    'SEND_RESET_PASSWORD_LINK_SERIALIZER_CLASS': 'tests.testapps.custom_serializers.serializers.DefaultDeprecatedSendResetPasswordLinkSerializer',  # noqa: E501
-})
-def test_when_deprecated_send_reset_password_link_serializer_then_success(
-        settings_with_reset_password_verification, user,
-        api_view_provider, api_factory):
-    request = api_factory.create_post_request({
-        'login': 'abra',
-    })
-    response = api_view_provider.view_func(request)
-    assert_response_is_ok(response)
-
-
 def assert_valid_send_link_email(sent_email, user, timer):
     assert sent_email.from_email == VERIFICATION_FROM_EMAIL
     assert sent_email.to == [user.email]

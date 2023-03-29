@@ -37,17 +37,6 @@ if TYPE_CHECKING:
 
 def authenticate_by_login_data(
         data: Dict[str, Any], **kwargs: Any) -> 'AbstractBaseUser':
-    serializer = kwargs.get('serializer')
-    if serializer:
-        # TODO: Issue #114 - remove code supporting deprecated behavior
-        get_authenticated_user = getattr(
-            serializer, 'get_authenticated_user', None)
-        if callable(get_authenticated_user):
-            user = get_authenticated_user()  # type: Optional[AbstractBaseUser]
-            if not user:
-                raise UserNotFound()
-            return user
-
     login_field_names = get_user_login_field_names()
     username_field_name = get_username_field_name()
     password = data.get('password')
@@ -115,15 +104,6 @@ def find_user_by_by_send_reset_password_link_data(
     Return user if matching given criteria (login fields / e-mail).
     Return ``None`` otherwise.
     """
-    serializer = kwargs.get('serializer')
-    if serializer:
-        # TODO: Issue #114 - remove code supporting deprecated behavior
-        get_user_or_none = getattr(serializer, 'get_user_or_none', None)
-        if callable(get_user_or_none):
-            user = get_user_or_none()  # type: Optional[AbstractBaseUser]
-            if not user:
-                raise UserNotFound()
-            return user
     login_field_names = get_user_login_field_names()
     finder_tests = [('login', login_field_names)]
     finder_tests.extend((f, [f]) for f in login_field_names)

@@ -32,14 +32,7 @@ class RegisterEmailView(BaseAPIView):
         user = request.user
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
-        # TODO: Issue #114 - remove code supporting deprecated behavior
-        get_email = getattr(serializer, 'get_email', None)
-        if callable(get_email):
-            email = get_email()
-        else:
-            email = serializer.validated_data['email']
-
+        email = serializer.validated_data['email']
         email_already_used = (
             is_user_email_field_unique()
             and user_with_email_exists(email))
