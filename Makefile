@@ -36,6 +36,8 @@ SPHINXBUILD_WARNING_LOG = sphinx-warnings.log
 SPHINXAUTOBUILD := sphinx-autobuild
 SPHINXAUTOBUILD_OPTS := --watch ${PACKAGE_DIR} --ignore ${DOCS_REFERENCE_DIR}
 
+BUMPVERSION_DIFF_FILES := diff-files.txt
+
 .PHONY: help
 help: ## Display this help screen
 	@grep -E '^[\.a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -104,12 +106,19 @@ build_package:  ## build package (source + wheel)
 	${PYTHON} setup.py bdist_wheel
 
 .PHONY: bump_version_patch
-bump_version_patch:  ## bump package version by the patch part
-	bump2version patch
+bump_version_patch: bump_version_check  ## bump package version by the patch part
+	git add CHANGELOG.md
+	bump2version patch --allow-dirty
 
 .PHONY: bump_version_minor
-bump_version_minor:  ## bump package version by the minor part
-	bump2version minor
+bump_version_minor: bump_version_check  ## bump package version by the minor part
+	git add CHANGELOG.md
+	bump2version minor --allow-dirty
+
+.PHONY: bump_version_check
+bump_version_check:
+	git diff --name-status
+	git diff-files --name-only | grep -q CHANGELOG.md
 
 .PHONY: build_docs
 build_docs:  ## build documentation
