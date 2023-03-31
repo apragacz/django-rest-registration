@@ -1,6 +1,18 @@
 # Changelog
 
 
+## Version 0.8
+
+### v0.8.0
+
+*   Add CHANGELOG.md
+*   Remove deprecated code in version 0.6 (#114)
+*   Add ID translations
+*   Correct FR translation
+*   Remove unused `api_view_serializer_class*` decorators
+*   Rewrite views as APIView classes (#55)
+
+
 ## Version 0.7
 
 ### v0.7.3
