@@ -1,5 +1,6 @@
 version: 2.1
-
+orbs:
+  codecov: codecov/codecov@3.2.3
 executors:
   docker-executor:
     docker:
@@ -123,7 +124,6 @@ jobs:
     steps:
       - restore_project_workspace
       - run: source ~/.venv/bin/activate && make test ARGS="-v --cov --cov-report xml"
-      - run: source ~/.venv/bin/activate && codecov
   test-tox:
     parameters:
       py:
@@ -163,6 +163,8 @@ workflows:
             - flake8
             - mypy
             - setup_project
+          post-steps:
+            - codecov/upload
       - test-tox:
           name: test-tox-py39-django40
           py: "39"
