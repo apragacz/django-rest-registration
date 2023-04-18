@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+dynamic = ["version"]
+name = "django-rest-registration"
+authors = [
+  {name = "Andrzej Pragacz", email = "apragacz@o2.pl"},
+]
+description = "User registration REST API, based on django-rest-framework"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.5"
+dependencies = [
+	"Django>=2.0",
+	"djangorestframework>=3.3",
+]
+classifiers = [
+	"Development Status :: 4 - Beta",
+	"Environment :: Web Environment",
+	"Framework :: Django",
+	"Framework :: Django :: 2.0",
+	"Framework :: Django :: 3.0",
+	"Framework :: Django :: 4.0",
+	"Intended Audience :: Developers",
+	"License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+	"Programming Language :: Python",
+	"Programming Language :: Python :: 3",
+	"Programming Language :: Python :: 3 :: Only",
+	"Topic :: Internet",
+	"Topic :: Internet :: WWW/HTTP",
+]
+keywords = [
+	"django",
+	"rest",
+	"api",
+	"auth",
+	"rest-framework",
+	"registration",
+	"register",
+	"login",
+	"reset-password",
+	"register-email",
+	"change-email",
+	"sign-up",
+	"sign-in",
+]
+
+[project.urls]
+homepage = "https://github.com/apragacz/django-rest-registration"
+"Bug Tracker" = "https://github.com/apragacz/django-rest-registration/issues"
+"Documentation" = "https://django-rest-registration.readthedocs.io/"
+"Source Code" = "https://github.com/apragacz/django-rest-registration"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.dynamic]
+version = {attr = "rest_registration._version.__version__"}
