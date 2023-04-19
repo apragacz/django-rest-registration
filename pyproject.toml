@@ -59,3 +59,7 @@ include-package-data = true
 
 [tool.setuptools.dynamic]
 version = {attr = "rest_registration._version.__version__"}
+
+[tool.setuptools.packages.find]
+include = ["rest_registration*"]
+namespaces = false
