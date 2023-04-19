@@ -102,8 +102,7 @@ build: build_package  ## alias for build_package
 .PHONY: build_package
 build_package:  ## build package (source + wheel)
 	-${RM} -r ${DIST_DIR}
-	${PYTHON} setup.py sdist
-	${PYTHON} setup.py bdist_wheel
+	${PYTHON} -m build
 
 .PHONY: bump_version_patch
 bump_version_patch: bump_version_check  ## bump package version by the patch part
