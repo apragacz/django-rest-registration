@@ -413,7 +413,7 @@ sphinxcontrib-serializinghtml==1.1.5
     # via
     #   -r requirements/requirements-test.lock.txt
     #   sphinx
-sqlparse==0.4.3
+sqlparse==0.4.4
     # via
     #   -r requirements/requirements-test.lock.txt
     #   django
