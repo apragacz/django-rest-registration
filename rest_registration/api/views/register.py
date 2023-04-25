@@ -90,6 +90,9 @@ class VerifyRegistrationView(BaseAPIView):
             extra_data = perform_login(request, user)
         return get_ok_response(_("User verified successfully"), extra_data=extra_data)
 
+    def get_serializer_class(self) -> Type[Serializer]:
+        return VerifyRegistrationSerializer
+
 
 verify_registration = VerifyRegistrationView.as_view()
 
