@@ -8,7 +8,7 @@ alabaster==0.7.13
     # via sphinx
 asgiref==3.6.0
     # via django
-astroid==2.15.3
+astroid==2.15.4
     # via pylint
 babel==2.12.1
     # via sphinx
@@ -180,7 +180,7 @@ pygments==2.15.1
     #   readme-renderer
     #   rich
     #   sphinx
-pylint==2.17.2
+pylint==2.17.3
     # via -r requirements/requirements-test.in
 pyproject-api==1.5.1
     # via tox
