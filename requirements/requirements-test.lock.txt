@@ -260,7 +260,7 @@ tomlkit==0.11.7
     # via pylint
 tornado==6.2
     # via livereload
-tox==4.4.12
+tox==4.5.1
     # via -r requirements/requirements-test.in
 twine==4.0.2
     # via -r requirements/requirements-test.in
