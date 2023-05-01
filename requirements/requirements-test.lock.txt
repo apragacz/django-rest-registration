@@ -50,11 +50,11 @@ django==4.2
     # via
     #   django-stubs
     #   django-stubs-ext
-django-stubs==1.16.0
+django-stubs==4.2.0
     # via
     #   -r requirements/requirements-test.in
     #   djangorestframework-stubs
-django-stubs-ext==0.8.0
+django-stubs-ext==4.2.0
     # via django-stubs
 djangorestframework-stubs==1.10.0
     # via -r requirements/requirements-test.in
@@ -254,8 +254,6 @@ sqlparse==0.4.4
     # via django
 stevedore==5.0.0
     # via doc8
-tomli==2.0.1
-    # via django-stubs
 tomlkit==0.11.7
     # via pylint
 tornado==6.2
