@@ -3,3 +3,4 @@ include LICENSE
 recursive-include rest_registration/templates *.txt *.html
 recursive-include rest_registration/locale *.mo *.po
 prune examples
+prune tests
