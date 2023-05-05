@@ -23,7 +23,7 @@ FLAKE8_OPTS :=
 MYPY := mypy
 MYPY_OPTS :=
 PYLINT := pylint
-PYLINT_OPTS := --rcfile=setup.cfg
+PYLINT_OPTS := --rcfile=pyproject.toml
 PYTEST := py.test
 PYTEST_OPTS :=
 TWINE := twine

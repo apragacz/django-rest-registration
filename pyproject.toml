@@ -63,3 +63,101 @@ version = {attr = "rest_registration._version.__version__"}
 [tool.setuptools.packages.find]
 include = ["rest_registration*"]
 namespaces = false
+
+[tool.flake8]
+max-line-length = 88
+exclude = [
+    "migrations",
+    "examples",
+    "build",
+    ".venv",
+    ".tox",
+]
+
+[tool.isort]
+line_length = 88
+skip = ["migrations", "examples", ".venv", ".tox"]
+known_third_party = "django_dynamic_fixture"
+known_first_party = "rest_registration"
+multi_line_output = 3
+
+[tool.mypy]
+plugins = [
+	"mypy_django_plugin.main",
+	"mypy_drf_plugin.main",
+]
+
+[tool.django-stubs]
+django_settings_module = "tests.default_settings"
+
+[tool.pylint.main]
+ignore = ["migrations", "examples", "build", ".venv", ".tox"]
+
+[tool.pylint.basic]
+const-rgx = "([a-z_][a-z0-9_]{3,30}|[A-Z_][A-Z0-9_]{3,30})"
+good-names = ["i", "j", "k", "db"]
+
+[tool.pylint.design]
+max-parents = 10
+max-args = 6
+min-public-methods = 0
+
+[tool.pylint."messages control"]
+disable = [
+	"missing-docstring",
+	"missing-function-docstring",
+	"unused-argument",
+	"unused-import",
+	"line-too-long",
+	"ungrouped-imports",
+	"fixme",
+	"consider-using-f-string",
+]
+
+[tool.pylint.reports]
+ignore-docstrings = true
+score = false
+
+[tools.pylint.similarities]
+min-similarity-lines = 5
+ignore-imports = true
+
+[tool.pylint.typecheck]
+generated-members = [
+	"objects",
+	"from_queryset",
+	"__setattr__",
+	"DoesNotExist",
+	"Meta",
+	"_meta",
+]
+
+[tool.pytest.ini_options]
+pythonpath = "."
+DJANGO_SETTINGS_MODULE = "tests.default_settings"
+django_find_project = false
+addopts = "--doctest-modules"
+testpaths = [
+	"tests",
+	"rest_registration",
+]
+
+[tool.coverage.run]
+branch = true
+source = [
+	"rest_registration",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+	"pragma: no cover",
+	"def __repr__",
+	"raise AssertionError",
+	"raise NotImplementedError",
+	"if __name__ == .__main__.:",
+	"if TYPE_CHECKING:",
+]
+ignore_errors = true
+
+[tool.coverage.html]
+directory = "coverage_html_report"

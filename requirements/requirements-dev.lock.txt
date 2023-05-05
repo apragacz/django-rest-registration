@@ -140,6 +140,7 @@ flake8==5.0.4
     #   flake8-debugger
     #   flake8-isort
     #   flake8-print
+    #   flake8-pyproject
     #   flake8-tuple
 flake8-comprehensions==3.12.0
     # via -r requirements/requirements-test.lock.txt
@@ -148,6 +149,8 @@ flake8-debugger==4.1.2
 flake8-isort==5.0.3
     # via -r requirements/requirements-test.lock.txt
 flake8-print==5.0.0
+    # via -r requirements/requirements-test.lock.txt
+flake8-pyproject==1.2.3
     # via -r requirements/requirements-test.lock.txt
 flake8-tuple==0.4.1
     # via -r requirements/requirements-test.lock.txt
@@ -179,7 +182,7 @@ ipython==8.12.2
     # via
     #   -r requirements/requirements-dev.in
     #   ipdb
-isort==4.3.21
+isort[pyproject]==4.3.21
     # via
     #   -r requirements/requirements-test.lock.txt
     #   flake8-isort
@@ -423,12 +426,17 @@ stevedore==5.0.0
     # via
     #   -r requirements/requirements-test.lock.txt
     #   doc8
+toml==0.10.2
+    # via
+    #   -r requirements/requirements-test.lock.txt
+    #   isort
 tomli==2.0.1
     # via
     #   -r requirements/requirements-test.lock.txt
     #   build
     #   coverage
     #   django-stubs
+    #   flake8-pyproject
     #   ipdb
     #   mypy
     #   pylint
