@@ -28,6 +28,7 @@ _ModelT = TypeVar('_ModelT', bound=Model)
 
 if TYPE_CHECKING:
     from typing import Optional
+
     from django.contrib.auth.base_user import AbstractBaseUser
     from django.contrib.contenttypes.fields import GenericForeignKey
     from django.db.models import Field, ForeignObjectRel

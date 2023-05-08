@@ -65,7 +65,8 @@ class RestFrameworkAuthTokenManager(AbstractAuthTokenManager):
         ]
 
     def provide_token(self, user: 'AbstractBaseUser') -> AuthToken:
-        from rest_framework.authtoken.models import Token  # noqa: E501 pylint: disable=import-outside-toplevel
+        from rest_framework.authtoken.models import \
+            Token  # noqa: E501 pylint: disable=import-outside-toplevel
 
         token_obj, _ = Token.objects.get_or_create(user=user)
         return AuthToken(token_obj.key)
@@ -73,7 +74,8 @@ class RestFrameworkAuthTokenManager(AbstractAuthTokenManager):
     def revoke_token(
             self, user: 'AbstractBaseUser', *,
             token: Optional[AuthToken] = None) -> None:
-        from rest_framework.authtoken.models import Token  # noqa: E501 pylint: disable=import-outside-toplevel
+        from rest_framework.authtoken.models import \
+            Token  # noqa: E501 pylint: disable=import-outside-toplevel
 
         try:
             token_obj = Token.objects.get(user_id=user.pk)  # type: Token
