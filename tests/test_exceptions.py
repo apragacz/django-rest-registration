@@ -1,6 +1,6 @@
 import pytest
 
-from rest_registration.exceptions import BadRequest, ErrorDetail
+from rest_registration.exceptions import BadRequest, ErrorDetail, _extract_details
 from tests.helpers.settings import override_rest_registration_settings
 
 
@@ -38,7 +38,7 @@ def test_bad_request_detail(detail, code, expected_obj_detail):
         pytest.param(
             {"field": ["test err"]},
             {"field": [ErrorDetail("test err", code="bad-request")]},
-            id="str_list_dict"
+            id="str_list_dict",
         ),
     ],
 )
@@ -48,3 +48,41 @@ def test_bad_request_detail(detail, code, expected_obj_detail):
 def test_bad_request_detail_with_use_non_field_errors_key(detail, expected_obj_detail):
     exc = BadRequest(detail=detail)
     assert exc.detail == expected_obj_detail
+
+
+@pytest.mark.parametrize(
+    "detail,"
+    "expected_obj_detail", [
+        pytest.param(
+            None,
+            [],
+            id="none",
+        ),
+        pytest.param(
+            ["test err"],
+            ["test err"],
+            id="str_list",
+        ),
+        pytest.param(
+            "test err",
+            ["test err"],
+            id="str",
+        ),
+        pytest.param(
+            {"field": ["test err"]},
+            ["test err"],
+            id="str_list_dict",
+        ),
+        pytest.param(
+            {
+                "field1": ["test err 1"],
+                "field2": ["test err 2"],
+            },
+            ["test err 1", "test err 2"],
+            id="str_list_dict2",
+        ),
+    ],
+)
+def test_extract_details(detail, expected_obj_detail):
+    output = _extract_details(detail)
+    assert output == expected_obj_detail
