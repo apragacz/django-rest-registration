@@ -1,20 +1,33 @@
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Mapping, Optional, Sequence, Union
 
 from django.utils.translation import gettext_lazy as _
 from rest_framework.exceptions import APIException as _APIException
+from rest_framework.exceptions import ErrorDetail
 from rest_framework.settings import api_settings
 
 from rest_registration.settings import registration_settings
 from rest_registration.utils.types import StrOrPromise
 
-_DetailType = Union[StrOrPromise, List[str], Dict[str, List[str]]]
+# _Detail = Union[StrOrPromise, List[str], Dict[str, List[str]]]
+_Detail = Union[
+    ErrorDetail,
+    List[ErrorDetail],
+    Dict[str, ErrorDetail],
+]
+_APIExceptionInput = Union[
+    _Detail,
+    StrOrPromise,
+    Sequence["_APIExceptionInput"],
+    Mapping[str, "_APIExceptionInput"],
+    None,
+]
 
 
 class APIException(_APIException):
 
     def __init__(
             self,
-            detail: Optional[_DetailType] = None,
+            detail: Optional[_APIExceptionInput] = None,
             code: Optional[str] = None) -> None:
         if detail is None:
             detail = self.default_detail
@@ -94,9 +107,19 @@ class VerificationTemplatesNotFound(APIException):
     default_code = 'verification-templates-not-found'
 
 
-def _wrap_detail_in_dict(detail: _DetailType) -> Dict[str, List[Any]]:
+def _wrap_detail_in_dict(detail: _APIExceptionInput) -> Dict[str, List[Any]]:
     if isinstance(detail, list):
         return {api_settings.NON_FIELD_ERRORS_KEY: detail}
     if isinstance(detail, dict):
-        return detail
+        return {k: _extract_details(v) for k, v in detail.items()}
     return {api_settings.NON_FIELD_ERRORS_KEY: [detail]}
+
+
+def _extract_details(detail: _APIExceptionInput) -> List[Union[_Detail, StrOrPromise]]:
+    if detail is None:
+        return []
+    if isinstance(detail, Sequence):
+        return [ed for d in detail for ed in _extract_details(d)]
+    if isinstance(detail, Mapping):
+        return [ed for d in detail.values() for ed in _extract_details(d)]
+    return [detail]

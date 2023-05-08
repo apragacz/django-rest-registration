@@ -7,23 +7,27 @@
 alabaster==0.7.13
     # via sphinx
 asgiref==3.6.0
-    # via django
+    # via
+    #   -r requirements/requirements-base.lock.txt
+    #   django
 astroid==2.15.4
     # via pylint
 babel==2.12.1
     # via sphinx
+backports-zoneinfo==0.2.1
+    # via
+    #   -r requirements/requirements-base.lock.txt
+    #   django
 bleach==6.0.0
     # via readme-renderer
 build==0.10.0
     # via -r requirements/requirements-test.in
 cachetools==5.3.0
     # via tox
-certifi==2022.12.7
+certifi==2023.5.7
     # via requests
 cffi==1.15.1
-    # via
-    #   cmarkgfm
-    #   cryptography
+    # via cmarkgfm
 chardet==5.1.0
     # via tox
 charset-normalizer==3.1.0
@@ -38,25 +42,27 @@ coreapi==2.3.3
     # via -r requirements/requirements-test.in
 coreschema==0.0.4
     # via coreapi
-coverage[toml]==7.2.3
+coverage[toml]==7.2.5
     # via pytest-cov
-cryptography==40.0.2
-    # via secretstorage
 dill==0.3.6
     # via pylint
 distlib==0.3.6
     # via virtualenv
-django==4.2
+django==4.2.1
     # via
+    #   -r requirements/requirements-base.lock.txt
     #   django-stubs
     #   django-stubs-ext
+    #   djangorestframework
 django-stubs==4.2.0
     # via
     #   -r requirements/requirements-test.in
     #   djangorestframework-stubs
 django-stubs-ext==4.2.0
     # via django-stubs
-djangorestframework-stubs==1.10.0
+djangorestframework==3.14.0
+    # via -r requirements/requirements-base.lock.txt
+djangorestframework-stubs==3.14.0
     # via -r requirements/requirements-test.in
 doc8==0.11.2
     # via -r requirements/requirements-test.in
@@ -69,7 +75,9 @@ docutils==0.18.1
     #   sphinx
     #   sphinx-jinja
     #   sphinx-rtd-theme
-filelock==3.11.0
+exceptiongroup==1.1.1
+    # via pytest
+filelock==3.12.0
     # via
     #   tox
     #   virtualenv
@@ -95,10 +103,13 @@ idna==3.4
     # via requests
 imagesize==1.4.1
     # via sphinx
-importlib-metadata==6.4.1
+importlib-metadata==6.6.0
     # via
     #   keyring
+    #   sphinx
     #   twine
+importlib-resources==5.12.0
+    # via keyring
 iniconfig==2.0.0
     # via pytest
 isort==4.3.21
@@ -110,10 +121,6 @@ itypes==1.2.0
     # via coreapi
 jaraco-classes==3.2.3
     # via keyring
-jeepney==0.8.0
-    # via
-    #   keyring
-    #   secretstorage
 jinja2==3.1.2
     # via
     #   coreschema
@@ -155,7 +162,7 @@ pbr==5.11.1
     # via stevedore
 pkginfo==1.9.6
     # via twine
-platformdirs==3.2.0
+platformdirs==3.5.0
     # via
     #   pylint
     #   tox
@@ -180,7 +187,7 @@ pygments==2.15.1
     #   readme-renderer
     #   rich
     #   sphinx
-pylint==2.17.3
+pylint==2.17.4
     # via -r requirements/requirements-test.in
 pyproject-api==1.5.1
     # via tox
@@ -195,27 +202,30 @@ pytest-cov==4.0.0
     # via -r requirements/requirements-test.in
 pytest-django==4.5.2
     # via -r requirements/requirements-test.in
+pytz==2023.3
+    # via
+    #   -r requirements/requirements-base.lock.txt
+    #   babel
+    #   djangorestframework
 readme-renderer[md]==37.3
     # via
     #   -r requirements/requirements-test.in
     #   twine
-requests==2.28.2
+requests==2.30.0
     # via
     #   coreapi
     #   djangorestframework-stubs
     #   requests-toolbelt
     #   sphinx
     #   twine
-requests-toolbelt==0.10.1
+requests-toolbelt==1.0.0
     # via twine
 restructuredtext-lint==1.4.0
     # via doc8
 rfc3986==2.0.0
     # via twine
-rich==13.3.4
+rich==13.3.5
     # via twine
-secretstorage==3.3.3
-    # via keyring
 six==1.16.0
     # via
     #   bleach
@@ -251,12 +261,25 @@ sphinxcontrib-qthelp==1.0.3
 sphinxcontrib-serializinghtml==1.1.5
     # via sphinx
 sqlparse==0.4.4
-    # via django
+    # via
+    #   -r requirements/requirements-base.lock.txt
+    #   django
 stevedore==5.0.0
     # via doc8
-tomlkit==0.11.7
+tomli==2.0.1
+    # via
+    #   build
+    #   coverage
+    #   django-stubs
+    #   mypy
+    #   pylint
+    #   pyproject-api
+    #   pyproject-hooks
+    #   pytest
+    #   tox
+tomlkit==0.11.8
     # via pylint
-tornado==6.2
+tornado==6.3.1
     # via livereload
 tox==4.5.1
     # via -r requirements/requirements-test.in
@@ -268,23 +291,26 @@ types-pyyaml==6.0.12.9
     # via
     #   django-stubs
     #   djangorestframework-stubs
-types-requests==2.28.11.17
+types-requests==2.30.0.0
     # via djangorestframework-stubs
-types-urllib3==1.26.25.10
+types-urllib3==1.26.25.12
     # via types-requests
 typing-extensions==4.5.0
     # via
+    #   astroid
     #   django-stubs
     #   django-stubs-ext
     #   djangorestframework-stubs
     #   mypy
+    #   pylint
+    #   rich
 uritemplate==4.1.1
     # via coreapi
-urllib3==1.26.15
+urllib3==2.0.2
     # via
     #   requests
     #   twine
-virtualenv==20.21.0
+virtualenv==20.23.0
     # via tox
 webencodings==0.5.1
     # via bleach
@@ -293,4 +319,6 @@ wheel==0.40.0
 wrapt==1.15.0
     # via astroid
 zipp==3.15.0
-    # via importlib-metadata
+    # via
+    #   importlib-metadata
+    #   importlib-resources
