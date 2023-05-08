@@ -5,7 +5,7 @@ flake8-debugger
 flake8-isort
 flake8-print
 flake8-tuple
-isort<5.0
+isort<6.0
 pylint
 
 # type checking
