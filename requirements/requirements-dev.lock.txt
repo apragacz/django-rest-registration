@@ -195,7 +195,7 @@ jaraco-classes==3.2.3
     # via
     #   -r requirements/requirements-test.lock.txt
     #   keyring
-jedi==0.17.2
+jedi==0.18.2
     # via
     #   -r requirements/requirements-dev.in
     #   ipython
@@ -257,7 +257,7 @@ packaging==23.1
     #   pytest
     #   sphinx
     #   tox
-parso==0.7.1
+parso==0.8.3
     # via jedi
 pbr==5.11.1
     # via
