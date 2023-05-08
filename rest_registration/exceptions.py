@@ -118,8 +118,8 @@ def _wrap_detail_in_dict(detail: _APIExceptionInput) -> Dict[str, List[Any]]:
 def _extract_details(detail: _APIExceptionInput) -> List[Union[_Detail, StrOrPromise]]:
     if detail is None:
         return []
-    if isinstance(detail, Sequence):
-        return [ed for d in detail for ed in _extract_details(d)]
     if isinstance(detail, Mapping):
         return [ed for d in detail.values() for ed in _extract_details(d)]
+    if isinstance(detail, Sequence) and not isinstance(detail, str):
+        return [ed for d in detail for ed in _extract_details(d)]
     return [detail]
