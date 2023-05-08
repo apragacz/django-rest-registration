@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Type
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.checks import register
-from django.core.exceptions import ImproperlyConfigured
 from rest_framework.settings import api_settings
 
 from rest_registration.auth_token_managers import AbstractAuthTokenManager
@@ -210,14 +209,6 @@ def valid_register_email_verification_email_template_config_check() -> None:
         sends_emails,
         registration_settings.REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES,
     )
-
-
-def _is_email_template_config_valid(template_config_data) -> bool:
-    try:
-        parse_template_config(template_config_data)
-    except ImproperlyConfigured:
-        return False
-    return True
 
 
 def _validate_email_template_config(enabled, template_config_data) -> None:
