@@ -1,5 +1,5 @@
 # linting
-flake8<6.0
+flake8<7.0
 flake8-comprehensions
 flake8-debugger
 flake8-isort
