@@ -353,7 +353,7 @@ class RegisterViewTestCase(APIViewTestCase):
             self.assert_response_is_bad_request(response)
 
     @override_settings(
-        EMAIL_BACKEND='tests.api.views.register.test_register.FailureEmailBackend',  # noqa E501
+        EMAIL_BACKEND='tests.unit_tests.api.views.register.test_register.FailureEmailBackend',  # noqa E501
     )
     def test_when_notification_failure_then_user_not_created(self):
         data = self._get_register_user_data(password='testpassword')

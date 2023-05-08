@@ -5,7 +5,7 @@ from tests.helpers.testcases import BaseViewTestCase
 
 
 @override_settings(
-    ROOT_URLCONF='tests.contrib.verification_redirects.default_urls',
+    ROOT_URLCONF='tests.unit_tests.contrib.verification_redirects.default_urls',
 )
 class ViewTestCase(BaseViewTestCase):
     APP_NAME = 'rest_registration.contrib.verification_redirects'
