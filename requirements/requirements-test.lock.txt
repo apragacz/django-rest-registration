@@ -7,17 +7,11 @@
 alabaster==0.7.13
     # via sphinx
 asgiref==3.6.0
-    # via
-    #   -r requirements/requirements-base.lock.txt
-    #   django
+    # via django
 astroid==2.15.4
     # via pylint
 babel==2.12.1
     # via sphinx
-backports-zoneinfo==0.2.1
-    # via
-    #   -r requirements/requirements-base.lock.txt
-    #   django
 bleach==6.0.0
     # via readme-renderer
 build==0.10.0
@@ -27,7 +21,9 @@ cachetools==5.3.0
 certifi==2023.5.7
     # via requests
 cffi==1.15.1
-    # via cmarkgfm
+    # via
+    #   cmarkgfm
+    #   cryptography
 chardet==5.1.0
     # via tox
 charset-normalizer==3.1.0
@@ -44,24 +40,22 @@ coreschema==0.0.4
     # via coreapi
 coverage[toml]==7.2.5
     # via pytest-cov
+cryptography==40.0.2
+    # via secretstorage
 dill==0.3.6
     # via pylint
 distlib==0.3.6
     # via virtualenv
 django==4.2.1
     # via
-    #   -r requirements/requirements-base.lock.txt
     #   django-stubs
     #   django-stubs-ext
-    #   djangorestframework
 django-stubs==4.2.0
     # via
     #   -r requirements/requirements-test.in
     #   djangorestframework-stubs
 django-stubs-ext==4.2.0
     # via django-stubs
-djangorestframework==3.14.0
-    # via -r requirements/requirements-base.lock.txt
 djangorestframework-stubs==3.14.0
     # via -r requirements/requirements-test.in
 doc8==0.11.2
@@ -75,8 +69,6 @@ docutils==0.18.1
     #   sphinx
     #   sphinx-jinja
     #   sphinx-rtd-theme
-exceptiongroup==1.1.1
-    # via pytest
 filelock==3.12.0
     # via
     #   tox
@@ -109,10 +101,7 @@ imagesize==1.4.1
 importlib-metadata==6.6.0
     # via
     #   keyring
-    #   sphinx
     #   twine
-importlib-resources==5.12.0
-    # via keyring
 iniconfig==2.0.0
     # via pytest
 isort[pyproject]==5.12.0
@@ -124,6 +113,10 @@ itypes==1.2.0
     # via coreapi
 jaraco-classes==3.2.3
     # via keyring
+jeepney==0.8.0
+    # via
+    #   keyring
+    #   secretstorage
 jinja2==3.1.2
     # via
     #   coreschema
@@ -147,7 +140,7 @@ mdurl==0.1.2
     # via markdown-it-py
 more-itertools==9.1.0
     # via jaraco-classes
-mypy==1.2.0
+mypy==1.3.0
     # via
     #   -r requirements/requirements-test.in
     #   django-stubs
@@ -205,11 +198,6 @@ pytest-cov==4.0.0
     # via -r requirements/requirements-test.in
 pytest-django==4.5.2
     # via -r requirements/requirements-test.in
-pytz==2023.3
-    # via
-    #   -r requirements/requirements-base.lock.txt
-    #   babel
-    #   djangorestframework
 readme-renderer[md]==37.3
     # via
     #   -r requirements/requirements-test.in
@@ -229,6 +217,8 @@ rfc3986==2.0.0
     # via twine
 rich==13.3.5
     # via twine
+secretstorage==3.3.3
+    # via keyring
 six==1.16.0
     # via
     #   bleach
@@ -264,23 +254,9 @@ sphinxcontrib-qthelp==1.0.3
 sphinxcontrib-serializinghtml==1.1.5
     # via sphinx
 sqlparse==0.4.4
-    # via
-    #   -r requirements/requirements-base.lock.txt
-    #   django
+    # via django
 stevedore==5.0.0
     # via doc8
-tomli==2.0.1
-    # via
-    #   build
-    #   coverage
-    #   django-stubs
-    #   flake8-pyproject
-    #   mypy
-    #   pylint
-    #   pyproject-api
-    #   pyproject-hooks
-    #   pytest
-    #   tox
 tomlkit==0.11.8
     # via pylint
 tornado==6.3.1
@@ -301,13 +277,10 @@ types-urllib3==1.26.25.12
     # via types-requests
 typing-extensions==4.5.0
     # via
-    #   astroid
     #   django-stubs
     #   django-stubs-ext
     #   djangorestframework-stubs
     #   mypy
-    #   pylint
-    #   rich
 uritemplate==4.1.1
     # via coreapi
 urllib3==2.0.2
@@ -323,6 +296,4 @@ wheel==0.40.0
 wrapt==1.15.0
     # via astroid
 zipp==3.15.0
-    # via
-    #   importlib-metadata
-    #   importlib-resources
+    # via importlib-metadata
