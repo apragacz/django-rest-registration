@@ -8,7 +8,7 @@ asgiref==3.3.1
     # via django
 certifi==2022.12.7
     # via requests
-chardet==4.0.0
+charset-normalizer==3.1.0
     # via requests
 coreapi==2.3.3
     # via
@@ -45,7 +45,7 @@ openapi-codec==1.3.2
     # via django-rest-swagger
 pytz==2021.1
     # via django
-requests==2.25.1
+requests==2.31.0
     # via coreapi
 simplejson==3.17.2
     # via django-rest-swagger
