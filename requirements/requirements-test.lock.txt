@@ -237,7 +237,7 @@ sphinx-autobuild==2021.3.14
     # via -r requirements/requirements-test.in
 sphinx-jinja==2.0.2
     # via -r requirements/requirements-test.in
-sphinx-rtd-theme==1.2.0
+sphinx-rtd-theme==1.2.1
     # via -r requirements/requirements-test.in
 sphinxcontrib-applehelp==1.0.4
     # via sphinx
