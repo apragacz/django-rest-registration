@@ -202,7 +202,7 @@ readme-renderer[md]==37.3
     # via
     #   -r requirements/requirements-test.in
     #   twine
-requests==2.30.0
+requests==2.31.0
     # via
     #   coreapi
     #   djangorestframework-stubs
