@@ -1,0 +1,118 @@
+# Copyright (C) 2015-2019 Andrzej Pragacz
+# This file is distributed under the same license as
+# the Django-REST-Registration package.
+# Oliver Bengs <oliver.bengs@opensuse.org>.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-05-24 10:24+0200\n"
+"PO-Revision-Date: 2023-05-24 10:24+0200\n"
+"Last-Translator: Oliver Bengs\n"
+"Language-Team: \n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: api/views/change_password.py:26
+msgid "Old password is not correct"
+msgstr "Das alte Passwort ist nicht korrekt"
+
+#: api/views/change_password.py:54
+msgid "Password changed successfully"
+msgstr "Passwort erfolgreich geändert"
+
+#: api/views/login.py:39
+msgid "Login successful"
+msgstr "Erfolgreich angemeldet"
+
+#: api/views/login.py:73
+msgid "Logout successful"
+msgstr "Erfolgreich abgemeldet"
+
+#: api/views/register.py:91
+msgid "User verified successfully"
+msgstr "Benutzer erfolgreich verifiziert"
+
+#: api/views/register_email.py:59
+msgid "Register email link email sent"
+msgstr "Registrierungs-Link per E-Mail gesendet"
+
+#: api/views/register_email.py:87
+msgid "Email verified successfully"
+msgstr "E-Mail erfolgreich bestätigt"
+
+#: api/views/reset_password.py:37
+msgid "Reset link sent"
+msgstr ""
+
+#: api/views/reset_password.py:39
+msgid "Reset link sent if the user exists in database"
+msgstr "Link zum Zurücksetzen wird gesendet, wenn der Benutzer in der Datenbank vorhanden ist"
+
+#: api/views/reset_password.py:91
+msgid "Reset password successful"
+msgstr "Passwort zurücksetzen erfolgreich"
+
+#: exceptions.py:45
+msgid "Bad Request"
+msgstr "Ungültige Anforderung"
+
+#: exceptions.py:50
+msgid "User not found"
+msgstr "Benutzer nicht gefunden"
+
+#: exceptions.py:55
+msgid "Login or password invalid."
+msgstr "Login oder Passwort ungültig."
+
+#: exceptions.py:60
+msgid "This email is already registered."
+msgstr "Diese E-Mail ist bereits registriert."
+
+#: exceptions.py:65
+msgid "User without email cannot be verified"
+msgstr "Benutzer ohne E-Mail-Adresse können nicht verifiziert werden"
+
+#: exceptions.py:70
+msgid "Could not process authentication token"
+msgstr "Authentifizierungstoken konnte nicht verarbeitet werden"
+
+#: exceptions.py:75
+msgid "Authentication token could not be provided"
+msgstr "Authentifizierungstoken konnte nicht bereitgestellt werden"
+
+#: exceptions.py:80
+msgid "Authentication token cannot be revoked"
+msgstr "Das Authentifizierungstoken kann nicht widerrufen werden"
+
+#: exceptions.py:85
+msgid "Authentication token not found"
+msgstr "Authentifizierungstoken nicht gefunden"
+
+#: exceptions.py:90
+msgid "Generic signature error"
+msgstr "Allgemeiner Signaturfehler"
+
+#: exceptions.py:95
+msgid "Signature expired"
+msgstr "Signatur abgelaufen"
+
+#: exceptions.py:100
+msgid "Invalid signature"
+msgstr "ungültige Signatur"
+
+#: exceptions.py:106
+msgid "Could not find verification templates"
+msgstr "Es konnten keine Verifizierungstemplate gefunden werden"
+
+#: utils/email.py:104
+msgid "No 'subject' key found"
+msgstr "Kein 'Betreff' gefunden"
+
+#: utils/validation.py:44
+msgid "Passwords don't match"
+msgstr "Passwörter stimmen nicht überein"
