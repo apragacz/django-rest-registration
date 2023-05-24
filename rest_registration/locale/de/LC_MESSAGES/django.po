@@ -111,7 +111,7 @@ msgstr "Es konnten keine Verifizierungstemplate gefunden werden"
 
 #: utils/email.py:104
 msgid "No 'subject' key found"
-msgstr "Kein 'Betreff' gefunden"
+msgstr "Kein 'subject' Schlüssel gefunden"
 
 #: utils/validation.py:44
 msgid "Passwords don't match"
