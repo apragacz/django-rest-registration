@@ -3,6 +3,11 @@
 
 ## Version 0.8
 
+### v0.8.2
+
+*   Add translation for DE
+
+
 ### v0.8.1
 
 *   Override get_serializer_class in VerifyRegistrationView (#215)
