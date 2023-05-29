@@ -16,6 +16,7 @@ from rest_registration.utils.email import parse_template_config
 from rest_registration.utils.users import (
     get_user_email_field_name,
     get_user_login_field_names,
+    get_user_setting,
     is_model_field_unique
 )
 
@@ -249,7 +250,10 @@ def drf_compatible_django_auth_backend_check() -> bool:
     ErrorCode.LOGIN_FIELDS_NOT_UNIQUE,
 )
 def login_fields_unique_check() -> bool:
-    return implies(_is_auth_installed(), _are_login_fields_unique)
+    return implies(
+        _is_auth_installed() and get_user_setting('LOGIN_FIELDS_UNIQUE_CHECK_ENABLED'),
+        _are_login_fields_unique,
+    )
 
 
 def _are_login_fields_unique() -> bool:

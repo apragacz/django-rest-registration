@@ -6,15 +6,22 @@
 
 '{{ f.name }}'
 ~{{ '~' * f.name|length }}~
+{% if f.type_signature %}
+{% if f.type_signature|attr("__class__")|attr("__name__") == "type" %}
+* Type: ``{{ f.type_signature.__name__ }}``
+{% else %}
+* Type: ``{{ f.type_signature|pprint }}``
+{% endif %}
+{% endif %}
 {% if (f.default|pprint).split('\n')|length > 1 %}
-Default:
+* Default:
 
 .. code:: python
 
     {{ f.default|pprint|indent(width=4) }}
 
 {% else %}
-Default: ``{{ f.default|pprint }}``
+* Default: ``{{ f.default|pprint }}``
 {% endif %}
 {% if f.help %}
 {{ f.help }}

@@ -1,10 +1,12 @@
 import datetime
 from collections import OrderedDict, namedtuple
 from textwrap import dedent
+from typing import List, Union
 
 _Field = namedtuple('_Field', [
     'name',
     'default',
+    'type_signature',
     'help',
     'import_string',
 ])
@@ -15,16 +17,45 @@ class Field(_Field):
     def __new__(
             cls, name, *,
             default=None,
+            type_signature=None,
             help=None,  # pylint: disable=redefined-builtin
             import_string=False):
         return super().__new__(
             cls, name=name, default=default,
+            type_signature=type_signature,
             help=help, import_string=import_string)
 
 
 USER_SETTINGS_FIELDS = [
     Field(
         'USER_LOGIN_FIELDS',
+        type_signature=Union[List[str], None],
+        help=dedent("""\
+            Setting that defines the list of fields which can be treated as
+            "login" fields. An example of such fields would be ``username``, ``email``.
+
+            If not set / set to ``None``, it will fall back to one-element list
+            containing ``user_class.USERNAME_FIELD``,
+
+            This setting is used by default :ref:`login-authenticator-setting`
+            implementation and default
+            :ref:`send-reset-password-link-user-finder-setting` implementation.
+
+            To ensure integrity, Django-REST-Registration will check if each of
+            the listed fields is unique. If you want to disable that check,
+            please refer to :ref:`user-login-fields-unique-check-enabled-setting`.
+            """)
+    ),
+    Field(
+        'USER_LOGIN_FIELDS_UNIQUE_CHECK_ENABLED',
+        type_signature=bool,
+        default=True,
+        help=dedent("""\
+            If enabled, each of the fields listed in :ref:`user-login-fields-setting`
+            will be checked if it is unique.
+
+            **Disable this setting only when you know what you're doing!**
+            """)
     ),
     Field(
         'USER_HIDDEN_FIELDS',

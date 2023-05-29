@@ -296,6 +296,15 @@ def test_when_one_non_unique_login_field_then_check_fails():
 
 
 @override_rest_registration_settings({
+    'USER_LOGIN_FIELDS': ['email'],
+    'USER_LOGIN_FIELDS_UNIQUE_CHECK_ENABLED': False,
+})
+def test_ok_when_one_non_unique_login_field_but_check_disabled():
+    errors = simulate_checks()
+    assert_error_codes_match(errors, [])
+
+
+@override_rest_registration_settings({
     'USER_LOGIN_FIELDS': ['username', 'email'],
 })
 def test_when_one_non_unique_login_field_in_many_then_check_fails():
