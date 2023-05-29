@@ -158,7 +158,7 @@ pbr==5.11.1
     # via stevedore
 pkginfo==1.9.6
     # via twine
-platformdirs==3.5.0
+platformdirs==3.5.1
     # via
     #   pylint
     #   tox
@@ -261,7 +261,7 @@ tomlkit==0.11.8
     # via pylint
 tornado==6.3.2
     # via livereload
-tox==4.5.1
+tox==4.5.2
     # via -r requirements/requirements-test.in
 twine==4.0.2
     # via -r requirements/requirements-test.in
