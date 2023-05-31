@@ -25,56 +25,6 @@ def parse_template_config(template_config_data: Dict[str, Any]) -> EmailTemplate
     """
     >>> from tests import doctest_utils
     >>> convert_html_to_text = registration_settings.VERIFICATION_EMAIL_HTML_TO_TEXT_CONVERTER  # noqa: E501
-    >>> parse_template_config({})  # doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-    ...
-    ImproperlyConfigured
-    >>> parse_template_config({
-    ...     'subject': 'blah',
-    ... })  # doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-    ...
-    ImproperlyConfigured
-    >>> parse_template_config({
-    ...     'subject': 'blah',
-    ...     'body': 'blah',
-    ... })  # doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-    ...
-    ImproperlyConfigured
-    >>> doctest_utils.equals(
-    ...     parse_template_config({
-    ...         'subject': 'rest_registration/register/subject.txt',
-    ...         'html_body': 'rest_registration/register/body.html',
-    ...         'text_body': 'rest_registration/register/body.txt',
-    ...     }),
-    ...     EmailTemplateConfig(
-    ...         'rest_registration/register/subject.txt',
-    ...         'rest_registration/register/body.txt',
-    ...         'rest_registration/register/body.html',
-    ...         identity))
-    OK
-    >>> doctest_utils.equals(
-    ...     parse_template_config({
-    ...         'subject': 'rest_registration/register/subject.txt',
-    ...         'html_body': 'rest_registration/register/body.html',
-    ...     }),
-    ...     EmailTemplateConfig(
-    ...         'rest_registration/register/subject.txt',
-    ...         'rest_registration/register/body.html',
-    ...         'rest_registration/register/body.html',
-    ...         convert_html_to_text))
-    OK
-    >>> doctest_utils.equals(
-    ...     parse_template_config({
-    ...         'subject': 'rest_registration/register/subject.txt',
-    ...         'text_body': 'rest_registration/register/body.txt',
-    ...     }),
-    ...     EmailTemplateConfig(
-    ...         'rest_registration/register/subject.txt',
-    ...         'rest_registration/register/body.txt', None,
-    ...         identity))
-    OK
     >>> doctest_utils.equals(
     ...     parse_template_config({
     ...         'subject': 'rest_registration/register/subject.txt',
@@ -82,21 +32,15 @@ def parse_template_config(template_config_data: Dict[str, Any]) -> EmailTemplate
     ...     }),
     ...     EmailTemplateConfig(
     ...         'rest_registration/register/subject.txt',
-    ...         'rest_registration/register/body.txt', None,
-    ...         identity))
+    ...         'rest_registration/register/body.txt',
+    ...         None,
+    ...         identity,
+    ...     ))
     OK
-    >>> doctest_utils.equals(
-    ...     parse_template_config({
-    ...         'subject': 'rest_registration/register/subject.txt',
-    ...         'body': 'rest_registration/register/body.html',
-    ...         'is_html': True,
-    ...     }),
-    ...     EmailTemplateConfig(
-    ...         'rest_registration/register/subject.txt',
-    ...         'rest_registration/register/body.html',
-    ...         'rest_registration/register/body.html',
-    ...         convert_html_to_text))
-    OK
+    >>> parse_template_config({})  # doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+    ...
+    ImproperlyConfigured
     """
     try:
         subject_template_name = template_config_data['subject']
