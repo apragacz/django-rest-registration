@@ -79,6 +79,13 @@ def assert_response_is_bad_request(response):
     )
 
 
+def assert_response_is_forbidden(response):
+    assert_invalid_response(
+        response,
+        expected_status_code=status.HTTP_403_FORBIDDEN,
+    )
+
+
 def assert_response_is_not_found(response):
     assert_invalid_response(
         response,
