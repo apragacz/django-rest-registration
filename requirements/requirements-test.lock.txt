@@ -56,7 +56,7 @@ django-stubs==4.2.1
     #   djangorestframework-stubs
 django-stubs-ext==4.2.1
     # via django-stubs
-djangorestframework-stubs==3.14.0
+djangorestframework-stubs==3.14.1
     # via -r requirements/requirements-test.in
 doc8==0.11.2
     # via -r requirements/requirements-test.in
