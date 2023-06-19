@@ -16,7 +16,7 @@ bleach==6.0.0
     # via readme-renderer
 build==0.10.0
     # via -r requirements/requirements-test.in
-cachetools==5.3.0
+cachetools==5.3.1
     # via tox
 certifi==2023.5.7
     # via requests
@@ -69,7 +69,7 @@ docutils==0.18.1
     #   sphinx
     #   sphinx-jinja
     #   sphinx-rtd-theme
-filelock==3.12.0
+filelock==3.12.2
     # via
     #   tox
     #   virtualenv
@@ -158,7 +158,7 @@ pbr==5.11.1
     # via stevedore
 pkginfo==1.9.6
     # via twine
-platformdirs==3.5.1
+platformdirs==3.6.0
     # via
     #   pylint
     #   tox
@@ -185,7 +185,7 @@ pygments==2.15.1
     #   sphinx
 pylint==2.17.4
     # via -r requirements/requirements-test.in
-pyproject-api==1.5.1
+pyproject-api==1.5.2
     # via tox
 pyproject-hooks==1.0.0
     # via build
@@ -261,7 +261,7 @@ tomlkit==0.11.8
     # via pylint
 tornado==6.3.2
     # via livereload
-tox==4.6.0
+tox==4.6.2
     # via -r requirements/requirements-test.in
 twine==4.0.2
     # via -r requirements/requirements-test.in
@@ -287,7 +287,7 @@ urllib3==2.0.2
     # via
     #   requests
     #   twine
-virtualenv==20.23.0
+virtualenv==20.23.1
     # via tox
 webencodings==0.5.1
     # via bleach
