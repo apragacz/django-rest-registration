@@ -198,7 +198,7 @@ pytest-cov==4.1.0
     # via -r requirements/requirements-test.in
 pytest-django==4.5.2
     # via -r requirements/requirements-test.in
-readme-renderer[md]==37.3
+readme-renderer[md]==40.0
     # via
     #   -r requirements/requirements-test.in
     #   twine
