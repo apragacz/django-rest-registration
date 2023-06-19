@@ -82,7 +82,7 @@ flake8==5.0.4
     #   flake8-print
     #   flake8-pyproject
     #   flake8-tuple
-flake8-comprehensions==3.12.0
+flake8-comprehensions==3.13.0
     # via -r requirements/requirements-test.in
 flake8-debugger==4.1.2
     # via -r requirements/requirements-test.in
