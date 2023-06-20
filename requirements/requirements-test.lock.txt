@@ -140,7 +140,7 @@ mdurl==0.1.2
     # via markdown-it-py
 more-itertools==9.1.0
     # via jaraco-classes
-mypy==1.3.0
+mypy==1.4.0
     # via
     #   -r requirements/requirements-test.in
     #   django-stubs
