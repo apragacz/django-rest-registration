@@ -189,7 +189,7 @@ pyproject-api==1.5.2
     # via tox
 pyproject-hooks==1.0.0
     # via build
-pytest==7.3.2
+pytest==7.4.0
     # via
     #   -r requirements/requirements-test.in
     #   pytest-cov
