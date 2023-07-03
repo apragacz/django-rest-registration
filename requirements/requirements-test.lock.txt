@@ -50,11 +50,11 @@ django==4.2.2
     # via
     #   django-stubs
     #   django-stubs-ext
-django-stubs==4.2.1
+django-stubs==4.2.3
     # via
     #   -r requirements/requirements-test.in
     #   djangorestframework-stubs
-django-stubs-ext==4.2.1
+django-stubs-ext==4.2.2
     # via django-stubs
 djangorestframework-stubs==3.14.1
     # via -r requirements/requirements-test.in
