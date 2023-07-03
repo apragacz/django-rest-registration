@@ -2,140 +2,179 @@ import time
 from unittest import mock
 from unittest.mock import patch
 
-from rest_framework import status
+import pytest
 
 from rest_registration.api.views.register import RegisterSigner
-from tests.helpers.constants import REGISTER_VERIFICATION_URL, VERIFICATION_FROM_EMAIL
+from tests.helpers.api_views import (
+    assert_response_status_is_bad_request,
+    assert_response_status_is_not_found,
+    assert_response_status_is_ok
+)
+from tests.helpers.constants import REGISTER_VERIFICATION_URL
 from tests.helpers.settings import override_rest_registration_settings
+from tests.helpers.views import ViewProvider
 
-from ..base import APIViewTestCase
+
+def test_ok(
+    settings_with_register_verification,
+    api_view_provider, api_factory, inactive_user,
+):
+    user = inactive_user
+    assert not user.is_active
+    request = prepare_request(api_factory, user)
+    response = api_view_provider.view_func(request)
+    assert_response_status_is_ok(response)
+    user.refresh_from_db()
+    assert user.is_active
 
 
 @override_rest_registration_settings({
-    'REGISTER_VERIFICATION_ENABLED': True,
-    'REGISTER_VERIFICATION_URL': REGISTER_VERIFICATION_URL,
-    'VERIFICATION_FROM_EMAIL': VERIFICATION_FROM_EMAIL,
+    'USER_VERIFICATION_ID_FIELD': 'username',
 })
-class VerifyRegistrationViewTestCase(APIViewTestCase):
-    VIEW_NAME = 'verify-registration'
+def test_ok_with_username_as_verification_id(
+    settings_with_register_verification,
+    api_view_provider, api_factory, inactive_user,
+):
+    user = inactive_user
+    request = prepare_request(
+        api_factory,
+        user,
+        data_to_sign={'user_id': user.username},
+    )
+    response = api_view_provider.view_func(request)
+    assert_response_status_is_ok(response)
+    user.refresh_from_db()
+    assert user.is_active
 
-    def prepare_user(self):
-        user = self.create_test_user(is_active=False)
-        self.assertFalse(user.is_active)
-        return user
 
-    def prepare_request(self, user, session=False, data_to_sign=None):
-        if data_to_sign is None:
-            data_to_sign = {'user_id': user.pk}
-        signer = RegisterSigner(data_to_sign)
-        data = signer.get_signed_data()
-        request = self.create_post_request(data)
-        if session:
-            self.add_session_to_request(request)
-        return request
+def test_ok_idempotent(
+    settings_with_register_verification,
+    api_view_provider, api_factory, inactive_user,
+):
+    user = inactive_user
+    request1 = prepare_request(api_factory, user)
+    request2 = prepare_request(api_factory, user)
 
-    def prepare_user_and_request(self, session=False):
-        user = self.prepare_user()
-        request = self.prepare_request(user, session=session)
-        return user, request
+    api_view_provider.view_func(request1)
 
-    def test_verify_ok(self):
-        user, request = self.prepare_user_and_request()
-        response = self.view_func(request)
-        self.assert_valid_response(response, status.HTTP_200_OK)
-        user.refresh_from_db()
-        self.assertTrue(user.is_active)
+    response = api_view_provider.view_func(request2)
+    assert_response_status_is_ok(response)
+    user.refresh_from_db()
+    assert user.is_active
 
-    @override_rest_registration_settings({
-        'USER_VERIFICATION_ID_FIELD': 'username',
-    })
-    def test_verify_with_username_as_verification_id_ok(self):
-        user = self.prepare_user()
-        request = self.prepare_request(
-            user, data_to_sign={'user_id': user.username})
-        response = self.view_func(request)
-        self.assert_valid_response(response, status.HTTP_200_OK)
-        user.refresh_from_db()
-        self.assertTrue(user.is_active)
 
-    def test_verify_ok_idempotent(self):
-        user = self.prepare_user()
-        request1 = self.prepare_request(user)
-        request2 = self.prepare_request(user)
+@override_rest_registration_settings({
+    'REGISTER_VERIFICATION_ONE_TIME_USE': True,
+})
+def test_ok_then_fail_with_one_time_use(
+    settings_with_register_verification,
+    api_view_provider, api_factory, inactive_user,
+):
+    user = inactive_user
+    request1 = prepare_request(api_factory, user)
+    request2 = prepare_request(api_factory, user)
 
-        self.view_func(request1)
+    response1 = api_view_provider.view_func(request1)
+    assert_response_status_is_ok(response1)
+    user.refresh_from_db()
+    assert user.is_active
 
-        response = self.view_func(request2)
-        self.assert_valid_response(response, status.HTTP_200_OK)
-        user.refresh_from_db()
-        self.assertTrue(user.is_active)
+    response2 = api_view_provider.view_func(request2)
+    assert_response_status_is_bad_request(response2)
+    user.refresh_from_db()
+    assert user.is_active
 
-    @override_rest_registration_settings({
-        'REGISTER_VERIFICATION_ONE_TIME_USE': True,
-    })
-    def test_verify_one_time_use(self):
-        user = self.prepare_user()
-        request1 = self.prepare_request(user)
-        request2 = self.prepare_request(user)
 
-        self.view_func(request1)
+@override_rest_registration_settings({
+    'REGISTER_VERIFICATION_AUTO_LOGIN': True,
+})
+def test_ok_login(
+    settings_with_register_verification,
+    api_view_provider, api_factory, inactive_user,
+):
+    user = inactive_user
+    with patch('django.contrib.auth.login') as login_mock:
+        request = prepare_request(api_factory, user)
+        response = api_view_provider.view_func(request)
+        login_mock.assert_called_once_with(
+            mock.ANY,
+            user,
+            backend='django.contrib.auth.backends.ModelBackend')
+    assert_response_status_is_ok(response)
+    user.refresh_from_db()
+    assert user.is_active
 
-        response = self.view_func(request2)
-        self.assert_valid_response(response, status.HTTP_400_BAD_REQUEST)
-        user.refresh_from_db()
-        self.assertTrue(user.is_active)
 
-    @override_rest_registration_settings({
-        'REGISTER_VERIFICATION_AUTO_LOGIN': True,
-    })
-    def test_verify_ok_login(self):
-        with patch('django.contrib.auth.login') as login_mock:
-            user, request = self.prepare_user_and_request()
-            response = self.view_func(request)
-            login_mock.assert_called_once_with(
-                mock.ANY,
-                user,
-                backend='django.contrib.auth.backends.ModelBackend')
-        self.assert_valid_response(response, status.HTTP_200_OK)
-        user.refresh_from_db()
-        self.assertTrue(user.is_active)
+def test_fail_when_tampered_timestamp(
+    settings_with_register_verification,
+    api_view_provider, api_factory, inactive_user,
+):
+    user = inactive_user
+    assert not user.is_active
+    signer = RegisterSigner({'user_id': user.pk})
+    data = signer.get_signed_data()
+    data['timestamp'] += 1
+    request = api_factory.create_post_request(data)
+    response = api_view_provider.view_func(request)
+    assert_response_status_is_bad_request(response)
+    user.refresh_from_db()
+    assert not user.is_active
 
-    def test_verify_tampered_timestamp(self):
-        user = self.create_test_user(is_active=False)
-        self.assertFalse(user.is_active)
+
+def test_fail_when_expired(
+    settings_with_register_verification,
+    api_view_provider, api_factory, inactive_user,
+):
+    user = inactive_user
+    assert not user.is_active
+    timestamp = int(time.time())
+    with patch(
+        'time.time',
+        side_effect=lambda: timestamp,
+    ):
         signer = RegisterSigner({'user_id': user.pk})
         data = signer.get_signed_data()
-        data['timestamp'] += 1
-        request = self.create_post_request(data)
-        response = self.view_func(request)
-        self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
-        user.refresh_from_db()
-        self.assertFalse(user.is_active)
+        request = api_factory.create_post_request(data)
 
-    def test_verify_expired(self):
-        timestamp = int(time.time())
-        user = self.create_test_user(is_active=False)
-        self.assertFalse(user.is_active)
-        with patch('time.time',
-                   side_effect=lambda: timestamp):
-            signer = RegisterSigner({'user_id': user.pk})
-            data = signer.get_signed_data()
-            request = self.create_post_request(data)
-        with patch('time.time',
-                   side_effect=lambda: timestamp + 3600 * 24 * 8):
-            response = self.view_func(request)
-        self.assert_invalid_response(response, status.HTTP_400_BAD_REQUEST)
-        user.refresh_from_db()
-        self.assertFalse(user.is_active)
+    with patch(
+        'time.time',
+        side_effect=lambda: timestamp + 3600 * 24 * 8,
+    ):
+        response = api_view_provider.view_func(request)
+    assert_response_status_is_bad_request(response)
+    user.refresh_from_db()
+    assert not user.is_active
 
-    @override_rest_registration_settings({
-        'REGISTER_VERIFICATION_ENABLED': False,
-        'REGISTER_VERIFICATION_URL': REGISTER_VERIFICATION_URL,
-    })
-    def test_verify_disabled(self):
-        user, request = self.prepare_user_and_request()
-        response = self.view_func(request)
 
-        self.assert_invalid_response(response, status.HTTP_404_NOT_FOUND)
-        user.refresh_from_db()
-        self.assertFalse(user.is_active)
+@override_rest_registration_settings({
+    'REGISTER_VERIFICATION_ENABLED': False,
+    'REGISTER_VERIFICATION_URL': REGISTER_VERIFICATION_URL,
+})
+def test_fail_when_disabled(
+    settings_with_register_verification,
+    api_view_provider, api_factory, inactive_user,
+):
+    user = inactive_user
+    request = prepare_request(api_factory, user)
+
+    response = api_view_provider.view_func(request)
+
+    assert_response_status_is_not_found(response)
+    user.refresh_from_db()
+    assert not user.is_active
+
+
+@pytest.fixture()
+def api_view_provider():
+    return ViewProvider('verify-registration')
+
+
+def prepare_request(api_factory, user, session=False, data_to_sign=None):
+    if data_to_sign is None:
+        data_to_sign = {'user_id': user.pk}
+    signer = RegisterSigner(data_to_sign)
+    data = signer.get_signed_data()
+    request = api_factory.create_post_request(data)
+    if session:
+        api_factory.add_session_to_request(request)
+    return request

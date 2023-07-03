@@ -127,6 +127,18 @@ def password_change():
 
 
 @pytest.fixture()
+def inactive_user(db, email_change, password_change):
+    kwargs = {
+        'email': email_change.old_value,
+        'password': password_change.old_value,
+        'is_active': False
+    }
+    if settings.AUTH_USER_MODEL != 'custom_users.SimpleEmailBasedUser':
+        kwargs['username'] = USERNAME
+    return create_test_user(**kwargs)
+
+
+@pytest.fixture()
 def user(db, email_change, password_change):
     kwargs = {
         'email': email_change.old_value,
