@@ -44,21 +44,7 @@ def _fake_get_response(request):
     raise NotImplementedError()
 
 
-def assert_valid_response(response, expected_status_code=None):
-    _assert_response(
-        response,
-        expected_valid_response=True,
-        expected_status_code=expected_status_code)
-
-
-def assert_invalid_response(response, expected_status_code=None):
-    _assert_response(
-        response,
-        expected_valid_response=False,
-        expected_status_code=expected_status_code)
-
-
-def assert_response_is_ok(response):
+def assert_response_status_is_ok(response):
     assert_valid_response(
         response,
         expected_status_code=status.HTTP_200_OK,
@@ -72,25 +58,55 @@ def assert_response_status_is_created(response):
     )
 
 
-def assert_response_is_bad_request(response):
+def assert_response_status_is_bad_request(response):
     assert_invalid_response(
         response,
         expected_status_code=status.HTTP_400_BAD_REQUEST,
     )
 
 
-def assert_response_is_forbidden(response):
+def assert_response_status_is_forbidden(response):
     assert_invalid_response(
         response,
         expected_status_code=status.HTTP_403_FORBIDDEN,
     )
 
 
-def assert_response_is_not_found(response):
+def assert_response_status_is_not_found(response):
     assert_invalid_response(
         response,
         expected_status_code=status.HTTP_404_NOT_FOUND,
     )
+
+
+def assert_response_is_ok(response):
+    assert_response_status_is_ok(response)
+
+
+def assert_response_is_bad_request(response):
+    assert_response_status_is_bad_request(response)
+
+
+def assert_response_is_forbidden(response):
+    assert_response_status_is_forbidden(response)
+
+
+def assert_response_is_not_found(response):
+    assert_response_status_is_not_found(response)
+
+
+def assert_valid_response(response, expected_status_code=None):
+    _assert_response(
+        response,
+        expected_valid_response=True,
+        expected_status_code=expected_status_code)
+
+
+def assert_invalid_response(response, expected_status_code=None):
+    _assert_response(
+        response,
+        expected_valid_response=False,
+        expected_status_code=expected_status_code)
 
 
 def _assert_response(
