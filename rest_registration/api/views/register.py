@@ -84,7 +84,7 @@ class VerifyRegistrationView(BaseAPIView):
             request.data,
             serializer_context=self.get_serializer_context(),
         )
-        signals.user_activated.send(sender=None, user=user, request=request)
+        signals.user_activated.send(sender=self.__class__, user=user, request=request)
         extra_data = None
         if registration_settings.REGISTER_VERIFICATION_AUTO_LOGIN:
             extra_data = perform_login(request, user)

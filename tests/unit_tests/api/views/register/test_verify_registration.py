@@ -28,6 +28,23 @@ def test_ok(
     assert user.is_active
 
 
+def test_ok_signal(
+    settings_with_register_verification,
+    api_view_provider, api_factory, inactive_user,
+):
+    user = inactive_user
+    assert not user.is_active
+    request = prepare_request(api_factory, user)
+
+    with patch('rest_registration.signals.user_activated.send') as signal_sent:
+        response = api_view_provider.view_func(request)
+        assert signal_sent.call_count == 1
+
+    assert_response_status_is_ok(response)
+    user.refresh_from_db()
+    assert user.is_active
+
+
 @override_rest_registration_settings({
     'USER_VERIFICATION_ID_FIELD': 'username',
 })
