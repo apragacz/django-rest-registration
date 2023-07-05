@@ -8,7 +8,7 @@ asgiref==3.6.0
     # via django
 backports-zoneinfo==0.2.1
     # via django
-django==4.2.1
+django==4.2.3
     # via
     #   django-rest-registration (setup.py)
     #   djangorestframework
