@@ -5,10 +5,12 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, List
 
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
+from django.db import transaction
 from django.utils.translation import gettext as _
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
 
+from rest_registration.settings import registration_settings
 from rest_registration.utils.users import (
     build_initial_user,
     get_user_by_verification_id
@@ -49,9 +51,12 @@ def validate_user_password_confirm(user_data: Dict[str, Any]) -> None:
 @wrap_validation_error_with_field('password')
 def validate_user_password(user_data: Dict[str, Any]) -> None:
     password = user_data['password']
-    user = build_initial_user(user_data)
-    return _validate_user_password(password, user)
 
+    with transaction.atomic():
+        user = registration_settings.REGISTER_SERIALIZER_CLASS().create(user_data)
+        result = _validate_user_password(password, user)
+        transaction.set_rollback(True)
+    return result
 
 @wrap_validation_error_with_field('password')
 def validate_password_with_user_id(user_data: Dict[str, Any]) -> None:
