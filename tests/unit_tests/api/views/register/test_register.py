@@ -91,6 +91,33 @@ def test_ok(
     assert_valid_register_verification_email(sent_email, user, timer)
 
 
+@pytest.mark.skip("TODO: Issue #259")
+@pytest.mark.django_db
+@override_rest_registration_settings({
+    'REGISTER_SERIALIZER_CLASS': 'tests.testapps.custom_users.serializers.RegisterUserSerializer',  # noqa: E501
+})
+def test_ok_with_user_with_relations(
+    settings_with_user_with_channel,
+    api_view_provider, api_factory,
+):
+    data = _get_register_user_data(password='testpassword')
+    data["primary_channel"] = {
+        "name": "fake-channel",
+        "description": "blah",
+    }
+    request = api_factory.create_post_request(data, format="json")
+    with capture_sent_emails() as sent_emails, capture_time() as timer:
+        response = api_view_provider.view_func(request)
+    assert_response_status_is_created(response)
+    # Check database state.
+    user = _get_register_response_user(response)
+    assert_user_state_matches_data(user, data)
+    # Check verification e-mail.
+    assert_one_email_sent(sent_emails)
+    sent_email = sent_emails[0]
+    assert_valid_register_verification_email(sent_email, user, timer)
+
+
 @pytest.mark.django_db
 @override_rest_registration_settings({
     'USER_VERIFICATION_ID_FIELD': 'username',

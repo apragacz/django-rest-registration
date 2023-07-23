@@ -21,11 +21,11 @@ class APIViewRequestFactory:
     def view_url(self):
         return self._view_provider.view_url
 
-    def create_post_request(self, data=None):
-        return self._factory.post(self.view_url, data)
+    def create_post_request(self, data=None, format=None):  # noqa: E501 pylint: disable=redefined-builtin
+        return self._factory.post(self.view_url, data=data, format=format)
 
-    def create_patch_request(self, data=None):
-        return self._factory.patch(self.view_url, data)
+    def create_patch_request(self, data=None, format=None):  # noqa: E501 pylint: disable=redefined-builtin
+        return self._factory.patch(self.view_url, data=data, format=format)
 
     def create_get_request(self):
         return self._factory.get(self.view_url)

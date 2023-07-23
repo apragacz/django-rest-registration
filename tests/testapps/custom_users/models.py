@@ -54,3 +54,16 @@ class SimpleEmailBasedUser(AbstractBaseUser):
         unique=True,
         blank=True,
     )
+
+
+class Channel(models.Model):
+    name = models.CharField(max_length=200, unique=True)
+    description = models.TextField(blank=True)
+
+
+class UserWithChannel(AbstractUser):
+    primary_channel = models.OneToOneField(
+        Channel,
+        on_delete=models.PROTECT,
+        related_name="owner",
+    )
