@@ -247,7 +247,58 @@ LOGIN_SETTINGS_FIELDS = [
             """),
     ),
     Field('LOGIN_AUTHENTICATE_SESSION'),
-    Field('LOGIN_RETRIEVE_TOKEN'),
+    Field(
+        'LOGIN_RETRIEVE_TOKEN',
+        default=None,
+        help=dedent("""\
+            When set to ``True``, the login view will returns the token.
+
+            To make sure that the token can be returned, ``rest_framework.authtoken`` must be added to the ``INSTALLED_APPS`` in your settings.
+
+            After added ``rest_framework.authtoken`` to the ``INSTALLED_APPS``, you need to run ``python manage.py migrate`` to apply changes.
+
+            To use the token authentication, you have two options:
+            
+            1. add ``rest_framework.authtoken.authentication.TokenAuthentication`` to the ``DEFAULT_AUTHENTICATION_CLASSES`` in your settings.
+
+            2. set ``authentication_classes = [TokenAuthentication]`` in your view.
+
+            example 1:
+
+            .. code:: python
+
+                REST_FRAMEWORK = {
+                    # ...
+                    "DEFAULT_AUTHENTICATION_CLASSES": [
+                        "rest_framework.authentication.TokenAuthentication",
+                        # ...
+                    ],
+                }
+
+            example 2:
+
+            .. code:: python
+
+                from rest_framework.authentication import TokenAuthentication
+
+                class SomeAwesomeView(APIView):
+                    authentication_classes = [TokenAuthentication]
+                    # ...
+
+            Then you can get token from the login response:
+
+            .. code:: javascript
+
+                {
+                    "detail": "Login successful",
+                    "token": "18eb5c64d21fcc6219facdcd05016d277f92cd90"
+                }
+
+            When you send a request to the protected view, you need to add the token to the request header:
+
+            ``Authorization: Token ${YourToken}``
+            """)
+    ),
     Field(
         'AUTH_TOKEN_MANAGER_CLASS',
         default='rest_registration.auth_token_managers.RestFrameworkAuthTokenManager',  # noqa: E501
