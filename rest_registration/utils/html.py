@@ -23,6 +23,14 @@ class MLStripper(HTMLParser):
         self._tag_info_stack = deque([TagInfo(None, {})])
         self._preserve_urls = preserve_urls
 
+    def parse_marked_section(self, i, report=1):
+        try:
+            return super().parse_marked_section(i, report=report)
+        except AssertionError as exc:
+            # rephrase confusing assertion error introduced by:
+            # https://bugs.python.org/issue38573
+            raise ValueError(str(exc)) from exc
+
     def handle_starttag(self, tag: str, attrs: List[Tuple[str, Optional[str]]]) -> None:
         self._tag_info_stack.append(TagInfo(tag, dict(attrs)))
         if tag == 'br':
