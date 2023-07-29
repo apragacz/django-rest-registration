@@ -324,10 +324,4 @@ wheel==0.41.0
 wrapt==1.15.0
     # via astroid
 zipp==3.16.2
-<<<<<<< HEAD
-    # via
-    #   importlib-metadata
-    #   importlib-resources
-=======
     # via importlib-metadata
->>>>>>> 0b2784c (Use Python 3.10 for CI)
