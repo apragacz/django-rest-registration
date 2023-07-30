@@ -140,7 +140,7 @@ jobs:
       - run: tox
 
 workflows:
-  workflow:
+  main:
     jobs:
       - setup_project
       - flake8:
