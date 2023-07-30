@@ -14,10 +14,6 @@ astroid==2.15.6
     # via pylint
 babel==2.12.1
     # via sphinx
-backports-zoneinfo==0.2.1
-    # via
-    #   -r requirements/requirements-base.lock.txt
-    #   django
 bleach==6.0.0
     # via readme-renderer
 build==0.10.0
@@ -109,10 +105,7 @@ imagesize==1.4.1
 importlib-metadata==6.8.0
     # via
     #   keyring
-    #   sphinx
     #   twine
-importlib-resources==6.0.0
-    # via keyring
 iniconfig==2.0.0
     # via pytest
 isort[pyproject]==5.12.0
@@ -165,7 +158,7 @@ pbr==5.11.1
     # via stevedore
 pkginfo==1.9.6
     # via twine
-platformdirs==3.9.1
+platformdirs==3.10.0
     # via
     #   pylint
     #   tox
@@ -226,7 +219,7 @@ restructuredtext-lint==1.4.0
     # via doc8
 rfc3986==2.0.0
     # via twine
-rich==13.4.2
+rich==13.5.0
     # via twine
 six==1.16.0
     # via
@@ -280,7 +273,7 @@ tomli==2.0.1
     #   pyproject-hooks
     #   pytest
     #   tox
-tomlkit==0.11.8
+tomlkit==0.12.1
     # via pylint
 tornado==6.3.2
     # via livereload
@@ -307,8 +300,6 @@ typing-extensions==4.7.1
     #   django-stubs-ext
     #   djangorestframework-stubs
     #   mypy
-    #   pylint
-    #   rich
 uritemplate==4.1.1
     # via coreapi
 urllib3==2.0.4
