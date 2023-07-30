@@ -51,23 +51,23 @@ commands:
       - save_cache:
           paths:
             - ~/.cache/pip
-          key: v1.0-pip-cache-{{ checksum "requirements/requirements-test.lock.txt" }}
+          key: drr-pip-cache-{{ .Environment.CACHE_VERSION }}-{{ checksum "requirements/requirements-test.lock.txt" }}
   restore_pip_cache:
     steps:
       - restore_cache:
           keys:
-            - v1.0-pip-cache-{{ checksum "requirements/requirements-test.lock.txt" }}
+            - drr-pip-cache-{{ .Environment.CACHE_VERSION }}-{{ checksum "requirements/requirements-test.lock.txt" }}
   save_py_venv_cache:
     steps:
       - save_cache:
           paths:
             - ~/.venv
-          key: v1.0-py-venv-{{ checksum "requirements/requirements-test.lock.txt" }}
+          key: drr-py-venv-{{ .Environment.CACHE_VERSION }}-{{ checksum "requirements/requirements-test.lock.txt" }}
   restore_py_venv_cache:
     steps:
       - restore_cache:
           keys:
-            - v1.0-py-venv-{{ checksum "requirements/requirements-test.lock.txt" }}
+            - drr-py-venv-{{ .Environment.CACHE_VERSION }}-{{ checksum "requirements/requirements-test.lock.txt" }}
   save_project_workspace:
     steps:
       - persist_to_workspace:
