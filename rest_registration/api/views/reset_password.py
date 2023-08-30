@@ -76,7 +76,7 @@ class ResetPasswordSerializer(  # pylint: disable=abstract-method
         return attrs
 
 
-class ResetPassordView(BaseAPIView):
+class ResetPasswordView(BaseAPIView):
     serializer_class = ResetPasswordSerializer
     permission_classes = registration_settings.NOT_AUTHENTICATED_PERMISSION_CLASSES
 
@@ -91,7 +91,7 @@ class ResetPassordView(BaseAPIView):
         return get_ok_response(_("Reset password successful"))
 
 
-reset_password = ResetPassordView.as_view()
+reset_password = ResetPasswordView.as_view()
 
 
 def process_reset_password_data(input_data, serializer_context=None):
