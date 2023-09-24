@@ -97,6 +97,7 @@ def test_ok(
     'REGISTER_SERIALIZER_CLASS': 'tests.testapps.custom_users.serializers.RegisterUserSerializer',  # noqa: E501
 })
 def test_ok_with_user_with_relations(
+    settings_with_register_verification,
     settings_with_user_with_channel,
     api_view_provider, api_factory,
 ):
