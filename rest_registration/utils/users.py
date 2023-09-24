@@ -34,6 +34,16 @@ if TYPE_CHECKING:
     from django.db.models import Field, ForeignObjectRel
 
     UserField = Union[Field[Any, Any], ForeignObjectRel, GenericForeignKey]
+    BaseUserAttrsProxy = AbstractBaseUser
+else:
+    BaseUserAttrsProxy = object
+
+
+class UserAttrsProxy(BaseUserAttrsProxy):
+
+    def __init__(self, **kwargs) -> None:
+        super().__init__()
+        self.__dict__.update(kwargs)
 
 
 def authenticate_by_login_data(
@@ -187,8 +197,11 @@ def build_initial_user(data: Dict[str, Any]) -> 'AbstractBaseUser':
     for field_name in user_field_names:
         if field_name in data:
             user_data[field_name] = data[field_name]
-    user_class = get_user_model()
-    return user_class(**user_data)
+    try:
+        user_class = get_user_model()
+        return user_class(**user_data)
+    except ValueError:
+        return UserAttrsProxy(**user_data)
 
 
 def get_user_field_names(
