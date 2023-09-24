@@ -91,7 +91,6 @@ def test_ok(
     assert_valid_register_verification_email(sent_email, user, timer)
 
 
-@pytest.mark.skip("TODO: Issue #259")
 @pytest.mark.django_db
 @override_rest_registration_settings({
     'REGISTER_SERIALIZER_CLASS': 'tests.testapps.custom_users.serializers.RegisterUserSerializer',  # noqa: E501
