@@ -178,6 +178,8 @@ pygments==2.17.2
     #   readme-renderer
     #   rich
     #   sphinx
+pyjwt==2.8.0
+    # via -r requirements/requirements-test.in
 pylint==3.0.3
     # via -r requirements/requirements-test.in
 pyproject-api==1.6.1

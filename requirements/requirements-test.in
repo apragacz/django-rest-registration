@@ -35,3 +35,6 @@ sphinx_rtd_theme
 sphinx-autobuild
 sphinx-jinja
 doc8
+
+# cookbook
+pyjwt

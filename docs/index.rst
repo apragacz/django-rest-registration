@@ -14,6 +14,7 @@ User registration REST API, based on Django-REST-Framework.
     install
     quickstart
     detailed_configuration/index
+    cookbook/index
 
 
 Requirements
@@ -51,7 +52,9 @@ Current limitations
 -------------------
 
 -   Supports only one email per user (as user model field)
--   No JWT support (but you can use it along libraries like
+-   No built-it JWT support (but you can easily
+    :ref:`implement one <generating-and-authenticating-using-jwt>` or
+    use Django REST Registration along libraries like
     `django-rest-framework-simplejwt <https://github.com/davesque/django-rest-framework-simplejwt>`__)
 
 

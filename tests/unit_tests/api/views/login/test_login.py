@@ -1,12 +1,21 @@
+import django
 import pytest
 from rest_framework.authtoken.models import Token
+from rest_framework.settings import api_settings
+from rest_framework.test import APIRequestFactory
 
 from tests.helpers.api_views import (
     assert_response_is_bad_request,
     assert_response_is_ok
 )
-from tests.helpers.settings import override_rest_registration_settings
+from tests.helpers.settings import (
+    override_rest_framework_settings,
+    override_rest_registration_settings
+)
 from tests.helpers.views import ViewProvider
+from tests.testapps.custom_authtokens.auth import JWTAuthentication
+
+DJANGO_VERSION_INFO = tuple(int(s) for s in django.__version__.split("."))
 
 
 def test_ok(
@@ -175,6 +184,48 @@ def test_ok_when_user_with_unique_email_logs_with_email(
     #   user_login_failed_send_mock.assert_not_called()
     # needs to be replaced with the one below:
     user_login_failed_send_mock.assert_called_once()
+
+
+@pytest.mark.skipif(
+    DJANGO_VERSION_INFO < (5, 0),
+    reason="requires Django 5.0 or higher",
+)
+@override_rest_registration_settings({
+    'AUTH_TOKEN_MANAGER_CLASS': 'tests.testapps.custom_authtokens.auth.AuthJWTManager',
+    'LOGIN_RETRIEVE_TOKEN': True,
+})
+@override_rest_framework_settings({
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'tests.testapps.custom_authtokens.auth.JWTAuthentication',
+    ),
+})
+def test_ok_with_token_and_auth_jwt_manager(
+    settings_minimal,
+    user, password_change, api_view_provider, api_factory,
+):
+    assert api_settings.DEFAULT_AUTHENTICATION_CLASSES == [JWTAuthentication]
+    password = password_change.old_value
+    request = api_factory.create_post_request({
+        'login': user.username,
+        'password': password,
+    })
+    api_factory.add_session_to_request(request)
+    response = api_view_provider.view_func(request)
+    assert_response_is_ok(response)
+    assert 'token' in response.data
+    token_key = response.data['token']
+
+    # test sample endpoint requiring authentication
+    profile_view_provider = ViewProvider('profile')
+    api_request_factory = APIRequestFactory()
+    authorized_request = api_request_factory.get(
+        profile_view_provider.view_url,
+        headers={
+            'Authorization': f"Bearer {token_key}",
+        },
+    )
+    response = profile_view_provider.view_func(authorized_request)
+    assert_response_is_ok(response)
 
 
 @pytest.fixture()

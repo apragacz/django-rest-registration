@@ -34,8 +34,11 @@ Full documentation for the project is available at [https://django-rest-registra
 
 ## Current limitations
 
-* Supports only one email per user (as model field)
-* No JWT support (but you can use it along libraries like [django-rest-framework-simplejwt](https://github.com/davesque/django-rest-framework-simplejwt))
+*   Supports only one email per user (as model field)
+*   No JWT support (but you can easily
+    [implement one](https://django-rest-registration.readthedocs.io/en/latest/cookbook/jwt.html)
+    or use Django REST Registration along libraries like
+    [django-rest-framework-simplejwt](https://github.com/davesque/django-rest-framework-simplejwt))
 
 
 ## Installation & Configuration
