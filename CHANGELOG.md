@@ -3,6 +3,16 @@
 
 ## Version 0.8
 
+### v0.8.3
+
+*   Use UserAttrsProxy as last resort in build_initial_user (#259)
+*   Add verification settings to test_ok_with_user_with_relations
+*   Fix typo (#268)
+*   Add document for settings of LOGIN_RETRIEVE_TOKEN
+*   Set user_activated sender to VerifyRegistrationView
+*   Add 'USER_LOGIN_FIELDS_UNIQUE_CHECK_ENABLED' setting (#208)
+
+
 ### v0.8.2
 
 *   Add translation for DE
