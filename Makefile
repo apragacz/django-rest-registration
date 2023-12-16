@@ -24,8 +24,8 @@ MYPY := mypy
 MYPY_OPTS :=
 PYLINT := pylint
 PYLINT_OPTS := --rcfile=pyproject.toml
-PYTEST := py.test
-PYTEST_OPTS :=
+PYTEST := pytest
+PYTEST_OPTS :=  --failed-first
 TWINE := twine
 PIP := pip
 PIP_COMPILE := pip-compile
