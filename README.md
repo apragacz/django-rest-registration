@@ -14,7 +14,7 @@ Full documentation for the project is available at [https://django-rest-registra
 ## Requirements
 
 * Django (2.0+, 3.0+, 4.0+) and Django-REST-Framework (3.3+)
-* Python 3.5 or higher (no Python 2 support!)
+* Python 3.6 or higher (no Python 2 support!)
 
 ## Features
 

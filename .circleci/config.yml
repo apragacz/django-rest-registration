@@ -9,13 +9,6 @@ executors:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
     working_directory: ~/project
-  docker-executor-py35:
-    docker:
-      - image: cimg/python:3.5
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_PASSWORD
-    working_directory: ~/project
   docker-executor-py36:
     docker:
       - image: cimg/python:3.6
@@ -40,6 +33,20 @@ executors:
   docker-executor-py39:
     docker:
       - image: cimg/python:3.9
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+    working_directory: ~/project
+  docker-executor-py310:
+    docker:
+      - image: cimg/python:3.10
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+    working_directory: ~/project
+  docker-executor-py311:
+    docker:
+      - image: cimg/python:3.11
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
@@ -165,6 +172,12 @@ workflows:
             - setup_project
           post-steps:
             - codecov/upload
+      - test-tox:
+          name: test-tox-py310-django50
+          py: "310"
+          django: "50"
+          requires:
+            - test
       - test-tox:
           name: test-tox-py39-django40
           py: "39"
