@@ -62,5 +62,5 @@ def send_notification(notification: EmailMultiAlternatives) -> None:
 
 def get_user_address(user: 'AbstractBaseUser') -> str:
     email_field_name = get_user_email_field_name()
-    email = getattr(user, email_field_name)  # type: str
+    email: str = getattr(user, email_field_name)
     return email

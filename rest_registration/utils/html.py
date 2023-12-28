@@ -19,7 +19,7 @@ class MLStripper(HTMLParser):
     def __init__(self, preserve_urls: bool = False) -> None:
         super().__init__(convert_charrefs=True)
         self.reset()
-        self._paragraphs = [[]]  # type: List[List[str]]
+        self._paragraphs: List[List[str]] = [[]]
         self._tag_info_stack = deque([TagInfo(None, {})])
         self._preserve_urls = preserve_urls
 

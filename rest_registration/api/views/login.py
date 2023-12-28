@@ -18,6 +18,8 @@ from rest_registration.utils.responses import get_ok_response
 if TYPE_CHECKING:
     from django.contrib.auth.base_user import AbstractBaseUser
 
+    from rest_registration.auth_token_managers import AbstractAuthTokenManager
+
 
 class LoginView(BaseAPIView):
     permission_classes = registration_settings.NOT_AUTHENTICATED_PERMISSION_CLASSES
@@ -59,6 +61,7 @@ class LogoutView(BaseAPIView):
         authenticated.
         '''
         user = request.user
+        assert not user.is_anonymous
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
@@ -67,7 +70,7 @@ class LogoutView(BaseAPIView):
             auth.logout(request)
         if should_retrieve_token() and data['revoke_token']:
             auth_token_manager_cls = registration_settings.AUTH_TOKEN_MANAGER_CLASS
-            auth_token_manager = auth_token_manager_cls()  # noqa: E501 type: rest_registration.auth_token_managers.AbstractAuthTokenManager
+            auth_token_manager: AbstractAuthTokenManager = auth_token_manager_cls()  # noqa: E501
             auth_token_manager.revoke_token(user)
 
         return get_ok_response(_("Logout successful"))

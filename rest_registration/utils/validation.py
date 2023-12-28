@@ -1,7 +1,7 @@
 import functools
 from collections import OrderedDict
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, List
+from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, List, Union
 
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -10,6 +10,7 @@ from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
 
 from rest_registration.utils.users import (
+    UserAttrsProxy,
     build_initial_user,
     get_user_by_verification_id
 )
@@ -61,16 +62,19 @@ def validate_password_with_user_id(user_data: Dict[str, Any]) -> None:
     return _validate_user_password(password, user)
 
 
-def _validate_user_password(password: str, user: 'AbstractBaseUser') -> None:
+def _validate_user_password(
+        password: str,
+        user: Union['AbstractBaseUser', UserAttrsProxy, None],
+) -> None:
     try:
-        validate_password(password, user=user)
+        validate_password(password, user=user)  # type: ignore
     except DjangoValidationError as exc:
         raise transform_django_validation_error(exc) from None
 
 
 def run_validators(validators: Iterable[Validator], value: Any) -> None:
-    fields_errors = OrderedDict()  # type: Dict[str, Any]
-    non_field_errors = []  # type: List[Any]
+    fields_errors: Dict[str, Any] = OrderedDict()
+    non_field_errors: List[Any] = []
     for validator in validators:
         try:
             validator(value)

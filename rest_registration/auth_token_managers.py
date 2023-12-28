@@ -78,7 +78,7 @@ class RestFrameworkAuthTokenManager(AbstractAuthTokenManager):
             Token  # noqa: E501 pylint: disable=import-outside-toplevel
 
         try:
-            token_obj = Token.objects.get(user_id=user.pk)  # type: Token
+            token_obj: Token = Token.objects.get(user_id=user.pk)
         except Token.DoesNotExist:
             raise AuthTokenNotFound() from None
 

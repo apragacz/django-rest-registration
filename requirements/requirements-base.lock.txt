@@ -6,15 +6,15 @@
 #
 asgiref==3.7.2
     # via django
-django==4.2.7
+django==5.0
     # via
     #   django-rest-registration (setup.py)
     #   djangorestframework
 djangorestframework==3.14.0
     # via django-rest-registration (setup.py)
-pytz==2023.3
+pytz==2023.3.post1
     # via djangorestframework
 sqlparse==0.4.4
     # via django
-typing-extensions==4.7.1
+typing-extensions==4.9.0
     # via asgiref

@@ -12,6 +12,7 @@ import sys
 
 import django  # noqa: E402
 from django.conf import settings  # noqa: E402
+from sphinx.util._pathlib import _StrPath
 
 # -- Path setup --------------------------------------------------------------
 DOCS_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -203,7 +204,7 @@ epub_exclude_files = ['search.html']
 
 # -- Extension configuration -------------------------------------------------
 
-jinja_base = DOCS_DIR
+jinja_base = _StrPath(DOCS_DIR)
 jinja_contexts = {
     'detailed_configuration__all_settings': {
         'settings_fields': settings_fields.SETTINGS_FIELDS,

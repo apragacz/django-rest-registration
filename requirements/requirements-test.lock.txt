@@ -10,23 +10,21 @@ asgiref==3.7.2
     # via
     #   -r requirements/requirements-base.lock.txt
     #   django
-astroid==2.15.6
+astroid==3.0.2
     # via pylint
-babel==2.12.1
+babel==2.14.0
     # via sphinx
-bleach==6.0.0
-    # via readme-renderer
-build==0.10.0
+build==1.0.3
     # via -r requirements/requirements-test.in
-cachetools==5.3.1
+cachetools==5.3.2
     # via tox
-certifi==2023.7.22
+certifi==2023.11.17
     # via requests
-cffi==1.15.1
+cffi==1.16.0
     # via cmarkgfm
-chardet==5.1.0
+chardet==5.2.0
     # via tox
-charset-normalizer==3.2.0
+charset-normalizer==3.3.2
     # via requests
 cmarkgfm==2022.10.27
     # via readme-renderer
@@ -38,31 +36,31 @@ coreapi==2.3.3
     # via -r requirements/requirements-test.in
 coreschema==0.0.4
     # via coreapi
-coverage[toml]==7.2.7
+coverage[toml]==7.3.3
     # via pytest-cov
 dill==0.3.7
     # via pylint
-distlib==0.3.7
+distlib==0.3.8
     # via virtualenv
-django==4.2.7
+django==5.0
     # via
     #   -r requirements/requirements-base.lock.txt
     #   django-stubs
     #   django-stubs-ext
     #   djangorestframework
-django-stubs==4.2.3
+django-stubs==4.2.7
     # via
     #   -r requirements/requirements-test.in
     #   djangorestframework-stubs
-django-stubs-ext==4.2.2
+django-stubs-ext==4.2.7
     # via django-stubs
 djangorestframework==3.14.0
     # via -r requirements/requirements-base.lock.txt
-djangorestframework-stubs==3.14.2
+djangorestframework-stubs==3.14.5
     # via -r requirements/requirements-test.in
-doc8==0.11.2
+doc8==1.1.1
     # via -r requirements/requirements-test.in
-docutils==0.18.1
+docutils==0.20.1
     # via
     #   -r requirements/requirements-test.in
     #   doc8
@@ -71,13 +69,13 @@ docutils==0.18.1
     #   sphinx
     #   sphinx-jinja
     #   sphinx-rtd-theme
-exceptiongroup==1.1.2
+exceptiongroup==1.2.0
     # via pytest
-filelock==3.12.2
+filelock==3.13.1
     # via
     #   tox
     #   virtualenv
-flake8==5.0.4
+flake8==6.1.0
     # via
     #   -r requirements/requirements-test.in
     #   flake8-comprehensions
@@ -90,7 +88,7 @@ flake8-comprehensions==3.14.0
     # via -r requirements/requirements-test.in
 flake8-debugger==4.1.2
     # via -r requirements/requirements-test.in
-flake8-isort==6.0.0
+flake8-isort==6.1.1
     # via -r requirements/requirements-test.in
 flake8-print==5.0.0
     # via -r requirements/requirements-test.in
@@ -98,17 +96,17 @@ flake8-pyproject==1.2.3
     # via -r requirements/requirements-test.in
 flake8-tuple==0.4.1
     # via -r requirements/requirements-test.in
-idna==3.4
+idna==3.6
     # via requests
 imagesize==1.4.1
     # via sphinx
-importlib-metadata==6.8.0
+importlib-metadata==7.0.0
     # via
     #   keyring
     #   twine
 iniconfig==2.0.0
     # via pytest
-isort[pyproject]==5.12.0
+isort[pyproject]==5.13.2
     # via
     #   -r requirements/requirements-test.in
     #   flake8-isort
@@ -122,10 +120,8 @@ jinja2==3.1.2
     #   coreschema
     #   sphinx
     #   sphinx-jinja
-keyring==24.2.0
+keyring==24.3.0
     # via twine
-lazy-object-proxy==1.9.0
-    # via astroid
 livereload==2.6.3
     # via sphinx-autobuild
 markdown-it-py==3.0.0
@@ -138,71 +134,70 @@ mccabe==0.7.0
     #   pylint
 mdurl==0.1.2
     # via markdown-it-py
-more-itertools==10.0.0
+more-itertools==10.1.0
     # via jaraco-classes
-mypy==1.4.1
-    # via
-    #   -r requirements/requirements-test.in
-    #   django-stubs
-    #   djangorestframework-stubs
+mypy==1.7.1
+    # via -r requirements/requirements-test.in
 mypy-extensions==1.0.0
     # via mypy
-packaging==23.1
+nh3==0.2.15
+    # via readme-renderer
+packaging==23.2
     # via
     #   build
     #   pyproject-api
     #   pytest
     #   sphinx
     #   tox
-pbr==5.11.1
+pbr==6.0.0
     # via stevedore
 pkginfo==1.9.6
     # via twine
-platformdirs==3.10.0
+platformdirs==4.1.0
     # via
     #   pylint
     #   tox
     #   virtualenv
-pluggy==1.2.0
+pluggy==1.3.0
     # via
     #   pytest
     #   tox
-pycodestyle==2.9.1
+pycodestyle==2.11.1
     # via
     #   flake8
     #   flake8-debugger
     #   flake8-print
 pycparser==2.21
     # via cffi
-pyflakes==2.5.0
+pyflakes==3.1.0
     # via flake8
-pygments==2.15.1
+pygments==2.17.2
     # via
     #   -r requirements/requirements-test.in
     #   doc8
     #   readme-renderer
     #   rich
     #   sphinx
-pylint==2.17.5
+pylint==3.0.3
     # via -r requirements/requirements-test.in
-pyproject-api==1.5.3
+pyproject-api==1.6.1
     # via tox
 pyproject-hooks==1.0.0
     # via build
-pytest==7.4.0
+pytest==7.4.3
     # via
     #   -r requirements/requirements-test.in
     #   pytest-cov
     #   pytest-django
 pytest-cov==4.1.0
     # via -r requirements/requirements-test.in
-pytest-django==4.5.2
+pytest-django==4.7.0
     # via -r requirements/requirements-test.in
-pytz==2023.3
+pytz==2023.3.post1
     # via
     #   -r requirements/requirements-base.lock.txt
     #   djangorestframework
-readme-renderer[md]==40.0
+readme-renderer[md]==42.0
     # via
     #   -r requirements/requirements-test.in
     #   twine
@@ -219,41 +214,45 @@ restructuredtext-lint==1.4.0
     # via doc8
 rfc3986==2.0.0
     # via twine
-rich==13.5.0
+rich==13.7.0
     # via twine
 six==1.16.0
     # via
-    #   bleach
     #   flake8-tuple
     #   livereload
 snowballstemmer==2.2.0
     # via sphinx
-sphinx==6.2.1
+sphinx==7.2.6
     # via
     #   -r requirements/requirements-test.in
     #   sphinx-autobuild
     #   sphinx-jinja
     #   sphinx-rtd-theme
+    #   sphinxcontrib-applehelp
+    #   sphinxcontrib-devhelp
+    #   sphinxcontrib-htmlhelp
     #   sphinxcontrib-jquery
+    #   sphinxcontrib-qthelp
+    #   sphinxcontrib-serializinghtml
 sphinx-autobuild==2021.3.14
     # via -r requirements/requirements-test.in
 sphinx-jinja==2.0.2
     # via -r requirements/requirements-test.in
-sphinx-rtd-theme==1.2.2
+sphinx-rtd-theme==2.0.0
     # via -r requirements/requirements-test.in
-sphinxcontrib-applehelp==1.0.4
+sphinxcontrib-applehelp==1.0.7
     # via sphinx
-sphinxcontrib-devhelp==1.0.2
+sphinxcontrib-devhelp==1.0.5
     # via sphinx
-sphinxcontrib-htmlhelp==2.0.1
+sphinxcontrib-htmlhelp==2.0.4
     # via sphinx
 sphinxcontrib-jquery==4.1
     # via sphinx-rtd-theme
 sphinxcontrib-jsmath==1.0.1
     # via sphinx
-sphinxcontrib-qthelp==1.0.3
+sphinxcontrib-qthelp==1.0.6
     # via sphinx
-sphinxcontrib-serializinghtml==1.1.5
+sphinxcontrib-serializinghtml==1.1.9
     # via sphinx
 sqlparse==0.4.4
     # via
@@ -266,6 +265,7 @@ tomli==2.0.1
     #   build
     #   coverage
     #   django-stubs
+    #   doc8
     #   flake8-pyproject
     #   mypy
     #   pylint
@@ -273,25 +273,23 @@ tomli==2.0.1
     #   pyproject-hooks
     #   pytest
     #   tox
-tomlkit==0.12.1
+tomlkit==0.12.3
     # via pylint
-tornado==6.3.3
+tornado==6.4
     # via livereload
-tox==4.6.4
+tox==4.11.4
     # via -r requirements/requirements-test.in
 twine==4.0.2
     # via -r requirements/requirements-test.in
-types-pytz==2023.3.0.0
+types-pytz==2023.3.1.1
     # via django-stubs
-types-pyyaml==6.0.12.11
+types-pyyaml==6.0.12.12
     # via
     #   django-stubs
     #   djangorestframework-stubs
-types-requests==2.31.0.2
+types-requests==2.31.0.10
     # via djangorestframework-stubs
-types-urllib3==1.26.25.14
-    # via types-requests
-typing-extensions==4.7.1
+typing-extensions==4.9.0
     # via
     #   -r requirements/requirements-base.lock.txt
     #   asgiref
@@ -302,17 +300,14 @@ typing-extensions==4.7.1
     #   mypy
 uritemplate==4.1.1
     # via coreapi
-urllib3==2.0.7
+urllib3==2.1.0
     # via
     #   requests
     #   twine
-virtualenv==20.24.2
+    #   types-requests
+virtualenv==20.25.0
     # via tox
-webencodings==0.5.1
-    # via bleach
-wheel==0.41.0
+wheel==0.42.0
     # via -r requirements/requirements-test.in
-wrapt==1.15.0
-    # via astroid
-zipp==3.16.2
+zipp==3.17.0
     # via importlib-metadata

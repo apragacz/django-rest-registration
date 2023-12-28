@@ -34,12 +34,9 @@ if TYPE_CHECKING:
     from django.db.models import Field, ForeignObjectRel
 
     UserField = Union[Field[Any, Any], ForeignObjectRel, GenericForeignKey]
-    BaseUserAttrsProxy = AbstractBaseUser
-else:
-    BaseUserAttrsProxy = object
 
 
-class UserAttrsProxy(BaseUserAttrsProxy):
+class UserAttrsProxy:
 
     def __init__(self, **kwargs) -> None:
         super().__init__()
@@ -54,7 +51,7 @@ def authenticate_by_login_data(
     login_value = data.get('login')
     if password is None:
         raise UserNotFound()
-    user_selectors = []  # type: List[Tuple[str, str]]
+    user_selectors: List[Tuple[str, str]] = []
     if login_value is not None:
         user_selectors.extend(
             (field_name, login_value) for field_name in login_field_names)
@@ -148,7 +145,7 @@ def is_user_email_field_unique() -> bool:
 
 
 def get_user_email_field_name() -> str:
-    email = get_user_setting('EMAIL_FIELD')  # type: str
+    email: str = get_user_setting('EMAIL_FIELD')
     return email
 
 
@@ -165,7 +162,7 @@ def get_user_by_lookup_dict(
     if require_verified and verification_enabled and verification_flag_field:
         kwargs[verification_flag_field] = True
     try:
-        queryset = user_class.objects.all()  # type: QuerySet[AbstractBaseUser]
+        queryset: QuerySet[AbstractBaseUser] = user_class.objects.all()
         user = get_object_or_404(queryset, **kwargs)
     except Http404:
         if default is DefaultValues.RAISE_EXCEPTION:
@@ -191,7 +188,9 @@ def get_user_setting(name: str) -> Any:
     return value
 
 
-def build_initial_user(data: Dict[str, Any]) -> 'AbstractBaseUser':
+def build_initial_user(
+    data: Dict[str, Any],
+) -> Union['AbstractBaseUser', UserAttrsProxy]:
     user_field_names = get_user_public_field_names(write_once=True)
     user_data = {}
     for field_name in user_field_names:
@@ -266,8 +265,9 @@ def _get_user_public_read_only_field_names(
     base_field_names = _get_user_public_base_field_names(
         fields, write_once=write_once)
     email_field_name = get_user_email_field_name()
-    _editable_field_names = get_user_setting(
-        'EDITABLE_FIELDS')  # type: Optional[Iterable[str]]
+    _editable_field_names: Optional[Iterable[str]] = get_user_setting(
+        'EDITABLE_FIELDS',
+    )
     editable_field_names = set_or_none(_editable_field_names)
     if write_once:
         excludes = {'last_login', pk_name}
@@ -288,8 +288,9 @@ def _get_user_public_base_field_names(
     default_field_names = [f.name for f in fields]
     email_field_name = get_user_email_field_name()
     hidden_field_names = set(get_user_setting('HIDDEN_FIELDS'))
-    _public_field_names = get_user_setting(
-        'PUBLIC_FIELDS')  # type: Optional[Iterable[str]]
+    _public_field_names: Optional[Iterable[str]] = get_user_setting(
+        'PUBLIC_FIELDS',
+    )
     public_field_names = set_or_none(_public_field_names)
 
     base_field_names = default_field_names
@@ -327,8 +328,8 @@ def _get_user_default_fields() -> List['UserField']:
 
 
 def is_model_field_unique(field: 'UserField') -> bool:
-    f_uniq = getattr(field, 'unique', False)  # type: bool
-    f_pkey = getattr(field, 'primary_key', False)  # type: bool
+    f_uniq: bool = getattr(field, 'unique', False)
+    f_pkey: bool = getattr(field, 'primary_key', False)
     return f_uniq or f_pkey
 
 

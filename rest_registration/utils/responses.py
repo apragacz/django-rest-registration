@@ -10,8 +10,8 @@ def get_ok_response(
         status: int = 200,
         extra_data: Optional[Dict[str, Any]] = None) -> Response:
     builder = registration_settings.SUCCESS_RESPONSE_BUILDER
-    response = builder(
-        message=message, status=status, extra_data=extra_data)  # type: Response
+    response: Response = builder(
+        message=message, status=status, extra_data=extra_data)
     return response
 
 

@@ -257,7 +257,7 @@ def login_fields_unique_check() -> bool:
 
 
 def _are_login_fields_unique() -> bool:
-    user_cls = get_user_model()  # type: Type[Model]
+    user_cls: Type[Model] = get_user_model()
     user_meta = user_cls._meta  # pylint: disable=protected-access
     return all(
         is_model_field_unique(user_meta.get_field(field_name))
@@ -343,7 +343,7 @@ def send_reset_password_link_serializer_email_unique_check() -> bool:
 
 
 def _is_email_field_unique() -> bool:
-    user_cls = get_user_model()  # type: Type[Model]
+    user_cls: Type[Model] = get_user_model()
     user_meta = user_cls._meta  # pylint: disable=protected-access
     email_field_name = get_user_email_field_name()
     return is_model_field_unique(user_meta.get_field(email_field_name))
