@@ -11,7 +11,7 @@ class ViewProvider:
 
     @property
     def full_view_name(self):
-        return '{self.app_name}:{self.view_name}'.format(self=self)
+        return f"{self.app_name}:{self.view_name}"
 
     @property
     def view_url(self):

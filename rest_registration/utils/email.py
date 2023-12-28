@@ -90,8 +90,8 @@ def parse_template_config(template_config_data: Dict[str, Any]) -> EmailTemplate
             )
     else:
         raise ImproperlyConfigured(
-            'Could not parse template config data: {template_config_data}'.format(  # noqa: E501
-                template_config_data=template_config_data))
+            f"Could not parse template config data: {template_config_data}",
+        )
 
     _validate_template_name_existence(config.subject_template_name)
     _validate_template_name_existence(config.text_body_template_name)
@@ -109,6 +109,6 @@ def _validate_template_name_existence(template_name: str) -> None:
         get_template(template_name)
     except TemplateDoesNotExist:
         raise ImproperlyConfigured(
-            'Template {template_name!r} does not exist; ensure that your'
-            ' Django TEMPLATES setting is configured correctly'.format(
-                template_name=template_name)) from None
+            f"Template {template_name!r} does not exist; ensure that your"
+            f" Django TEMPLATES setting is configured correctly",
+        ) from None

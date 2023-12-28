@@ -447,8 +447,7 @@ def assert_error_codes_match(errors, expected_error_codes):
     expected_error_ids = sorted(
         code.get_full_code_id() for code in expected_error_codes)
     msg = "\n\nList of errors:\n"
-    for error in errors:
-        msg += "- {error}\n".format(error=error)
+    msg += "".join(f"- {error}\n" for error in errors)
     msg += " does not match the codes: "
     if expected_error_codes:
         msg += ", ".join(str(e) for e in expected_error_codes)

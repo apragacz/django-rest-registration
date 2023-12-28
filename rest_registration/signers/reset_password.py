@@ -22,8 +22,7 @@ class ResetPasswordSigner(URLParamsSigner):
             # was caused by previous password reset and the signature
             # is not valid anymore because changed password hash implies
             # changed salt used when verifying the input data.
-            salt = '{self.SALT_BASE}:{user_password_hash}'.format(
-                self=self, user_password_hash=user_password_hash)
+            salt = f"{self.SALT_BASE}:{user_password_hash}"
         else:
             salt = self.SALT_BASE
         return salt

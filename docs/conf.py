@@ -28,13 +28,12 @@ django.setup()
 
 # -- Project information -----------------------------------------------------
 
-project = 'Django REST Registration'
-docs_title = '{project} documentation'.format(project=project)
-author = 'Andrzej Pragacz'
+project = "Django REST Registration"
+docs_title = f"{project} documentation"
+author = "Andrzej Pragacz"
 datetime_now = datetime.datetime.now()
 current_year = datetime_now
-copyright = '{current_year}, {author}'.format(  # noqa: E501 pylint: disable=redefined-builtin
-    author=author, current_year=current_year)
+copyright = f"{current_year}, {author}"  # pylint: disable=redefined-builtin
 version = rest_registration.__version__
 release = version
 
@@ -213,8 +212,7 @@ jinja_contexts = {
 }
 settings_fields_groups_map = settings_fields.SETTINGS_FIELDS_GROUPS_MAP
 for group_name, settings_fields in settings_fields_groups_map.items():
-    ctx_key = 'detailed_configuration__{group_name}'.format(
-        group_name=group_name)
+    ctx_key = f"detailed_configuration__{group_name}"
     jinja_contexts[ctx_key] = {
         'settings_fields': settings_fields,
         'generate_setting_refs': False,

@@ -23,11 +23,6 @@ def _assert_urls_in_text(text, expected_num, line_url_pattern):
             match_groupdict = match.groupdict()
             urls.append(match_groupdict['url'])
     num_of_urls = len(urls)
-    msg_format = "Found {num_of_urls} urls instead of {expected_num} in:\n{text}"  # noqa: E501
-    msg = msg_format.format(
-        num_of_urls=num_of_urls,
-        expected_num=expected_num,
-        text=text,
-    )
+    msg = f"Found {num_of_urls} urls instead of {expected_num} in:\n{text}"
     assert num_of_urls == expected_num, msg
     return urls

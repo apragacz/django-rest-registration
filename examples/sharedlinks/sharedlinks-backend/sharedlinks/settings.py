@@ -173,7 +173,7 @@ REST_FRAMEWORK = {
 
 
 def get_frontend_url(uri):
-    return 'http://localhost:3000{uri}'.format(uri=uri)
+    return f"http://localhost:3000{uri}"
 
 
 REST_REGISTRATION = {

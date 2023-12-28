@@ -32,7 +32,7 @@ class ErrorCode(_BaseCheckCodeMixin, Enum):
     INVALID_AUTH_BACKENDS_CONFIG = 14
 
     def get_code_id(self) -> str:
-        return 'E{self.value:03d}'.format(self=self)
+        return f"E{self.value:03d}"
 
     def get_check_message_class(self) -> Type[CheckMessage]:
         return checks.Error
@@ -46,7 +46,7 @@ class WarningCode(_BaseCheckCodeMixin, Enum):
     DEPRECATION = 2
 
     def get_code_id(self) -> str:
-        return 'W{self.value:03d}'.format(self=self)
+        return f"W{self.value:03d}"
 
     def get_check_message_class(self) -> Type[CheckMessage]:
         return checks.Warning

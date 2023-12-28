@@ -17,7 +17,7 @@ class CheckCode:
     def get_full_code_id(self) -> str:
         app_name = self.get_app_name()
         code_id = self.get_code_id()
-        return '{app_name}.{code_id}'.format(app_name=app_name, code_id=code_id)
+        return f"{app_name}.{code_id}"
 
     def get_app_name(self) -> str:
         raise NotImplementedError()
@@ -81,8 +81,7 @@ def no_exception_check(
                 fun()
             except Exception as exc:  # pylint: disable=broad-except
                 exc_str = str(exc)
-                msg = '{error_message}: {exc_str}'.format(
-                    error_message=error_message, exc_str=exc_str)
+                msg = f"{error_message}: {exc_str}"
                 return [
                     message_cls(
                         msg,

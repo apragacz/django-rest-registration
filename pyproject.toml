@@ -111,7 +111,6 @@ disable = [
 	"line-too-long",
 	"ungrouped-imports",
 	"fixme",
-	"consider-using-f-string",
 ]
 
 [tool.pylint.reports]

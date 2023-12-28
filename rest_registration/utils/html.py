@@ -43,7 +43,7 @@ class MLStripper(HTMLParser):
         last_segment = last_paragraph[-1] if last_paragraph else None
         if (self._preserve_urls and
                 tag_info.name == 'a' and href and href != last_segment):
-            self._append_segment('({href})'.format(href=href))
+            self._append_segment(f"({href})")
 
         if tag == 'p':
             self._paragraphs.append([])
@@ -58,8 +58,7 @@ class MLStripper(HTMLParser):
             self._append_segment(data)
 
     def error(self, message: str) -> None:
-        raise ValueError("HTML parse error: {message}".format(
-            message=message))
+        raise ValueError(f"HTML parse error: {message}")
 
     def get_data(self) -> str:
         paragraph_texts = []

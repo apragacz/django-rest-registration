@@ -27,9 +27,9 @@ class BaseAPIView(APIView):
         (Eg. admins get full serialization, others get basic serialization)
         """
         assert self.serializer_class is not None, (
-            "'%s' should either include a `serializer_class` attribute, "
-            "or override the `get_serializer_class()` method."
-            % self.__class__.__name__
+            f"'{self.__class__.__name__}' should either include a "
+            f"`serializer_class` attribute, "
+            f"or override the `get_serializer_class()` method."
         )
 
         return self.serializer_class

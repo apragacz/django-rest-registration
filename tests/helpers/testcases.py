@@ -24,31 +24,17 @@ class TestCase(DjangoTestCase):
         return create_test_user(**kwargs)
 
     def assert_len_equals(self, collection, expected_len, msg=None):
-        std_msg_format = "{collection} does not have length {expected_len}"
-        std_msg = std_msg_format.format(
-            collection=collection,
-            expected_len=expected_len,
-        )
+        std_msg = f"{collection} does not have length {expected_len}"
         if len(collection) != expected_len:
             self.fail(self._formatMessage(msg, std_msg))
 
     def assert_is_between(self, value, start, end, msg=None):
-        std_msg_format = "{value} is not in range [{start}, {end})"
-        std_msg = std_msg_format.format(
-            value=value,
-            start=start,
-            end=end,
-        )
+        std_msg = f"{value} is not in range [{start}, {end})"
         if not start <= value < end:
             self.fail(self._formatMessage(msg, std_msg))
 
     def assert_is_not_between(self, value, start, end, msg=None):
-        std_msg_format = "{value} is unexpectedly in range [{start}, {end})"
-        std_msg = std_msg_format.format(
-            value=value,
-            start=start,
-            end=end,
-        )
+        std_msg = f"{value} is unexpectedly in range [{start}, {end})"
         if start <= value < end:
             self.fail(self._formatMessage(msg, std_msg))
 
@@ -62,11 +48,7 @@ class TestCase(DjangoTestCase):
         with self.capture_sent_emails() as sent_emails:
             yield sent_emails
         num_of_sent_emails = len(sent_emails)
-        msg_format = "Expected {expected_num} emails to be sent, but found {num_of_sent_emails}"  # noqa: E501
-        msg = msg_format.format(
-            expected_num=expected_num,
-            num_of_sent_emails=num_of_sent_emails,
-        )
+        msg = f"Expected {expected_num} emails to be sent, but found {num_of_sent_emails}"  # noqa: E501
         self.assertEqual(num_of_sent_emails, expected_num, msg=msg)
 
     @contextlib.contextmanager
@@ -98,12 +80,7 @@ class TestCase(DjangoTestCase):
                 match_groupdict = match.groupdict()
                 urls.append(match_groupdict['url'])
         num_of_urls = len(urls)
-        msg_format = "Found {num_of_urls} urls instead of {expected_num} in:\n{text}"  # noqa: E501
-        msg = msg_format.format(
-            num_of_urls=num_of_urls,
-            expected_num=expected_num,
-            text=text,
-        )
+        msg = f"Found {num_of_urls} urls instead of {expected_num} in:\n{text}"
         self.assertEqual(num_of_urls, expected_num, msg=msg)
         return urls
 
@@ -133,7 +110,7 @@ class BaseViewTestCase(TestCase):
     def full_view_name(self):
         assert self.APP_NAME
         assert self.VIEW_NAME
-        return '{self.APP_NAME}:{self.VIEW_NAME}'.format(self=self)
+        return f"{self.APP_NAME}:{self.VIEW_NAME}"
 
     @property
     def view_url(self):

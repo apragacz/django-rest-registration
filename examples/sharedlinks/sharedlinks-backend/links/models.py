@@ -14,7 +14,7 @@ class Link(models.Model):
     )
 
     def __str__(self):
-        return '{self.title} ({self.url})'.format(self=self)
+        return f"{self.title} ({self.url})"
 
     def get_num_of_positive_votes(self):
         return self.votes.filter(positive=True).count()
@@ -53,5 +53,4 @@ class LinkVote(models.Model):
         else:
             vote = 'neutral'
 
-        return '{vote} vote for {self.link} by {self.voter}'.format(
-            vote=vote, self=self)
+        return f"{vote} vote for {self.link} by {self.voter}"

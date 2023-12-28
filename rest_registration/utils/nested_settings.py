@@ -43,9 +43,7 @@ class NestedSettings:
 
     def __getattr__(self, attr: str) -> Any:
         if attr not in self.defaults.keys():
-            raise AttributeError(
-                "Invalid {self.root_setting_name} setting: '{attr}'".format(
-                    self=self, attr=attr))
+            raise AttributeError(f"Invalid {self.root_setting_name} setting: '{attr}'")
 
         try:
             # Check if present in user settings

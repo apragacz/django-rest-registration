@@ -49,9 +49,5 @@ class EmailMessageContainer(Sequence):
 
 def _assert_emails_sent(sent_emails, expected_num):
     num_of_sent_emails = len(sent_emails)
-    msg_format = "Expected {expected_num} emails to be sent, but found {num_of_sent_emails}"  # noqa: E501
-    msg = msg_format.format(
-        expected_num=expected_num,
-        num_of_sent_emails=num_of_sent_emails,
-    )
+    msg = f"Expected {expected_num} emails to be sent, but found {num_of_sent_emails}"
     assert num_of_sent_emails == expected_num, msg

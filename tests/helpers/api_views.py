@@ -114,20 +114,15 @@ def _assert_response(
         expected_status_code=None):
     status_code = response.status_code
     if expected_status_code is not None:
-        msg_format = dedent("""\
+        msg = dedent(f"""\
             Response returned with HTTP code {status_code} but code {expected_status_code} was expected.
 
             Response body was {response.data}.""")  # noqa: E501
     else:
-        msg_format = dedent("""\
+        msg = dedent(f"""\
             Response unexpectedly returned with HTTP code {status_code}
 
             Response body was {response.data}.""")
-    msg = msg_format.format(
-        status_code=status_code,
-        expected_status_code=expected_status_code,
-        response=response,
-    )
     if expected_status_code is not None:
         assert status_code == expected_status_code, msg
     elif expected_valid_response:

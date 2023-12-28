@@ -177,7 +177,7 @@ def get_user_field_obj(name: str) -> 'UserField':
 
 
 def get_user_setting(name: str) -> Any:
-    setting_name = 'USER_{name}'.format(name=name)
+    setting_name = f"USER_{name}"
     user_class = get_user_model()
     placeholder = object()
     value = getattr(user_class, name, placeholder)

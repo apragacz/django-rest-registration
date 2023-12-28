@@ -38,11 +38,7 @@ class APIViewTestCase(BaseViewTestCase):
             self, response, expected_valid_response=True,
             expected_status_code=None):
         status_code = response.status_code
-        msg_format = "Response returned with code {status_code}, body {response.data}"  # noqa: E501
-        msg = msg_format.format(
-            status_code=status_code,
-            response=response,
-        )
+        msg = f"Response returned with code {status_code}, body {response.data}"
         if expected_status_code is not None:
             self.assertEqual(status_code, expected_status_code, msg=msg)
         elif expected_valid_response:
@@ -102,9 +98,9 @@ class APIViewTestCase(BaseViewTestCase):
 
         for key, values in query.items():
             if not values:
-                raise ValueError("no values for '{key}".format(key=key))
+                raise ValueError(f"no values for {key!r}")
             if len(values) > 1:
-                raise ValueError("multiple values for '{key}'".format(key=key))
+                raise ValueError(f"multiple values for {key!r}")
 
         verification_data = {key: values[0] for key, values in query.items()}
         return parsed_url.path, verification_data

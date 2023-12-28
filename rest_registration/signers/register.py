@@ -23,8 +23,7 @@ class RegisterSigner(URLParamsSigner):
             # implies changed salt used when verifying the input data.
             verification_flag_field = get_user_setting('VERIFICATION_FLAG_FIELD')
             verification_flag = getattr(user, verification_flag_field)
-            salt = '{self.SALT_BASE}:{verification_flag}'.format(
-                self=self, verification_flag=verification_flag)
+            salt = f"{self.SALT_BASE}:{verification_flag}"
         else:
             salt = self.SALT_BASE
         return salt

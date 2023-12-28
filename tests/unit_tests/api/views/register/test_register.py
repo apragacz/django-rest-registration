@@ -62,7 +62,7 @@ def parse_custom_verification_url(url, verification_field_names):
     url_path = parsed_url.path.rstrip('/')
     url_segments = url_path.rsplit('/', num_of_fields)
     if len(url_segments) != num_of_fields + 1:
-        raise ValueError("Could not parse {url}".format(url=url))
+        raise ValueError(f"Could not parse {url!r}")
 
     data_segments = url_segments[1:]
     url_path = url_segments[0] + '/'

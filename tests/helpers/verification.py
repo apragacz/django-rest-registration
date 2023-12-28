@@ -47,9 +47,9 @@ def _parse_verification_url(
 
     for key, values in query.items():
         if not values:
-            raise ValueError("no values for '{key}".format(key=key))
+            raise ValueError(f"no values for {key!r}")
         if len(values) > 1:
-            raise ValueError("multiple values for '{key}'".format(key=key))
+            raise ValueError(f"multiple values for {key!r}")
 
     verification_data = {key: values[0] for key, values in query.items()}
     return parsed_url.path, verification_data
