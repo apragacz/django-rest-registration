@@ -143,7 +143,7 @@ jobs:
     steps:
       - restore_project_workspace
       - restore_pip_cache
-      - run: pip install tox==4.4.4
+      - run: pip install tox==3.28.0
       - run: tox
 
 workflows:
