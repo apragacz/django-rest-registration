@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Any, Dict, Type
 
 from django.contrib import auth
+from django.contrib.auth import signals as auth_signals
 from django.utils.translation import gettext as _
 from rest_framework import permissions, serializers
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
@@ -98,16 +99,25 @@ def rest_auth_has_class(cls: type) -> bool:
 
 
 def perform_login(request: Request, user: 'AbstractBaseUser') -> Dict[str, Any]:
+    user_logged_in_signal_sent = False
     if should_authenticate_session():
         login_auth_backend = get_login_authentication_backend(user=user)
         auth.login(request, user, backend=login_auth_backend)
+        user_logged_in_signal_sent = True
 
     extra_data = {}
 
     if should_retrieve_token():
         auth_token_manager_cls = registration_settings.AUTH_TOKEN_MANAGER_CLASS
-        auth_token_manager = auth_token_manager_cls()  # noqa: E501 type: rest_registration.auth_token_managers.AbstractAuthTokenManager
+        auth_token_manager: AbstractAuthTokenManager = auth_token_manager_cls()
         token = auth_token_manager.provide_token(user)
         extra_data['token'] = token
+
+    if not user_logged_in_signal_sent:
+        auth_signals.user_logged_in.send(
+            sender=user.__class__,
+            request=request,
+            user=user,
+        )
 
     return extra_data
