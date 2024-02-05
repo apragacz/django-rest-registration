@@ -1,6 +1,7 @@
-from typing import TYPE_CHECKING, Any, Dict, Type
+from typing import TYPE_CHECKING, Any, Dict, Optional, Type
 
 from django.contrib import auth
+from django.contrib.auth.signals import user_logged_in, user_login_failed
 from django.utils.translation import gettext as _
 from rest_framework import permissions, serializers
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
@@ -36,7 +37,7 @@ class LoginView(BaseAPIView):
         except UserNotFound:
             raise LoginInvalid() from None
 
-        extra_data = perform_login(request, user)
+        extra_data = perform_login(request, user, credentials=serializer.validated_data)
 
         return get_ok_response(_("Login successful"), extra_data=extra_data)
 
@@ -97,17 +98,38 @@ def rest_auth_has_class(cls: type) -> bool:
     return cls in api_settings.DEFAULT_AUTHENTICATION_CLASSES
 
 
-def perform_login(request: Request, user: 'AbstractBaseUser') -> Dict[str, Any]:
-    if should_authenticate_session():
-        login_auth_backend = get_login_authentication_backend(user=user)
-        auth.login(request, user, backend=login_auth_backend)
+def perform_login(
+    request: Request,
+    user: 'AbstractBaseUser',
+    *,
+    credentials: Optional[Dict[str, Any]] = None
+) -> Dict[str, Any]:
+    if credentials is None:
+        credentials = {}
 
     extra_data = {}
+    user_logged_in_signal_sent = False
 
-    if should_retrieve_token():
-        auth_token_manager_cls = registration_settings.AUTH_TOKEN_MANAGER_CLASS
-        auth_token_manager = auth_token_manager_cls()  # noqa: E501 type: rest_registration.auth_token_managers.AbstractAuthTokenManager
-        token = auth_token_manager.provide_token(user)
-        extra_data['token'] = token
+    try:
+        if should_retrieve_token():
+            auth_token_manager_cls = registration_settings.AUTH_TOKEN_MANAGER_CLASS
+            auth_token_manager: AbstractAuthTokenManager = auth_token_manager_cls()
+            token = auth_token_manager.provide_token(user)
+            extra_data['token'] = token
 
-    return extra_data
+        if should_authenticate_session():
+            login_auth_backend = get_login_authentication_backend(user=user)
+            auth.login(request, user, backend=login_auth_backend)
+            user_logged_in_signal_sent = True
+
+        if not user_logged_in_signal_sent:
+            user_logged_in.send(sender=user.__class__, request=request, user=user)
+
+        return extra_data
+    except Exception:
+        user_login_failed.send(
+            sender=user.__class__,
+            request=request,
+            credentials=credentials,
+        )
+        raise
