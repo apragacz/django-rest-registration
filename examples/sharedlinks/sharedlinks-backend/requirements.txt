@@ -4,7 +4,7 @@
 #
 #    pip-compile requirements.in
 #
-asgiref==3.3.1
+asgiref==3.7.2
     # via django
 certifi==2023.7.22
     # via requests
@@ -16,7 +16,7 @@ coreapi==2.3.3
     #   openapi-codec
 coreschema==0.0.4
     # via coreapi
-django==3.1.14
+django==3.2.24
     # via
     #   -r requirements.in
     #   django-cors-headers
