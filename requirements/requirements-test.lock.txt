@@ -42,7 +42,7 @@ dill==0.3.7
     # via pylint
 distlib==0.3.8
     # via virtualenv
-django==5.0
+django==5.0.2
     # via
     #   -r requirements/requirements-base.lock.txt
     #   django-stubs
