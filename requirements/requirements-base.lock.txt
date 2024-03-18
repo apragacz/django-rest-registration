@@ -6,7 +6,7 @@
 #
 asgiref==3.7.2
     # via django
-django==5.0.2
+django==5.0.3
     # via
     #   django-rest-registration (setup.py)
     #   djangorestframework
