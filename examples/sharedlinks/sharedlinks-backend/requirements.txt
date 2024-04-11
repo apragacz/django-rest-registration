@@ -33,7 +33,7 @@ djangorestframework==3.12.2
     #   -r requirements.in
     #   django-rest-registration
     #   django-rest-swagger
-idna==2.10
+idna==3.7
     # via requests
 itypes==1.2.0
     # via coreapi
