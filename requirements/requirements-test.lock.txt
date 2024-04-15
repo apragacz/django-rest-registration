@@ -96,7 +96,7 @@ flake8-pyproject==1.2.3
     # via -r requirements/requirements-test.in
 flake8-tuple==0.4.1
     # via -r requirements/requirements-test.in
-idna==3.6
+idna==3.7
     # via requests
 imagesize==1.4.1
     # via sphinx
@@ -256,7 +256,7 @@ sphinxcontrib-qthelp==1.0.6
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.9
     # via sphinx
-sqlparse==0.4.4
+sqlparse==0.5.0
     # via
     #   -r requirements/requirements-base.lock.txt
     #   django
