@@ -49,7 +49,7 @@ requests==2.31.0
     # via coreapi
 simplejson==3.17.2
     # via django-rest-swagger
-sqlparse==0.4.4
+sqlparse==0.5.0
     # via django
 uritemplate==3.0.1
     # via coreapi
