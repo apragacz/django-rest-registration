@@ -75,6 +75,7 @@ exclude = [
 ]
 
 [tool.isort]
+profile = "black"
 line_length = 88
 skip = ["migrations", "examples", ".venv", ".tox"]
 known_third_party = "django_dynamic_fixture"

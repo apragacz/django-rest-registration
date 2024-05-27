@@ -17,7 +17,7 @@ from rest_registration.utils.users import (
     get_user_email_field_name,
     get_user_login_field_names,
     get_user_setting,
-    is_model_field_unique
+    is_model_field_unique,
 )
 
 if TYPE_CHECKING:

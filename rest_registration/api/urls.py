@@ -10,7 +10,7 @@ from .views import (
     reset_password,
     send_reset_password_link,
     verify_email,
-    verify_registration
+    verify_registration,
 )
 
 app_name = 'rest_registration'

@@ -118,9 +118,13 @@ flake8-debugger==4.1.2
     # via -r requirements/requirements-ci.in
 flake8-isort==6.1.1
     # via -r requirements/requirements-ci.in
+flake8-plugin-utils==1.3.3
+    # via flake8-pytest-style
 flake8-print==5.0.0
     # via -r requirements/requirements-ci.in
 flake8-pyproject==1.2.3
+    # via -r requirements/requirements-ci.in
+flake8-pytest-style==2.0.0
     # via -r requirements/requirements-ci.in
 flake8-tuple==0.4.1
     # via -r requirements/requirements-ci.in

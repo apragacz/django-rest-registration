@@ -17,7 +17,7 @@ from rest_registration.utils.users import get_user_by_verification_id
 from rest_registration.utils.validation import (
     run_validators,
     validate_password_with_user_id,
-    validate_user_password_confirm
+    validate_user_password_confirm,
 )
 from rest_registration.utils.verification import verify_signer_or_bad_request
 

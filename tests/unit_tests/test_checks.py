@@ -1,6 +1,5 @@
 from django.apps import apps
 from django.core.checks.registry import registry
-from django.test import TestCase
 from django.test.utils import override_settings
 
 from rest_registration.auth_token_managers import AbstractAuthTokenManager
@@ -22,193 +21,198 @@ def simulate_checks():
     return errors
 
 
-class ChecksTestCase(TestCase):
+@override_settings(
+    REST_REGISTRATION={
+        'REGISTER_VERIFICATION_URL': '/verify-account/',
+        'REGISTER_EMAIL_VERIFICATION_URL': '/verify-email/',
+        'RESET_PASSWORD_VERIFICATION_URL': '/reset-password/',
+    },
+)
+def test_checks_preferred_setup_missing_sender_email():
+    errors = simulate_checks()
+    assert_error_codes_match(errors, [
+        ErrorCode.NO_VER_FROM_EMAIL,
+    ])
 
-    @override_settings(
-        REST_REGISTRATION={
-            'REGISTER_VERIFICATION_URL': '/verify-account/',
-            'REGISTER_EMAIL_VERIFICATION_URL': '/verify-email/',
-            'RESET_PASSWORD_VERIFICATION_URL': '/reset-password/',
-        },
-    )
-    def test_checks_preferred_setup_missing_sender_email(self):
-        errors = simulate_checks()
-        self.assert_error_codes_match(errors, [
-            ErrorCode.NO_VER_FROM_EMAIL,
-        ])
 
-    @override_settings(
-        REST_REGISTRATION={
-            'REGISTER_VERIFICATION_URL': '/verify-account/',
-            'REGISTER_VERIFICATION_AUTO_LOGIN': True,
-            'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
-            'RESET_PASSWORD_VERIFICATION_ENABLED': False,
-            'VERIFICATION_FROM_EMAIL': 'jon.doe@example.com',
-        },
-    )
-    def test_checks_multiple_time_auto_login(self):
-        errors = simulate_checks()
-        self.assert_error_codes_match(errors, [
-            WarningCode.REGISTER_VERIFICATION_MULTIPLE_AUTO_LOGIN,
-        ])
+@override_settings(
+    REST_REGISTRATION={
+        'REGISTER_VERIFICATION_URL': '/verify-account/',
+        'REGISTER_VERIFICATION_AUTO_LOGIN': True,
+        'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
+        'RESET_PASSWORD_VERIFICATION_ENABLED': False,
+        'VERIFICATION_FROM_EMAIL': 'jon.doe@example.com',
+    },
+)
+def test_checks_multiple_time_auto_login():
+    errors = simulate_checks()
+    assert_error_codes_match(errors, [
+        WarningCode.REGISTER_VERIFICATION_MULTIPLE_AUTO_LOGIN,
+    ])
 
-    @override_settings(
-        REST_REGISTRATION={
-            'REGISTER_VERIFICATION_ENABLED': False,
-            'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
-            'RESET_PASSWORD_VERIFICATION_URL': '/reset-password/',
-        },
-    )
-    def test_checks_one_verification_url_missing_sender_email(self):
-        errors = simulate_checks()
-        self.assert_error_codes_match(errors, [
-            ErrorCode.NO_VER_FROM_EMAIL,
-        ])
 
-    @override_settings(
-        REST_REGISTRATION={
-            'REGISTER_VERIFICATION_URL': '/verify-account/',
-            'REGISTER_EMAIL_VERIFICATION_URL': '/verify-email/',
-            'RESET_PASSWORD_VERIFICATION_URL': '/reset-password/',
-            'VERIFICATION_FROM_EMAIL': 'jon.doe@example.com',
-            'LOGIN_RETRIEVE_TOKEN': True,
-        },
-    )
-    def test_checks_missing_token_auth_config(self):
-        errors = simulate_checks()
-        self.assert_error_codes_match(errors, [
-            ErrorCode.NO_TOKEN_AUTH_CONFIG,
-        ])
+@override_settings(
+    REST_REGISTRATION={
+        'REGISTER_VERIFICATION_ENABLED': False,
+        'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
+        'RESET_PASSWORD_VERIFICATION_URL': '/reset-password/',
+    },
+)
+def test_checks_one_verification_url_missing_sender_email():
+    errors = simulate_checks()
+    assert_error_codes_match(errors, [
+        ErrorCode.NO_VER_FROM_EMAIL,
+    ])
 
-    @override_settings(
-        INSTALLED_APPS=(
-            'django.contrib.admin',
-            'django.contrib.contenttypes',
-            'django.contrib.sessions',
-            'django.contrib.messages',
-            'django.contrib.staticfiles',
 
-            'rest_framework',
-            'rest_registration',
-        ),
-        REST_REGISTRATION={
-            'REGISTER_VERIFICATION_ENABLED': False,
-            'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
-            'RESET_PASSWORD_VERIFICATION_ENABLED': False,
-        },
-    )
-    def test_checks_missing_auth_installed(self):
-        errors = simulate_checks()
-        self.assert_error_codes_match(errors, [
-            ErrorCode.NO_AUTH_INSTALLED,
-        ])
+@override_settings(
+    REST_REGISTRATION={
+        'REGISTER_VERIFICATION_URL': '/verify-account/',
+        'REGISTER_EMAIL_VERIFICATION_URL': '/verify-email/',
+        'RESET_PASSWORD_VERIFICATION_URL': '/reset-password/',
+        'VERIFICATION_FROM_EMAIL': 'jon.doe@example.com',
+        'LOGIN_RETRIEVE_TOKEN': True,
+    },
+)
+def test_checks_missing_token_auth_config():
+    errors = simulate_checks()
+    assert_error_codes_match(errors, [
+        ErrorCode.NO_TOKEN_AUTH_CONFIG,
+    ])
 
-    @override_settings(
-        INSTALLED_APPS=(
-            'django.contrib.admin',
-            'django.contrib.auth',
-            'django.contrib.contenttypes',
-            'django.contrib.sessions',
-            'django.contrib.messages',
-            'django.contrib.staticfiles',
 
-            'rest_framework',
-            'rest_registration',
-        ),
-        REST_REGISTRATION={
-            'REGISTER_VERIFICATION_URL': '/verify-account/',
-            'REGISTER_EMAIL_VERIFICATION_URL': '/verify-email/',
-            'RESET_PASSWORD_VERIFICATION_URL': '/reset-password/',
-            'VERIFICATION_FROM_EMAIL': 'jon.doe@example.com',
-            'LOGIN_RETRIEVE_TOKEN': True,
-        },
-    )
-    def test_checks_missing_token_auth_installed(self):
-        errors = simulate_checks()
-        self.assert_error_codes_match(errors, [
-            ErrorCode.NO_TOKEN_AUTH_CONFIG,
-            ErrorCode.NO_TOKEN_AUTH_INSTALLED,
-        ])
+@override_settings(
+    INSTALLED_APPS=(
+        'django.contrib.admin',
+        'django.contrib.contenttypes',
+        'django.contrib.sessions',
+        'django.contrib.messages',
+        'django.contrib.staticfiles',
 
-    @override_settings(
-        REST_REGISTRATION={
-            'REGISTER_VERIFICATION_URL': '/verify-account/',
-            'REGISTER_EMAIL_VERIFICATION_URL': '/verify-email/',
-            'RESET_PASSWORD_VERIFICATION_URL': '/reset-password/',
-            'VERIFICATION_FROM_EMAIL': 'jon.doe@example.com',
-            'REGISTER_VERIFICATION_EMAIL_TEMPLATES': {},
-        },
-    )
-    def test_checks_invalid_register_verification_email_templates_config(self):
-        errors = simulate_checks()
-        self.assert_error_codes_match(errors, [
-            ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
-        ])
+        'rest_framework',
+        'rest_registration',
+    ),
+    REST_REGISTRATION={
+        'REGISTER_VERIFICATION_ENABLED': False,
+        'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
+        'RESET_PASSWORD_VERIFICATION_ENABLED': False,
+    },
+)
+def test_checks_missing_auth_installed():
+    errors = simulate_checks()
+    assert_error_codes_match(errors, [
+        ErrorCode.NO_AUTH_INSTALLED,
+    ])
 
-    @override_settings(
-        REST_REGISTRATION={
-            'REGISTER_VERIFICATION_URL': '/verify-account/',
-            'REGISTER_EMAIL_VERIFICATION_URL': '/verify-email/',
-            'RESET_PASSWORD_VERIFICATION_URL': '/reset-password/',
-            'VERIFICATION_FROM_EMAIL': 'jon.doe@example.com',
-            'RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES': {},
-        },
-    )
-    def test_checks_invalid_register_email_verification_email_templates_config(self):  # noqa: E501
-        errors = simulate_checks()
-        self.assert_error_codes_match(errors, [
-            ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
-        ])
 
-    @override_settings(
-        REST_REGISTRATION={
-            'REGISTER_VERIFICATION_URL': '/verify-account/',
-            'REGISTER_EMAIL_VERIFICATION_URL': '/verify-email/',
-            'RESET_PASSWORD_VERIFICATION_URL': '/reset-password/',
-            'VERIFICATION_FROM_EMAIL': 'jon.doe@example.com',
-            'RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES': {},
-        },
-    )
-    def test_checks_invalid_reset_password_verification_email_templates_config(self):  # noqa: E501
-        errors = simulate_checks()
-        self.assert_error_codes_match(errors, [
-            ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
-        ])
+@override_settings(
+    INSTALLED_APPS=(
+        'django.contrib.admin',
+        'django.contrib.auth',
+        'django.contrib.contenttypes',
+        'django.contrib.sessions',
+        'django.contrib.messages',
+        'django.contrib.staticfiles',
 
-    @override_settings(
-        AUTHENTICATION_BACKENDS=[
-            'django.contrib.auth.backends.AllowAllUsersModelBackend',
-        ],
-        REST_REGISTRATION={
-            'REGISTER_VERIFICATION_ENABLED': False,
-            'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
-            'RESET_PASSWORD_VERIFICATION_ENABLED': False,
-        },
-    )
-    def test_checks_invalid_auth_model_backend_used(self):
-        errors = simulate_checks()
-        self.assert_error_codes_match(errors, [
-            ErrorCode.DRF_INCOMPATIBLE_DJANGO_AUTH_BACKEND,
-        ])
+        'rest_framework',
+        'rest_registration',
+    ),
+    REST_REGISTRATION={
+        'REGISTER_VERIFICATION_URL': '/verify-account/',
+        'REGISTER_EMAIL_VERIFICATION_URL': '/verify-email/',
+        'RESET_PASSWORD_VERIFICATION_URL': '/reset-password/',
+        'VERIFICATION_FROM_EMAIL': 'jon.doe@example.com',
+        'LOGIN_RETRIEVE_TOKEN': True,
+    },
+)
+def test_checks_missing_token_auth_installed():
+    errors = simulate_checks()
+    assert_error_codes_match(errors, [
+        ErrorCode.NO_TOKEN_AUTH_CONFIG,
+        ErrorCode.NO_TOKEN_AUTH_INSTALLED,
+    ])
 
-    @override_settings(
-        AUTHENTICATION_BACKENDS=[
-            'django.contrib.auth.backends.AllowAllUsersRemoteUserBackend',
-        ],
-        REST_REGISTRATION={
-            'REGISTER_VERIFICATION_ENABLED': False,
-            'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
-            'RESET_PASSWORD_VERIFICATION_ENABLED': False,
-        },
-    )
-    def test_checks_invalid_auth_remote_backend_used(self):
-        errors = simulate_checks()
-        self.assert_error_codes_match(errors, [
-            ErrorCode.DRF_INCOMPATIBLE_DJANGO_AUTH_BACKEND,
-        ])
 
-    def assert_error_codes_match(self, errors, expected_error_codes):
-        assert_error_codes_match(errors, expected_error_codes)
+@override_settings(
+    REST_REGISTRATION={
+        'REGISTER_VERIFICATION_URL': '/verify-account/',
+        'REGISTER_EMAIL_VERIFICATION_URL': '/verify-email/',
+        'RESET_PASSWORD_VERIFICATION_URL': '/reset-password/',
+        'VERIFICATION_FROM_EMAIL': 'jon.doe@example.com',
+        'REGISTER_VERIFICATION_EMAIL_TEMPLATES': {},
+    },
+)
+def test_checks_invalid_register_verification_email_templates_config():
+    errors = simulate_checks()
+    assert_error_codes_match(errors, [
+        ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
+    ])
+
+
+@override_settings(
+    REST_REGISTRATION={
+        'REGISTER_VERIFICATION_URL': '/verify-account/',
+        'REGISTER_EMAIL_VERIFICATION_URL': '/verify-email/',
+        'RESET_PASSWORD_VERIFICATION_URL': '/reset-password/',
+        'VERIFICATION_FROM_EMAIL': 'jon.doe@example.com',
+        'RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES': {},
+    },
+)
+def test_checks_invalid_register_email_verification_email_templates_config():
+    errors = simulate_checks()
+    assert_error_codes_match(errors, [
+        ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
+    ])
+
+
+@override_settings(
+    REST_REGISTRATION={
+        'REGISTER_VERIFICATION_URL': '/verify-account/',
+        'REGISTER_EMAIL_VERIFICATION_URL': '/verify-email/',
+        'RESET_PASSWORD_VERIFICATION_URL': '/reset-password/',
+        'VERIFICATION_FROM_EMAIL': 'jon.doe@example.com',
+        'RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES': {},
+    },
+)
+def test_checks_invalid_reset_password_verification_email_templates_config():
+    errors = simulate_checks()
+    assert_error_codes_match(errors, [
+        ErrorCode.INVALID_EMAIL_TEMPLATE_CONFIG,
+    ])
+
+
+@override_settings(
+    AUTHENTICATION_BACKENDS=[
+        'django.contrib.auth.backends.AllowAllUsersModelBackend',
+    ],
+    REST_REGISTRATION={
+        'REGISTER_VERIFICATION_ENABLED': False,
+        'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
+        'RESET_PASSWORD_VERIFICATION_ENABLED': False,
+    },
+)
+def test_checks_invalid_auth_model_backend_used():
+    errors = simulate_checks()
+    assert_error_codes_match(errors, [
+        ErrorCode.DRF_INCOMPATIBLE_DJANGO_AUTH_BACKEND,
+    ])
+
+
+@override_settings(
+    AUTHENTICATION_BACKENDS=[
+        'django.contrib.auth.backends.AllowAllUsersRemoteUserBackend',
+    ],
+    REST_REGISTRATION={
+        'REGISTER_VERIFICATION_ENABLED': False,
+        'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
+        'RESET_PASSWORD_VERIFICATION_ENABLED': False,
+    },
+)
+def test_checks_invalid_auth_remote_backend_used():
+    errors = simulate_checks()
+    assert_error_codes_match(errors, [
+        ErrorCode.DRF_INCOMPATIBLE_DJANGO_AUTH_BACKEND,
+    ])
 
 
 @override_settings(REST_REGISTRATION=DEFAULTS)

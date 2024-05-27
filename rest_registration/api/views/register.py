@@ -18,7 +18,7 @@ from rest_registration.utils.responses import get_ok_response
 from rest_registration.utils.users import (
     get_user_by_verification_id,
     get_user_email_field_name,
-    get_user_setting
+    get_user_setting,
 )
 from rest_registration.utils.verification import verify_signer_or_bad_request
 

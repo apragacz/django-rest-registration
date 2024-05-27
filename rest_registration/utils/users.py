@@ -7,7 +7,7 @@ from typing import (
     List,
     Tuple,
     TypeVar,
-    Union
+    Union,
 )
 
 from django.contrib import auth

@@ -9,8 +9,9 @@ from rest_registration.utils.checks import CheckCode, CheckMessage
 class _BaseCheckCodeMixin(CheckCode):  # noqa: E501 pylint: disable=abstract-method
 
     def get_app_name(self) -> str:
-        from rest_registration.apps import \
-            RestRegistrationConfig  # noqa: E501 pylint: disable=import-outside-toplevel, cyclic-import
+        from rest_registration.apps import (  # noqa: E501 pylint: disable=import-outside-toplevel, cyclic-import
+            RestRegistrationConfig,
+        )
 
         return RestRegistrationConfig.name
 

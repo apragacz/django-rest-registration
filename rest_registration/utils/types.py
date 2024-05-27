@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from django_stubs_ext import StrOrPromise
+
     # mypy uses typing_extensions by default (Py 3.8); when importing from typing
     # one will get the following error message in mypy:
     #
