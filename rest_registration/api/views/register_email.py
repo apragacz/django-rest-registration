@@ -17,7 +17,7 @@ from rest_registration.utils.users import (
     get_user_by_verification_id,
     get_user_email_field_name,
     is_user_email_field_unique,
-    user_with_email_exists
+    user_with_email_exists,
 )
 from rest_registration.utils.verification import verify_signer_or_bad_request
 

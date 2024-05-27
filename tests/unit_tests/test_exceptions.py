@@ -5,12 +5,10 @@ from tests.helpers.settings import override_rest_registration_settings
 
 
 @pytest.mark.parametrize(
-    "detail,"
-    "code,"
-    "expected_obj_detail", (
+    ("detail", "code", "expected_obj_detail"), [
         ("test err", "test-err", ErrorDetail("test err", code="test-err")),
         (None, None, ErrorDetail("Bad Request", code="bad-request")),
-    ),
+    ],
 )
 def test_bad_request_detail(detail, code, expected_obj_detail):
     exc = BadRequest(detail=detail, code=code)
@@ -18,8 +16,7 @@ def test_bad_request_detail(detail, code, expected_obj_detail):
 
 
 @pytest.mark.parametrize(
-    "detail,"
-    "expected_obj_detail", [
+    ("detail", "expected_obj_detail"), [
         pytest.param(
             None,
             {"non_field_errors": [ErrorDetail("Bad Request", code="bad-request")]},
@@ -51,8 +48,7 @@ def test_bad_request_detail_with_use_non_field_errors_key(detail, expected_obj_d
 
 
 @pytest.mark.parametrize(
-    "detail,"
-    "expected_obj_detail", [
+    ("detail", "expected_obj_detail"), [
         pytest.param(
             None,
             [],

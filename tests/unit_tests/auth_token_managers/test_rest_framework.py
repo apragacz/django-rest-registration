@@ -5,7 +5,7 @@ from rest_registration.auth_token_managers import RestFrameworkAuthTokenManager
 from rest_registration.exceptions import AuthTokenError
 
 
-@pytest.fixture()
+@pytest.fixture
 def auth_token_manager():
     return RestFrameworkAuthTokenManager()
 

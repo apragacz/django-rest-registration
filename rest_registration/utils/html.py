@@ -14,6 +14,10 @@ def convert_html_to_text(value: str, preserve_urls: bool = False) -> str:
     return stripper.get_data()
 
 
+class MLStripperParseFailed(ValueError):
+    pass
+
+
 class MLStripper(HTMLParser):
 
     def __init__(self, preserve_urls: bool = False) -> None:
@@ -29,7 +33,7 @@ class MLStripper(HTMLParser):
         except AssertionError as exc:
             # rephrase confusing assertion error introduced by:
             # https://bugs.python.org/issue38573
-            raise ValueError(str(exc)) from exc
+            raise MLStripperParseFailed(str(exc)) from exc
 
     def handle_starttag(self, tag: str, attrs: List[Tuple[str, Optional[str]]]) -> None:
         self._tag_info_stack.append(TagInfo(tag, dict(attrs)))
@@ -58,7 +62,7 @@ class MLStripper(HTMLParser):
             self._append_segment(data)
 
     def error(self, message: str) -> None:
-        raise ValueError(f"HTML parse error: {message}")
+        raise MLStripperParseFailed(f"HTML parse error: {message}")
 
     def get_data(self) -> str:
         paragraph_texts = []

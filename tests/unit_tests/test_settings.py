@@ -1,33 +1,35 @@
-from django.test import TestCase
+import pytest
 from django.test.utils import override_settings
 
 from rest_registration.utils.nested_settings import NestedSettings
 
 
-class RegistrationSettingsTestCase(TestCase):
+def test_user_settings(settings_defaults):
+    user_settings = {
+        'A': 1,
+    }
+    settings = NestedSettings(
+        user_settings, settings_defaults, (), 'NESTED_TEST_SETTING')
 
-    def setUp(self):
-        self.defaults = {
-            'A': 2,
-            'B': 3,
-        }
+    assert settings.A == 1
+    assert settings.B == 3
 
-    def test_user_settings(self):
-        user_settings = {
-            'A': 1,
-        }
-        settings = NestedSettings(
-            user_settings, self.defaults, (), 'NESTED_TEST_SETTING')
-        self.assertEqual(settings.A, 1)
-        self.assertEqual(settings.B, 3)
 
-    @override_settings(
-        REST_REGISTRATION={
-            'A': 5,
-        }
-    )
-    def test_django_settings(self):
-        settings = NestedSettings(
-            None, self.defaults, (), 'REST_REGISTRATION')
-        self.assertEqual(settings.A, 5)
-        self.assertEqual(settings.B, 3)
+@override_settings(
+    REST_REGISTRATION={
+        'A': 5,
+    }
+)
+def test_django_settings(settings_defaults):
+    settings = NestedSettings(
+        None, settings_defaults, (), 'REST_REGISTRATION')
+    assert settings.A == 5
+    assert settings.B == 3
+
+
+@pytest.fixture
+def settings_defaults():
+    return {
+        'A': 2,
+        'B': 3,
+    }

@@ -12,7 +12,7 @@ from rest_framework.settings import api_settings
 from rest_registration.utils.users import (
     UserAttrsProxy,
     build_initial_user,
-    get_user_by_verification_id
+    get_user_by_verification_id,
 )
 
 if TYPE_CHECKING:

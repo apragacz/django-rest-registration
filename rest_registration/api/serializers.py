@@ -6,7 +6,7 @@ from rest_registration.utils.users import get_user_public_field_names
 from rest_registration.utils.validation import (
     run_validators,
     validate_user_password,
-    validate_user_password_confirm
+    validate_user_password_confirm,
 )
 
 
