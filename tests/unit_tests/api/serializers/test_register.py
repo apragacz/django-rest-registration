@@ -3,7 +3,7 @@ import pytest
 from rest_registration.settings import registration_settings
 
 
-@pytest.fixture()
+@pytest.fixture
 def serializer():
     serializer_class = registration_settings.REGISTER_SERIALIZER_CLASS
     return serializer_class(data={})

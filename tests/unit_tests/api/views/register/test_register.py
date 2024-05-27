@@ -499,7 +499,7 @@ def test_fail_when_register_flow_disabled(
     assert_no_email_sent(sent_emails)
 
 
-@pytest.fixture()
+@pytest.fixture
 def api_view_provider():
     return ViewProvider('register')
 

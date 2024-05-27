@@ -23,12 +23,12 @@ from tests.helpers.settings import (
 ValueChange = namedtuple('ValueChange', ['old_value', 'new_value'])
 
 
-@pytest.fixture()
+@pytest.fixture
 def settings_minimal():
     yield settings
 
 
-@pytest.fixture()
+@pytest.fixture
 def settings_without_register_verification():
     with override_rest_registration_settings({
         'REGISTER_VERIFICATION_ENABLED': False,
@@ -36,7 +36,7 @@ def settings_without_register_verification():
         yield settings
 
 
-@pytest.fixture()
+@pytest.fixture
 def settings_with_register_verification():
     with override_rest_registration_settings({
         'REGISTER_VERIFICATION_ENABLED': True,
@@ -46,7 +46,7 @@ def settings_with_register_verification():
         yield settings
 
 
-@pytest.fixture()
+@pytest.fixture
 def settings_with_register_email_verification():
     with override_rest_registration_settings({
         'REGISTER_EMAIL_VERIFICATION_ENABLED': True,
@@ -56,7 +56,7 @@ def settings_with_register_email_verification():
         yield settings
 
 
-@pytest.fixture()
+@pytest.fixture
 def settings_with_reset_password_verification():
     with override_rest_registration_settings({
         'RESET_PASSWORD_VERIFICATION_ENABLED': True,
@@ -66,7 +66,7 @@ def settings_with_reset_password_verification():
         yield settings
 
 
-@pytest.fixture()
+@pytest.fixture
 def settings_with_register_no_confirm():
     with override_rest_registration_settings({
         'REGISTER_SERIALIZER_PASSWORD_CONFIRM': False,
@@ -74,7 +74,7 @@ def settings_with_register_no_confirm():
         yield settings
 
 
-@pytest.fixture()
+@pytest.fixture
 def settings_with_reset_password_fail_when_user_not_found_disabled():
     with override_rest_registration_settings({
         'RESET_PASSWORD_FAIL_WHEN_USER_NOT_FOUND': False,
@@ -82,31 +82,31 @@ def settings_with_reset_password_fail_when_user_not_found_disabled():
         yield settings
 
 
-@pytest.fixture()
+@pytest.fixture
 def settings_with_simple_email_based_user():
     with override_auth_model_settings('custom_users.SimpleEmailBasedUser'):
         yield settings
 
 
-@pytest.fixture()
+@pytest.fixture
 def settings_with_user_with_user_type():
     with override_auth_model_settings('custom_users.UserWithUserType'):
         yield settings
 
 
-@pytest.fixture()
+@pytest.fixture
 def settings_with_user_with_unique_email():
     with override_auth_model_settings('custom_users.UserWithUniqueEmail'):
         yield settings
 
 
-@pytest.fixture()
+@pytest.fixture
 def settings_with_user_with_channel():
     with override_auth_model_settings('custom_users.UserWithChannel'):
         yield settings
 
 
-@pytest.fixture()
+@pytest.fixture
 def settings_with_coreapi_autoschema():
     with override_settings(
         REST_FRAMEWORK={
@@ -116,7 +116,7 @@ def settings_with_coreapi_autoschema():
         yield settings
 
 
-@pytest.fixture()
+@pytest.fixture
 def email_change():
     return ValueChange(
         old_value='testuser1@example.com',
@@ -124,7 +124,7 @@ def email_change():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def password_change():
     return ValueChange(
         old_value=USER_PASSWORD,
@@ -132,7 +132,7 @@ def password_change():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def inactive_user(db, email_change, password_change):
     kwargs = {
         'email': email_change.old_value,
@@ -144,7 +144,7 @@ def inactive_user(db, email_change, password_change):
     return create_test_user(**kwargs)
 
 
-@pytest.fixture()
+@pytest.fixture
 def user(db, email_change, password_change):
     kwargs = {
         'email': email_change.old_value,
@@ -155,7 +155,7 @@ def user(db, email_change, password_change):
     return create_test_user(**kwargs)
 
 
-@pytest.fixture()
+@pytest.fixture
 def user_token_obj(user):
     from rest_framework.authtoken.models import \
         Token  # noqa: E501 pylint: disable=import-outside-toplevel
@@ -163,20 +163,20 @@ def user_token_obj(user):
     return Token.objects.create(user=user)
 
 
-@pytest.fixture()
+@pytest.fixture
 def user2_with_user_email(db, email_change):
     return create_test_user(
         username=USERNAME2,
         email=email_change.old_value)
 
 
-@pytest.fixture()
+@pytest.fixture
 def user2_with_user_new_email(db, email_change):
     return create_test_user(
         username=USERNAME2,
         email=email_change.new_value)
 
 
-@pytest.fixture()
+@pytest.fixture
 def api_factory(api_view_provider):
     return APIViewRequestFactory(api_view_provider)

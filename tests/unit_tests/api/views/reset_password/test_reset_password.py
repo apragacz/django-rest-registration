@@ -172,23 +172,23 @@ class ResetPasswordViewTestCase(APIViewTestCase):
         self.assertTrue(user.check_password(old_password))
 
 
-@pytest.fixture()
+@pytest.fixture
 def api_view_provider():
     return ViewProvider('reset-password')
 
 
-@pytest.fixture()
+@pytest.fixture
 def user_signed_data(user):
     user_reset_password_signer = ResetPasswordSigner({'user_id': user.pk})
     return user_reset_password_signer.get_signed_data()
 
 
-@pytest.fixture()
+@pytest.fixture
 def old_password(password_change):
     return password_change.old_value
 
 
-@pytest.fixture()
+@pytest.fixture
 def new_password(password_change):
     return password_change.new_value
 

@@ -8,17 +8,17 @@ from django.contrib.auth.signals import (
 )
 
 
-@pytest.fixture()
+@pytest.fixture
 def user_logged_in_send_mock(monkeypatch):
     return _mock_signal_send(monkeypatch, user_logged_in)
 
 
-@pytest.fixture()
+@pytest.fixture
 def user_logged_out_send_mock(monkeypatch):
     return _mock_signal_send(monkeypatch, user_logged_out)
 
 
-@pytest.fixture()
+@pytest.fixture
 def user_login_failed_send_mock(monkeypatch):
     return _mock_signal_send(monkeypatch, user_login_failed)
 

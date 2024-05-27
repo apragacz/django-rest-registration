@@ -213,7 +213,7 @@ class SendResetPasswordLinkViewTestCase(APIViewTestCase):
         signer.verify()
 
 
-@pytest.fixture()
+@pytest.fixture
 def api_view_provider():
     return ViewProvider('send-reset-password-link')
 

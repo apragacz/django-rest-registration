@@ -77,17 +77,17 @@ class ProfileViewTestCase(APIViewTestCase):
         self.assertEqual(self.user.last_name, self.LAST_NAME)
 
 
-@pytest.fixture()
+@pytest.fixture
 def api_view_provider():
     return ViewProvider('profile')
 
 
-@pytest.fixture()
+@pytest.fixture
 def old_email(email_change):
     return email_change.old_value
 
 
-@pytest.fixture()
+@pytest.fixture
 def new_email(email_change):
     return email_change.new_value
 

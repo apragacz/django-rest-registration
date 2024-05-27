@@ -155,6 +155,6 @@ def test_fail_when_faulty_auth_token_manager(
     assert response.data['detail'] == 'Authentication token cannot be revoked'
 
 
-@pytest.fixture()
+@pytest.fixture
 def api_view_provider():
     return ViewProvider('logout')

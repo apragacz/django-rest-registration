@@ -322,7 +322,7 @@ def test_ok_when_custom_verification_templates_selector(
     assert user.email == email_change.old_value
 
 
-@pytest.fixture()
+@pytest.fixture
 def api_view_provider():
     return ViewProvider('register-email')
 

@@ -181,7 +181,7 @@ def test_fail_when_disabled(
     assert not user.is_active
 
 
-@pytest.fixture()
+@pytest.fixture
 def api_view_provider():
     return ViewProvider('verify-registration')
 

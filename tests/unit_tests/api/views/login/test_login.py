@@ -228,6 +228,6 @@ def test_ok_with_token_and_auth_jwt_manager(
     assert_response_is_ok(response)
 
 
-@pytest.fixture()
+@pytest.fixture
 def api_view_provider():
     return ViewProvider('login')
