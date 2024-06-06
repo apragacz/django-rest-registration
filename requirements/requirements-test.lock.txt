@@ -277,7 +277,7 @@ tomli==2.0.1
     #   tox
 tomlkit==0.12.3
     # via pylint
-tornado==6.4
+tornado==6.4.1
     # via livereload
 tox==4.11.4
     # via -r requirements/requirements-test.in

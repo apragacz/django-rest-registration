@@ -430,7 +430,7 @@ tomlkit==0.12.3
     # via
     #   -r requirements/requirements-test.lock.txt
     #   pylint
-tornado==6.4
+tornado==6.4.1
     # via
     #   -r requirements/requirements-test.lock.txt
     #   livereload
