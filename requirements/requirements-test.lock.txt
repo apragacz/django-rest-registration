@@ -302,7 +302,7 @@ typing-extensions==4.9.0
     #   mypy
 uritemplate==4.1.1
     # via coreapi
-urllib3==2.1.0
+urllib3==2.2.2
     # via
     #   requests
     #   twine
