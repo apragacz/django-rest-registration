@@ -95,7 +95,7 @@ django-stubs-ext==4.2.7
     # via
     #   -r requirements/requirements-test.lock.txt
     #   django-stubs
-djangorestframework==3.14.0
+djangorestframework==3.15.2
     # via -r requirements/requirements-test.lock.txt
 djangorestframework-stubs==3.14.5
     # via -r requirements/requirements-test.lock.txt
