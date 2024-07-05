@@ -32,7 +32,7 @@ cachetools==5.3.2
     # via
     #   -r requirements/requirements-test.lock.txt
     #   tox
-certifi==2023.11.17
+certifi==2024.7.4
     # via
     #   -r requirements/requirements-test.lock.txt
     #   requests
