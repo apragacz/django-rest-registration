@@ -484,7 +484,7 @@ wheel==0.42.0
     # via
     #   -r requirements/requirements-test.lock.txt
     #   pip-tools
-zipp==3.17.0
+zipp==3.19.1
     # via
     #   -r requirements/requirements-test.lock.txt
     #   importlib-metadata
