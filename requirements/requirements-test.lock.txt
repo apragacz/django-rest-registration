@@ -311,5 +311,5 @@ virtualenv==20.25.0
     # via tox
 wheel==0.42.0
     # via -r requirements/requirements-test.in
-zipp==3.17.0
+zipp==3.19.1
     # via importlib-metadata
