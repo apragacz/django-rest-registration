@@ -53,17 +53,17 @@ class TestCase(DjangoTestCase):
 
     @contextlib.contextmanager
     def assert_mails_sent(self, expected_num):
-        with self._assert_mails_sent(expected_num) as sent_emails:
+        with self._assert_mails_sent(expected_num) as sent_emails:  # noqa: E501 pylint: disable=contextmanager-generator-missing-cleanup
             yield sent_emails
 
     @contextlib.contextmanager
     def assert_one_mail_sent(self):
-        with self._assert_mails_sent(1) as sent_emails:
+        with self._assert_mails_sent(1) as sent_emails:  # noqa: E501 pylint: disable=contextmanager-generator-missing-cleanup
             yield sent_emails
 
     @contextlib.contextmanager
     def assert_no_mail_sent(self):
-        with self._assert_mails_sent(0) as sent_emails:
+        with self._assert_mails_sent(0) as sent_emails:  # noqa: E501 pylint: disable=contextmanager-generator-missing-cleanup
             yield sent_emails
 
     @contextlib.contextmanager

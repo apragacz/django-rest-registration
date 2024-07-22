@@ -31,7 +31,9 @@ readme_renderer[md]
 
 # documentation
 Sphinx
-sphinx_rtd_theme
+# not fixing this causes
+# pip._internal.exceptions.MetadataGenerationFailed: metadata generation failed
+sphinx_rtd_theme==2.0
 sphinx-autobuild
 sphinx-jinja
 doc8
