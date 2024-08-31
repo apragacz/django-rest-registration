@@ -63,7 +63,7 @@ Assuming you are in the cloned repository and have Python 3.5+ installed:
 
 Then, having your virtualenv set up, you can run:
 
-    make install_dev
+    make install-dev
 
 
 ### Code checks
@@ -105,12 +105,12 @@ You can run linters separately:
     make flake8
     make mypy
     make pylint
-    make check_docs
+    make check-docs
 
 In addition there is package check as well, which builds the package
 and performs checks on it:
 
-    make check_package
+    make check-package
 
 ### Testing
 
@@ -209,7 +209,7 @@ With your repository set up, you can activate virtualenv:
 
 And then run
 
-    make build_docs
+    make build-docs
 
 Then, the compiled documentation can be found
 in your `docs/_build/html` subdirectory.
@@ -217,7 +217,7 @@ in your `docs/_build/html` subdirectory.
 You can also edit the documentation iteratively; by running the script
 in watch mode:
 
-    make watch_docs
+    make watch-docs
 
 This will run a webserver
 (by default on [127.0.0.1:8000](http://127.0.0.1:8000)) so you can watch

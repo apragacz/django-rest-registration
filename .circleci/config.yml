@@ -97,7 +97,7 @@ jobs:
       - restore_pip_cache
       - restore_py_venv_cache
       - run: python -m venv --copies ~/.venv
-      - run: source ~/.venv/bin/activate && make install_ci
+      - run: source ~/.venv/bin/activate && make install-ci
       - save_pip_cache
       - save_py_venv_cache
       - save_project_workspace
@@ -120,12 +120,12 @@ jobs:
     executor: docker-executor
     steps:
       - restore_project_workspace
-      - run: source ~/.venv/bin/activate && make check_docs
+      - run: source ~/.venv/bin/activate && make check-docs
   packagecheck:
     executor: docker-executor
     steps:
       - restore_project_workspace
-      - run: source ~/.venv/bin/activate && make check_package
+      - run: source ~/.venv/bin/activate && make check-package
   test:
     executor: docker-executor
     steps:

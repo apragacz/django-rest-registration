@@ -43,35 +43,38 @@ help: ## Display this help screen
 	@grep -E '^[\.a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 .PHONY: all
-all: check test build check_package  ## check code, test, build, check package
+all: check test build check-package  ## check code, test, build, check package
 
-.PHONY: install_dev
-install_dev:  ## install all pip requirements and the package as editable
+.PHONY: install-dev
+install-dev:  ## install all pip requirements and the package as editable
 	${PYTHON} -m pip install -r requirements/requirements-dev.lock.txt ${ARGS}
 	${PYTHON} -m pip install -e .
 
-.PHONY: install_ci
-install_ci:  ## install all pip requirements needed for CI and the package as editable
+.PHONY: install-ci
+install-ci:  ## install all pip requirements needed for CI and the package as editable
 	${PYTHON} -m pip install -r requirements/requirements-ci.lock.txt ${ARGS}
 	${PYTHON} -m pip install -e .
 
-.PHONY: install_test
-install_test:  ## install all pip requirements needed for testing and the package as editable
+.PHONY: install-test
+install-test:  ## install all pip requirements needed for testing and the package as editable
 	${PYTHON} -m pip install -r requirements/requirements-test.lock.txt ${ARGS}
 	${PYTHON} -m pip install -e .
 
-.PHONY: upgrade_requirements_lockfiles
-upgrade_requirements_lockfiles:  ## upgrade pip requirements lock files
+.PHONY: upgrade-requirements-lockfiles
+upgrade-requirements-lockfiles:  ## upgrade pip requirements lock files
 	${PIP_COMPILE} ${PIP_COMPILE_OPTS} setup.py requirements/requirements-base.in  --output-file=requirements/requirements-base.lock.txt
 	${PIP_COMPILE} ${PIP_COMPILE_OPTS} requirements/requirements-base.lock.txt requirements/requirements-test.in --output-file=requirements/requirements-test.lock.txt
 	${PIP_COMPILE} ${PIP_COMPILE_OPTS} requirements/requirements-test.lock.txt requirements/requirements-ci.in --output-file=requirements/requirements-ci.lock.txt
 	${PIP_COMPILE} ${PIP_COMPILE_OPTS} requirements/requirements-ci.lock.txt requirements/requirements-dev.in --output-file=requirements/requirements-dev.lock.txt
 
-.PHONY: upgrade_dev
-upgrade_dev: upgrade_requirements_lockfiles install_dev  ## upgrade all pip requirements and reinstall package as editable
+.PHONY: upgrade-dev
+upgrade-dev: upgrade-requirements-lockfiles install-dev  ## upgrade all pip requirements and reinstall package as editable
 
-.PHONY: upgrade_test
-upgrade_test: upgrade_requirements_lockfiles install_test  ## upgrade all pip requirements needed for testing and reinstall package as editable
+.PHONY: upgrade-ci
+upgrade-test: upgrade-requirements-lockfiles install-ci  ## upgrade all pip requirements needed for CI and reinstall package as editable
+
+.PHONY: upgrade-test
+upgrade-test: upgrade-requirements-lockfiles install-test  ## upgrade all pip requirements needed for testing and reinstall package as editable
 
 .PHONY: test
 test:  ## run tests
@@ -94,49 +97,49 @@ pylint:  ## run pylint
 	${PYLINT} ${PYLINT_OPTS} ${PACKAGE_DIR} ${DOCS_DIR} ./*.py ${ARGS}
 	${PYLINT} ${PYLINT_OPTS} --disable=duplicate-code --disable=redefined-outer-name --disable=too-many-arguments ${TESTS_DIR} ${ARGS}
 
-.PHONY: upload_package
-upload_package: build_package check_package  ## upload the package to PyPI
+.PHONY: upload-package
+upload-package: build_package check_package  ## upload the package to PyPI
 	${TWINE} upload ${DIST_DIR}/*
 
-.PHONY: check_package
-check_package: build_package  ## check that the built package is well-formed
+.PHONY: check-package
+check-package: build_package  ## check that the built package is well-formed
 	${TWINE} check ${DIST_DIR}/*
 
 .PHONY: build
-build: build_package  ## alias for build_package
+build: build-package  ## alias for build_package
 
-.PHONY: build_package
-build_package:  ## build package (source + wheel)
+.PHONY: build-package
+build-package:  ## build package (source + wheel)
 	-${RM} -r ${DIST_DIR}
 	${PYTHON} -m build
 
-.PHONY: bump_version_patch
-bump_version_patch: bump_version_check  ## bump package version by the patch part
+.PHONY: bump-version-patch
+bump-version-patch: bump-version-check  ## bump package version by the patch part
 	git add CHANGELOG.md
 	bump2version patch --allow-dirty
 
-.PHONY: bump_version_minor
-bump_version_minor: bump_version_check  ## bump package version by the minor part
+.PHONY: bump-version-minor
+bump-version-minor: bump-version_-heck  ## bump package version by the minor part
 	git add CHANGELOG.md
 	bump2version minor --allow-dirty
 
-.PHONY: bump_version_check
-bump_version_check:
+.PHONY: bump-version-check
+bump-version-check:
 	git diff --name-status
 	git diff-files --name-only | grep -q CHANGELOG.md
 
-.PHONY: build_docs
-build_docs:  ## build documentation
+.PHONY: build-docs
+build-docs:  ## build documentation
 	${SPHINXBUILD} ${SPHINXBUILD_OPTS} ${DOCS_SRC_DIR} ${DOCS_BUILD_DIR}/html ${ARGS}
 
-.PHONY: check_docs
-check_docs:  ## check that the docs do not contain any warnings / errors
+.PHONY: check-docs
+check-docs:  ## check that the docs do not contain any warnings / errors
 	${SPHINXBUILD} ${SPHINXBUILD_OPTS} ${DOCS_SRC_DIR} ${DOCS_BUILD_DIR}/html -w ${SPHINXBUILD_WARNING_LOG} ${ARGS}
 	${CAT} ${SPHINXBUILD_WARNING_LOG}
 	@${SHELL} -c '[ ! -s ${SPHINXBUILD_WARNING_LOG} ]'
 
-.PHONY: watch_docs
-watch_docs:  ## build documentation in watch mode (will start additonal http server)
+.PHONY: watch-docs
+watch-docs:  ## build documentation in watch mode (will start additonal http server)
 	${SPHINXAUTOBUILD} ${SPHINXAUTOBUILD_OPTS} ${DOCS_SRC_DIR} ${DOCS_BUILD_DIR}/html ${ARGS}
 
 .PHONY: clean
