@@ -81,7 +81,7 @@ test:  ## run tests
 	${PYTEST} ${PYTEST_OPTS} ${ARGS}
 
 .PHONY: check
-check: flake8 mypy pylint check_docs  ## run checks: flake8, mypy, pylint, check_docs
+check: flake8 mypy pylint check-docs  ## run checks: flake8, mypy, pylint, check-docs
 
 .PHONY: flake8
 flake8:  ## run flake8
@@ -98,15 +98,15 @@ pylint:  ## run pylint
 	${PYLINT} ${PYLINT_OPTS} --disable=duplicate-code --disable=redefined-outer-name --disable=too-many-arguments ${TESTS_DIR} ${ARGS}
 
 .PHONY: upload-package
-upload-package: build_package check_package  ## upload the package to PyPI
+upload-package: build-package check-package  ## upload the package to PyPI
 	${TWINE} upload ${DIST_DIR}/*
 
 .PHONY: check-package
-check-package: build_package  ## check that the built package is well-formed
+check-package: build-package  ## check that the built package is well-formed
 	${TWINE} check ${DIST_DIR}/*
 
 .PHONY: build
-build: build-package  ## alias for build_package
+build: build-package  ## alias for build-package
 
 .PHONY: build-package
 build-package:  ## build package (source + wheel)
@@ -119,7 +119,7 @@ bump-version-patch: bump-version-check  ## bump package version by the patch par
 	bump2version patch --allow-dirty
 
 .PHONY: bump-version-minor
-bump-version-minor: bump-version_-heck  ## bump package version by the minor part
+bump-version-minor: bump-version-check  ## bump package version by the minor part
 	git add CHANGELOG.md
 	bump2version minor --allow-dirty
 
