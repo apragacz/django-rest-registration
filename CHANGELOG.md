@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 0.9
+
+### v0.9.0
+
+*   Drop official Python 3.5, 3.6 support
+*   Add CI requirements lockfile
+*   Use GNU Make target convention (dashes instead of underscores)
+*   Migrate remaining tests to pytest
+
 
 ## Version 0.8
 
