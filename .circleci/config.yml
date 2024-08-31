@@ -9,13 +9,6 @@ executors:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
     working_directory: ~/project
-  docker-executor-py36:
-    docker:
-      - image: cimg/python:3.6
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_PASSWORD
-    working_directory: ~/project
   docker-executor-py37:
     docker:
       - image: cimg/python:3.7
@@ -215,8 +208,8 @@ workflows:
           requires:
             - test
       - test-tox:
-          name: test-tox-py36-django21
-          py: "36"
+          name: test-tox-py37-django21
+          py: "37"
           django: "21"
           requires:
             - test
@@ -224,8 +217,8 @@ workflows:
             branches:
               only: master
       - test-tox:
-          name: test-tox-py36-django20
-          py: "36"
+          name: test-tox-py37-django20
+          py: "37"
           django: "20"
           requires:
             - test

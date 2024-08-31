@@ -145,7 +145,7 @@ If you don't want to install `tox` globally, you should be able
 to run `tox` command within the virtualenv as well.
 
 If you want to run all tox environments, you will need to have multiple versions
-of Python installed (`3.6` - `3.11`). You will need to have GNU make installed
+of Python installed (`3.7` - `3.11`). You will need to have GNU make installed
 as well.
 
 You can also run specific environment; for instance:

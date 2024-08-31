@@ -20,8 +20,8 @@ User registration REST API, based on Django-REST-Framework.
 Requirements
 ------------
 
--   Django (2.0+, 3.0+, 4.0+) and Django-REST-Framework (3.3+)
--   Python 3.6 or higher (no Python 2 support!)
+-   Django (2.0+, 3.0+, 4.0+, 5.0+) and Django-REST-Framework (3.3+)
+-   Python 3.7 or higher (no Python 2 support!)
 
 
 Features
