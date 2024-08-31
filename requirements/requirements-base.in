@@ -1,0 +1,2 @@
+# asgiref 3.8+ requires Py 3.8+
+asgiref<3.8.0

@@ -50,6 +50,11 @@ install_dev:  ## install all pip requirements and the package as editable
 	${PYTHON} -m pip install -r requirements/requirements-dev.lock.txt ${ARGS}
 	${PYTHON} -m pip install -e .
 
+.PHONY: install_ci
+install_ci:  ## install all pip requirements needed for CI and the package as editable
+	${PYTHON} -m pip install -r requirements/requirements-ci.lock.txt ${ARGS}
+	${PYTHON} -m pip install -e .
+
 .PHONY: install_test
 install_test:  ## install all pip requirements needed for testing and the package as editable
 	${PYTHON} -m pip install -r requirements/requirements-test.lock.txt ${ARGS}
@@ -57,9 +62,10 @@ install_test:  ## install all pip requirements needed for testing and the packag
 
 .PHONY: upgrade_requirements_lockfiles
 upgrade_requirements_lockfiles:  ## upgrade pip requirements lock files
-	${PIP_COMPILE} ${PIP_COMPILE_OPTS} --output-file=requirements/requirements-base.lock.txt
-	${PIP_COMPILE} ${PIP_COMPILE_OPTS} --output-file=requirements/requirements-test.lock.txt requirements/requirements-base.lock.txt requirements/requirements-test.in
-	${PIP_COMPILE} ${PIP_COMPILE_OPTS} --output-file=requirements/requirements-dev.lock.txt requirements/requirements-test.lock.txt requirements/requirements-dev.in
+	${PIP_COMPILE} ${PIP_COMPILE_OPTS} setup.py requirements/requirements-base.in  --output-file=requirements/requirements-base.lock.txt
+	${PIP_COMPILE} ${PIP_COMPILE_OPTS} requirements/requirements-base.lock.txt requirements/requirements-test.in --output-file=requirements/requirements-test.lock.txt
+	${PIP_COMPILE} ${PIP_COMPILE_OPTS} requirements/requirements-test.lock.txt requirements/requirements-ci.in --output-file=requirements/requirements-ci.lock.txt
+	${PIP_COMPILE} ${PIP_COMPILE_OPTS} requirements/requirements-ci.lock.txt requirements/requirements-dev.in --output-file=requirements/requirements-dev.lock.txt
 
 .PHONY: upgrade_dev
 upgrade_dev: upgrade_requirements_lockfiles install_dev  ## upgrade all pip requirements and reinstall package as editable

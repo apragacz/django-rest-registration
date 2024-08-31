@@ -1,0 +1,35 @@
+# linting
+flake8
+flake8-comprehensions
+flake8-debugger
+flake8-isort
+flake8-pyproject
+flake8-print
+flake8-tuple
+isort[pyproject]
+pylint
+
+# type checking
+mypy
+django-stubs
+djangorestframework-stubs
+
+# package building
+build
+docutils
+Pygments>=2.2.0
+twine>=1.11.0
+wheel>=0.31.0
+readme_renderer[md]
+
+# documentation
+Sphinx
+# not fixing this causes
+# pip._internal.exceptions.MetadataGenerationFailed: metadata generation failed
+sphinx_rtd_theme==2.0
+sphinx-autobuild
+sphinx-jinja
+doc8
+
+# cookbook
+pyjwt
