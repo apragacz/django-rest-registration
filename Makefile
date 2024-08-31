@@ -27,6 +27,7 @@ PYLINT_OPTS := --rcfile=pyproject.toml
 PYTEST := pytest
 PYTEST_OPTS :=  --failed-first
 TWINE := twine
+TWINE_REPOSITORY := django-rest-registration
 PIP := pip
 PIP_COMPILE := pip-compile
 PIP_COMPILE_OPTS := --upgrade --resolver=backtracking
@@ -99,7 +100,7 @@ pylint:  ## run pylint
 
 .PHONY: upload-package
 upload-package: build-package check-package  ## upload the package to PyPI
-	${TWINE} upload ${DIST_DIR}/*
+	${TWINE} upload --repository ${TWINE_REPOSITORY} ${DIST_DIR}/*
 
 .PHONY: check-package
 check-package: build-package  ## check that the built package is well-formed
