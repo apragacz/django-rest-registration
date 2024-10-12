@@ -12,4 +12,4 @@ sphinx:
 
 python:
    install:
-   - requirements: requirements/requirements-test.lock.txt
+   - requirements: requirements/requirements-ci.lock.txt
