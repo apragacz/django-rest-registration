@@ -431,7 +431,7 @@ sqlparse==0.5.1
     #   django
 stack-data==0.6.3
     # via ipython
-starlette==0.38.2
+starlette==0.40.0
     # via
     #   -r requirements/requirements-ci.lock.txt
     #   sphinx-autobuild
