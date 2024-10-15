@@ -307,7 +307,7 @@ sqlparse==0.5.1
     # via
     #   -r requirements/requirements-test.lock.txt
     #   django
-starlette==0.38.2
+starlette==0.40.0
     # via sphinx-autobuild
 stevedore==5.3.0
     # via doc8
