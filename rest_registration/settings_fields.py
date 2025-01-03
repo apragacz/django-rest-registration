@@ -181,7 +181,15 @@ REGISTER_SETTINGS_FIELDS = [
             to create the activation link for newly registered user.
             """),
     ),
-    Field('REGISTER_VERIFICATION_ONE_TIME_USE', default=False),
+    Field(
+        'REGISTER_VERIFICATION_ONE_TIME_USE',
+        default=False,
+        help=dedent("""\
+            This setting ensures the activation link can only be used once.
+            If REGISTER_VERIFICATION_AUTO_LOGIN is enabled, the link could auto-login 
+            the user, which may not be desired.
+            """),
+    ),
     Field(
         'REGISTER_VERIFICATION_EMAIL_TEMPLATES',
         default={
