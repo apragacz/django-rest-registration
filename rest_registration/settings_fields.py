@@ -186,7 +186,7 @@ REGISTER_SETTINGS_FIELDS = [
         default=False,
         help=dedent("""\
             This setting ensures the activation link can only be used once.
-            If REGISTER_VERIFICATION_AUTO_LOGIN is enabled, the link could auto-login 
+            If REGISTER_VERIFICATION_AUTO_LOGIN is enabled, the link could auto-login
             the user, which may not be desired.
             """),
     ),
