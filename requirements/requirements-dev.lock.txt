@@ -502,7 +502,7 @@ uvicorn==0.30.6
     # via
     #   -r requirements/requirements-ci.lock.txt
     #   sphinx-autobuild
-virtualenv==20.26.3
+virtualenv==20.26.6
     # via
     #   -r requirements/requirements-ci.lock.txt
     #   tox
