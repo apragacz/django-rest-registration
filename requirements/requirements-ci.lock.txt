@@ -360,7 +360,7 @@ urllib3==2.2.2
     #   types-requests
 uvicorn==0.30.6
     # via sphinx-autobuild
-virtualenv==20.26.3
+virtualenv==20.26.6
     # via
     #   -r requirements/requirements-test.lock.txt
     #   tox
