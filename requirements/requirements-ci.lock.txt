@@ -66,7 +66,7 @@ distlib==0.3.8
     # via
     #   -r requirements/requirements-test.lock.txt
     #   virtualenv
-django==5.0.8
+django==5.0.10
     # via
     #   -r requirements/requirements-test.lock.txt
     #   django-stubs
