@@ -128,7 +128,7 @@ flake8-pytest-style==2.0.0
     # via -r requirements/requirements-ci.in
 flake8-tuple==0.4.1
     # via -r requirements/requirements-ci.in
-h11==0.14.0
+h11==0.16.0
     # via uvicorn
 idna==3.8
     # via

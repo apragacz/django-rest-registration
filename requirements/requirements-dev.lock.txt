@@ -163,7 +163,7 @@ flake8-pytest-style==2.0.0
     # via -r requirements/requirements-ci.lock.txt
 flake8-tuple==0.4.1
     # via -r requirements/requirements-ci.lock.txt
-h11==0.14.0
+h11==0.16.0
     # via
     #   -r requirements/requirements-ci.lock.txt
     #   uvicorn
