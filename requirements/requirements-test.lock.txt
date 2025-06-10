@@ -76,7 +76,7 @@ pytest-cov==5.0.0
     # via -r requirements/requirements-test.in
 pytest-django==4.8.0
     # via -r requirements/requirements-test.in
-requests==2.32.3
+requests==2.32.4
     # via coreapi
 sqlparse==0.5.1
     # via

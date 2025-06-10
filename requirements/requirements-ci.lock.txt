@@ -254,7 +254,7 @@ readme-renderer[md]==43.0
     # via
     #   -r requirements/requirements-ci.in
     #   twine
-requests==2.32.3
+requests==2.32.4
     # via
     #   -r requirements/requirements-test.lock.txt
     #   coreapi
