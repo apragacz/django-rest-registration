@@ -53,5 +53,5 @@ typing-extensions==4.14.0
     # via asgiref
 uritemplate==3.0.1
     # via coreapi
-urllib3==1.26.19
+urllib3==2.5.0
     # via requests
