@@ -16,7 +16,7 @@ coreapi==2.3.3
     #   openapi-codec
 coreschema==0.0.4
     # via coreapi
-django==4.2.22
+django==4.2.25
     # via
     #   -r requirements.in
     #   django-cors-headers
