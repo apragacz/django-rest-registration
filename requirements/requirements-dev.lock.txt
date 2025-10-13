@@ -260,7 +260,7 @@ nh3==0.2.18
     # via
     #   -r requirements/requirements-ci.lock.txt
     #   readme-renderer
-packaging==24.1
+packaging==25.0
     # via
     #   -r requirements/requirements-ci.lock.txt
     #   build
@@ -465,7 +465,7 @@ traitlets==5.14.3
     # via
     #   ipython
     #   matplotlib-inline
-twine==5.1.1
+twine==6.2.0
     # via -r requirements/requirements-ci.lock.txt
 types-pyyaml==6.0.12.20240808
     # via

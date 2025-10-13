@@ -50,7 +50,7 @@ jinja2==3.1.5
     # via coreschema
 markupsafe==2.1.5
     # via jinja2
-packaging==24.1
+packaging==25.0
     # via
     #   pyproject-api
     #   pytest

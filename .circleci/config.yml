@@ -4,7 +4,7 @@ orbs:
 executors:
   docker-executor:
     docker:
-      - image: cimg/python:3.10
+      - image: cimg/python:3.11
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD

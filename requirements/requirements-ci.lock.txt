@@ -190,7 +190,7 @@ mypy-extensions==1.0.0
     # via mypy
 nh3==0.2.18
     # via readme-renderer
-packaging==24.1
+packaging==25.0
     # via
     #   -r requirements/requirements-test.lock.txt
     #   build
@@ -329,7 +329,7 @@ tomlkit==0.13.2
     # via pylint
 tox==4.18.0
     # via -r requirements/requirements-test.lock.txt
-twine==5.1.1
+twine==6.2.0
     # via -r requirements/requirements-ci.in
 types-pyyaml==6.0.12.20240808
     # via
