@@ -16,7 +16,7 @@ coreapi==2.3.3
     #   openapi-codec
 coreschema==0.0.4
     # via coreapi
-django==4.2.25
+django==4.2.26
     # via
     #   -r requirements.in
     #   django-cors-headers
@@ -49,8 +49,6 @@ simplejson==3.17.2
     # via django-rest-swagger
 sqlparse==0.5.0
     # via django
-typing-extensions==4.14.0
-    # via asgiref
 uritemplate==3.0.1
     # via coreapi
 urllib3==2.5.0
