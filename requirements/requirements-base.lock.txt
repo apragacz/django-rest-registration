@@ -8,7 +8,7 @@ asgiref==3.7.2
     # via
     #   -r requirements/requirements-base.in
     #   django
-django==5.0.10
+django==5.1.14
     # via
     #   django-rest-registration (setup.py)
     #   djangorestframework
