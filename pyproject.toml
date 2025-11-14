@@ -102,6 +102,7 @@ good-names = ["i", "j", "k", "db"]
 max-parents = 10
 max-args = 6
 min-public-methods = 0
+max-positional-arguments = 9
 
 [tool.pylint."messages control"]
 disable = [

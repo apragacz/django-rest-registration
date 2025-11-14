@@ -119,7 +119,8 @@ def perform_login(
 
         if should_authenticate_session():
             login_auth_backend = get_login_authentication_backend(user=user)
-            auth.login(request, user, backend=login_auth_backend)
+            # TODO: remove type ignore when djangorestframework-stubs is fixed
+            auth.login(request, user, backend=login_auth_backend)  # type: ignore
             user_logged_in_signal_sent = True
 
         if not user_logged_in_signal_sent:

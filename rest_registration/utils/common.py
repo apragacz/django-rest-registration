@@ -10,7 +10,7 @@ class DefaultValues(Enum):
     RAISE_EXCEPTION = 'raise-exception'
 
 
-RAISE_EXCEPTION = DefaultValues.RAISE_EXCEPTION
+RAISE_EXCEPTION = DefaultValues.RAISE_EXCEPTION  # pylint: disable=invalid-name
 
 
 def identity(value: _T) -> _T:
