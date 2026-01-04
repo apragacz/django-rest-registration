@@ -61,8 +61,8 @@ class MLStripper(HTMLParser):
         if data:
             self._append_segment(data)
 
-    def error(self, message: str) -> None:
-        raise MLStripperParseFailed(f"HTML parse error: {message}")
+    def unknown_decl(self, data: str) -> None:
+        raise MLStripperParseFailed(f"HTML parse error: unknown declaration {data}")
 
     def get_data(self) -> str:
         paragraph_texts = []

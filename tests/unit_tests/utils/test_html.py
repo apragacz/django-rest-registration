@@ -183,5 +183,5 @@ def test_convert_html_to_text_succeeds(html, kwargs, expected_text):
     ],
 )
 def test_convert_html_to_text_fails(html, kwargs):
-    with pytest.raises(MLStripperParseFailed):
+    with pytest.raises(MLStripperParseFailed, match=r"spam"):
         convert_html_to_text(html, **kwargs)
