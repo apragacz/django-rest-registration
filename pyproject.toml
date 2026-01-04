@@ -11,9 +11,9 @@ authors = [
 description = "User registration REST API, based on django-rest-framework"
 readme = "README.md"
 license = {file = "LICENSE"}
-requires-python = ">=3.7"
+requires-python = ">=3.9"
 dependencies = [
-	"Django>=2.0",
+	"Django>=3.0",
 	"djangorestframework>=3.3",
 ]
 classifiers = [
