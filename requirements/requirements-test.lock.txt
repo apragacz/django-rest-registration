@@ -28,13 +28,13 @@ coverage[toml]==7.2.7
     #   pytest-cov
 distlib==0.4.0
     # via virtualenv
-django==5.0.14
+django==5.1.15
     # via
     #   -r requirements/requirements-base.lock.txt
     #   djangorestframework
 djangorestframework==3.16.1
     # via -r requirements/requirements-base.lock.txt
-filelock==3.20.0
+filelock==3.20.3
     # via
     #   tox
     #   virtualenv
@@ -86,7 +86,7 @@ tox==4.32.0
     # via -r requirements/requirements-test.in
 uritemplate==4.2.0
     # via coreapi
-urllib3==2.5.0
+urllib3==2.6.3
     # via requests
-virtualenv==20.35.4
+virtualenv==20.36.1
     # via tox

@@ -98,7 +98,7 @@ distlib==0.4.0
     # via
     #   -r requirements/requirements-ci.lock.txt
     #   virtualenv
-django==5.0.14
+django==5.1.15
     # via
     #   -r requirements/requirements-ci.lock.txt
     #   django-stubs
@@ -129,7 +129,7 @@ docutils==0.20.1
     #   sphinx-rtd-theme
 executing==2.2.1
     # via stack-data
-filelock==3.20.0
+filelock==3.20.3
     # via
     #   -r requirements/requirements-ci.lock.txt
     #   tox
@@ -485,7 +485,7 @@ uritemplate==4.2.0
     # via
     #   -r requirements/requirements-ci.lock.txt
     #   coreapi
-urllib3==2.5.0
+urllib3==2.6.3
     # via
     #   -r requirements/requirements-ci.lock.txt
     #   requests
@@ -495,7 +495,7 @@ uvicorn==0.38.0
     # via
     #   -r requirements/requirements-ci.lock.txt
     #   sphinx-autobuild
-virtualenv==20.35.4
+virtualenv==20.36.1
     # via
     #   -r requirements/requirements-ci.lock.txt
     #   tox
@@ -509,7 +509,7 @@ websockets==15.0.1
     # via
     #   -r requirements/requirements-ci.lock.txt
     #   sphinx-autobuild
-wheel==0.45.1
+wheel==0.46.2
     # via
     #   -r requirements/requirements-ci.lock.txt
     #   pip-tools
