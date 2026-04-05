@@ -26,7 +26,7 @@ coverage[toml]==7.2.7
     #   pytest-cov
 distlib==0.4.0
     # via virtualenv
-django==5.0.14
+django==5.1.15
     # via
     #   -r requirements/requirements-base.lock.txt
     #   djangorestframework
