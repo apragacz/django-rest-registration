@@ -74,7 +74,7 @@ coverage[toml]==7.2.7
     # via
     #   -r requirements/requirements-ci.lock.txt
     #   pytest-cov
-cryptography==46.0.6
+cryptography==46.0.7
     # via
     #   -r requirements/requirements-ci.lock.txt
     #   secretstorage
@@ -90,7 +90,7 @@ distlib==0.4.0
     # via
     #   -r requirements/requirements-ci.lock.txt
     #   virtualenv
-django==5.0.14
+django==5.1.15
     # via
     #   -r requirements/requirements-ci.lock.txt
     #   django-stubs
@@ -336,7 +336,7 @@ pyproject-hooks==1.2.0
     #   -r requirements/requirements-ci.lock.txt
     #   build
     #   pip-tools
-pytest==9.0.2
+pytest==9.0.3
     # via
     #   -r requirements/requirements-ci.lock.txt
     #   pytest-cov
