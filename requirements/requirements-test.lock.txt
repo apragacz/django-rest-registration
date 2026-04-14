@@ -26,7 +26,7 @@ coverage[toml]==7.2.7
     #   pytest-cov
 distlib==0.4.0
     # via virtualenv
-django==5.0.14
+django==5.1.15
     # via
     #   -r requirements/requirements-base.lock.txt
     #   djangorestframework
@@ -67,7 +67,7 @@ pyjwt==2.12.1
     # via -r requirements/requirements-test.in
 pyproject-api==1.10.0
     # via tox
-pytest==9.0.2
+pytest==9.0.3
     # via
     #   -r requirements/requirements-test.in
     #   pytest-cov
