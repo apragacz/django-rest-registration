@@ -26,7 +26,7 @@ coverage[toml]==7.2.7
     #   pytest-cov
 distlib==0.4.0
     # via virtualenv
-django==5.0.14
+django==5.1.15
     # via
     #   -r requirements/requirements-base.lock.txt
     #   djangorestframework
@@ -37,7 +37,7 @@ filelock==3.25.2
     #   python-discovery
     #   tox
     #   virtualenv
-idna==3.11
+idna==3.15
     # via requests
 iniconfig==2.3.0
     # via pytest
@@ -67,7 +67,7 @@ pyjwt==2.12.1
     # via -r requirements/requirements-test.in
 pyproject-api==1.10.0
     # via tox
-pytest==9.0.2
+pytest==9.0.3
     # via
     #   -r requirements/requirements-test.in
     #   pytest-cov
@@ -80,7 +80,7 @@ python-discovery==1.2.1
     # via
     #   tox
     #   virtualenv
-requests==2.33.1
+requests==2.34.2
     # via coreapi
 sqlparse==0.5.5
     # via
@@ -92,7 +92,7 @@ tox==4.52.0
     # via -r requirements/requirements-test.in
 uritemplate==4.2.0
     # via coreapi
-urllib3==2.6.3
+urllib3==2.7.0
     # via requests
 virtualenv==21.2.0
     # via tox
